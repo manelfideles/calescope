@@ -1,6 +1,8 @@
-import { Box, Text, IconButton, Grid, GridItem, useColorModeValue, useDisclosure, Collapse, Icon, As } from '@chakra-ui/react';
+import { Box, Text, Tooltip, IconButton, Grid, GridItem, useColorModeValue, useDisclosure, Collapse, Icon, As, RangeSlider, RangeSliderFilledTrack, RangeSliderThumb, RangeSliderTrack, Select, Button } from '@chakra-ui/react';
 import { TiMediaFastForward, TiMediaPlay, TiMediaRewind, TiMediaStop } from 'react-icons/ti';
 import { BiArrowToTop, BiArrowToBottom } from 'react-icons/bi';
+import { HistogramSlider } from '../HistogramSlider'; 
+import { useState } from 'react';
 
 interface FilterBoxProps {
 	title: string,
@@ -9,9 +11,13 @@ interface FilterBoxProps {
 	mode: 'range' | 'value',
 }
 
-export const FilterBox = ({ title, mode, isTimeFilter, icon }: FilterBoxProps) => {
+// mock data
+const histogramData = Array.from({length: 5000}, () => Math.floor(Math.random() * 8));
+
+export const FilterBox = ({ title, icon }: FilterBoxProps) => {
 
 	const { isOpen, onToggle } = useDisclosure();
+	const [mode, setMode] = useState<string>('value');
 
 	return (
 		<Box
@@ -26,7 +32,9 @@ export const FilterBox = ({ title, mode, isTimeFilter, icon }: FilterBoxProps) =
 						alignItems='center'
 						justifyContent='space-between'
 					>
-						<Icon as={icon} />
+						<Tooltip label={`This variable represents the ${title.toLowerCase()} variable you've uploaded to the platform.`} placement='start'>
+							<Icon as={icon} />
+						</Tooltip>
 						<Text fontWeight='bold'>
 							{title}
 						</Text>
@@ -40,25 +48,37 @@ export const FilterBox = ({ title, mode, isTimeFilter, icon }: FilterBoxProps) =
 							icon={isOpen ? <BiArrowToTop /> : <BiArrowToBottom />}
 						/>
 					</Box>
-
 				</GridItem>
 				<Collapse in={isOpen} animateOpacity>
-					<GridItem>
-						Mode
+					<GridItem marginTop={2} display='flex' justifyContent='space-between' alignItems='center'>
+						<Text>
+							Mode
+						</Text>
+						<Select 
+						defaultValue='value'
+						size='sm' 
+						width='fit-content'
+						onChange={(e) => setMode(e.currentTarget.value)}
+						>
+							<option value='value'>Value</option>
+							<option value='range'>Range</option>
+						</Select>
 					</GridItem>
-					<GridItem>
-						HistTimeline
+					<GridItem marginTop={2} alignItems='center'>
+						<HistogramSlider 
+							data={histogramData}
+							mode={mode}
+							height={50}
+							width={190}
+						/>
 					</GridItem>
-					<GridItem>
-						Value(s) Form
-					</GridItem>
-					<GridItem>
+					<GridItem marginTop={2}>
 						<Text>Controls</Text>
-						<Box display='flex'>
-							<TiMediaRewind />
-							<TiMediaPlay />
-							<TiMediaStop />
-							<TiMediaFastForward />
+						<Box display='flex' gap={2}>
+							<IconButton icon={<TiMediaRewind />} aria-label=''/>
+							<IconButton icon={<TiMediaPlay />} aria-label=''/>
+							<IconButton icon={<TiMediaStop />} aria-label=''/>
+							<IconButton icon={<TiMediaFastForward />} aria-label=''/>
 						</Box>
 					</GridItem>
 				</Collapse>

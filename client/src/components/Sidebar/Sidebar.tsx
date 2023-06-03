@@ -1,13 +1,11 @@
 import { Box, Text, IconButton, Button } from '@chakra-ui/react'
 import { FilterControls } from '../FilterControls'
 import { BiArrowToLeft } from 'react-icons/bi'
-
+import { AiFillHome } from 'react-icons/ai'
 export const Sidebar = () => {
 	return (
 		<Box
-			maxWidth='20rem'
-			minWidth='15rem'
-			width='20%'
+			width='14rem'
 			display='flex'
 			flexDirection='column'
 			position='fixed'
@@ -21,14 +19,15 @@ export const Sidebar = () => {
 			>
 				<Button
 					as='a'
-					fontSize='sm'
-					fontWeight={400}
 					variant='link'
-					href='/'>
-					🔥
+					href='/'
+					color='black'
+					aria-label='Go home'
+					>
+					<AiFillHome />
 				</Button>
 				<Text fontWeight='bold'>
-					Filters
+					Calescope
 				</Text>
 				<IconButton
 					bg='none'

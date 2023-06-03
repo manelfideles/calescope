@@ -1,7 +1,5 @@
 import { Grid, GridItem } from '@chakra-ui/react'
 import { FilterBox } from '../FilterBox'
-import { MdHeight, MdAccessTime } from 'react-icons/md';
-import { TbTemperatureCelsius } from 'react-icons/tb';
 import { useMemo } from 'react';
 import { User } from '../../utils/types';
 
