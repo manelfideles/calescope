@@ -5,6 +5,7 @@ import { Faqs } from '../pages/Faqs';
 import { Dashboard } from '../pages/Dashboard';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
+import { Data } from '../pages/Data';
 
 type Route = {
 	path: string;
@@ -29,6 +30,12 @@ export const routes: Route[] = [
 		path: '/settings',
 		pageName: 'Settings',
 		element: <PageTemplate pageContent={<Settings />} />,
+		showIfLoggedOut: false,
+	},
+	{
+		path: '/data',
+		pageName: 'Data',
+		element: <PageTemplate pageContent={<Data />} />,
 		showIfLoggedOut: false,
 	},
 	{

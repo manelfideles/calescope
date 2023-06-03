@@ -1,18 +1,29 @@
-import { Heading, Stack, Box, Button, Grid, GridItem, Select, HStack, Input, Text, Flex, Link } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useDisclosure, Heading, Stack, Box, Button, Grid, GridItem, Select, HStack, Input, Text, Flex, Link, useToast } from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FiEdit, FiSave, FiPlus, FiXCircle } from 'react-icons/fi'
 import { Form } from '../components/Forms/Form'
 import { FormInput } from '../components/Forms/FormInput'
 import { useAuth } from '../hooks/useAuth'
-import { User, Settings as SettingsType } from '../utils/types'
+import { User } from '../utils/types'
 import { Link as RouterLink } from 'react-router-dom';
+import { useClient } from 'react-supabase';
+import { Variable } from '../utils/types'
+import { toLower, startCase } from 'lodash'
+import { Modal } from '../components/Modal'
 
 export const Settings = () => {
 	const { authState: { user }, updateUser } = useAuth();
+    const { isOpen, onOpen, onClose } = useDisclosure();
+	const supabase = useClient()
+	const toast = useToast({
+		position: 'bottom-right',
+		duration: 5000,
+		isClosable: true,
+	});
 	const [isEditing, setIsEditing] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
-	const [settings, setSettings] = useState<SettingsType>(
+	const [settings, setSettings] = useState<any>(
 		localStorage.getItem('settings')
 			? JSON.parse(localStorage.getItem('settings')!).userSettings
 			: { variables: [], metricSystem: 'metric' }
@@ -48,7 +59,7 @@ export const Settings = () => {
 	}
 
 	const handleVariableButtonClick = (variableId: number) => {
-		const idx = settings.variables.findIndex((v) => v.id === variableId)
+		const idx = settings.variables.findIndex((v: { id: number }) => v.id === variableId)
 		let clickedVariable = settings.variables[idx]
 		clickedVariable = {
 			...clickedVariable!,
@@ -58,10 +69,40 @@ export const Settings = () => {
 		setSettings({ ...settings });
 	}
 
+	const fetchVariables = async () => {
+		let { data: variables, error } = await supabase
+			.from('variables')
+			.select('*')
+		if (error) toast({ status: 'error', title: error.message })
+		else {
+			const vars = variables!.map(
+				(variable) => ({
+					id: variable.id, 
+					name: formatVariableName(variable.name), 
+					isSelected: false
+				})
+			)
+			setSettings({
+				...settings, 
+				variables: vars
+			})
+		}
+	}
+
+	const formatVariableName = (varName: string) => startCase(toLower(varName));
+
+	useEffect(() => {
+		if (settings.variables.length === 0) {
+			setIsLoading(true);
+			fetchVariables();
+			setIsLoading(false);
+		}
+	}, [])
+
 	const buttonGroup = settings.variables.map(
-		variable => <Button
+		(variable: Variable) => <Button
 			key={variable.id}
-			value={variable.name.toLowerCase()}
+			value={variable.name}
 			isDisabled={!isEditing}
 			onClick={() => handleVariableButtonClick(variable.id)}
 			colorScheme={variable.isSelected ? 'teal' : undefined}
@@ -193,10 +234,10 @@ export const Settings = () => {
 									</Link>
 									<Flex gap={2} flexWrap='wrap' marginY={2}>
 										{buttonGroup}
-										<></>
 									</Flex>
+
 									<Button
-										onClick={() => console.log('Add variable clicked')}
+										onClick={onOpen}
 										variant='solid'
 										colorScheme='teal'
 										isDisabled={!isEditing}
@@ -206,6 +247,16 @@ export const Settings = () => {
 									>
 										Add New Variable
 									</Button>
+									<Modal 
+										modalTitle='Add New Variable' 
+										onClose={onClose} 
+										isOpen={isOpen}
+										modalBody={
+											<FormInput name='new-variable-name' label='Variable Name' fieldError={undefined}>
+												<Input />
+											</FormInput>
+										}
+									/>
 								</Box>
 							</Stack>
 						</GridItem>
