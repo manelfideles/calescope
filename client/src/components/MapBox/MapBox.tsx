@@ -1,34 +1,47 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Map, Source, Layer } from 'react-map-gl';
 import type { MapRef } from 'react-map-gl';
 import type { GeoJSONSource } from 'react-map-gl';
 import { mapboxConfig } from '../../utils/mapbox-config';
 import { sources } from '../../utils/mapbox-sources';
+import { Badge, Spinner, useToast } from '@chakra-ui/react';
+import { useRPC } from '../../hooks/useRPC';
 
 export const MapBox = () => {
+  const toast = useToast();
   const { MAPBOX_TOKEN, centerPoint, defaultZoom } = mapboxConfig;
   const { clusterLayer, clusterCountLayer, unclusteredPointLayer } = sources;
+  const mapRef = useRef<MapRef>(null);
   const initialViewState = {
     latitude: centerPoint[0],
     longitude: centerPoint[1],
     zoom: defaultZoom,
   };
-
-  const mapRef = useRef<MapRef>(null);
+  const {
+    data: measurementCountPerLocation,
+    error,
+    isLoading,
+  } = useRPC({
+    rpcName: 'get_measurement_counts',
+    params: {},
+  });
 
   const onClick = (event: mapboxgl.MapLayerMouseEvent) => {
+    console.log({ event });
     const feature = event.features?.[0];
+    console.log({ feature });
     const clusterId = feature?.properties!.cluster_id;
 
     const mapboxSource = mapRef?.current!.getSource(
-      'earthquakes'
+      'location-measurement-counts'
     ) as GeoJSONSource;
 
     mapboxSource.getClusterExpansionZoom(clusterId, (err, zoom) => {
       if (err || !mapRef) return;
       mapRef.current!.easeTo({
-        center: [-9.13333, 38.7267],
+        // @ts-ignore ts(2339)
+        center: feature?.geometry!.coordinates,
         zoom,
         duration: 500,
       });
@@ -43,29 +56,56 @@ export const MapBox = () => {
     zIndex: -1,
   };
 
-  return (
-    <div style={mapStyle}>
-      <Map
-        initialViewState={initialViewState}
-        mapStyle='mapbox://styles/mapbox/light-v9'
-        mapboxAccessToken={MAPBOX_TOKEN}
-        interactiveLayerIds={[clusterLayer.id!]}
-        onClick={onClick}
-        ref={mapRef}
+  useEffect(() => {
+    const loadingToastId = 'loading-toast';
+    if (error)
+      toast({
+        status: 'error',
+        title: `Something went wrong: ${error.message}`,
+      });
+    if (isLoading && !toast.isActive(loadingToastId))
+      toast({
+        id: loadingToastId,
+        status: 'loading',
+        title: 'Loading measurement data',
+      });
+    else toast.close(loadingToastId);
+  }, [isLoading]);
+
+  const mapComponent = (
+    <Map
+      initialViewState={initialViewState}
+      reuseMaps
+      mapStyle='mapbox://styles/mapbox/light-v9'
+      mapboxAccessToken={MAPBOX_TOKEN}
+      interactiveLayerIds={[clusterLayer.id!]}
+      onClick={onClick}
+      ref={mapRef}
+    >
+      <Source
+        id='location-measurement-counts'
+        type='geojson'
+        data={measurementCountPerLocation}
+        cluster={true}
+        clusterMaxZoom={14}
+        clusterRadius={50}
       >
-        <Source
-          id='earthquakes'
-          type='geojson'
-          data='https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson'
-          cluster={true}
-          clusterMaxZoom={14}
-          clusterRadius={50}
-        >
-          <Layer {...clusterLayer} />
-          <Layer {...clusterCountLayer} />
-          <Layer {...unclusteredPointLayer} />
-        </Source>
-      </Map>
-    </div>
+        <Layer {...clusterLayer} />
+        <Layer {...clusterCountLayer} />
+        <Layer {...unclusteredPointLayer} />
+      </Source>
+    </Map>
+  );
+
+  return (
+    <>
+      {isLoading ? <Spinner /> : <div style={mapStyle}>{mapComponent}</div>}
+      <Badge
+        style={{ position: 'absolute', top: '0.5rem', right: '0.5rem' }}
+        fontSize='md'
+      >
+        📍 Portugal
+      </Badge>
+    </>
   );
 };

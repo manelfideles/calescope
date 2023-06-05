@@ -34,11 +34,7 @@ export const Settings = () => {
   } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const supabase = useClient();
-  const toast = useToast({
-    position: 'bottom-right',
-    duration: 5000,
-    isClosable: true,
-  });
+  const toast = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [settings, setSettings] = useState<any>(

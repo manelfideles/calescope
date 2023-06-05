@@ -49,11 +49,7 @@ export const useAuth = () => {
 
 export const AuthContextProvider = ({ children }: AuthProviderProps) => {
   const supabase = useClient();
-  const toast = useToast({
-    position: 'bottom-right',
-    duration: 5000,
-    isClosable: true,
-  });
+  const toast = useToast();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [authState, setAuthState] = useState<AuthState>({
     session: localStorage.getItem(sbTokenName)!

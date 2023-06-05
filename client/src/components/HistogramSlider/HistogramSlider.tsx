@@ -113,7 +113,6 @@ export const HistogramSlider = ({
           <FormInput label='Value' name='variable-value' fieldError={undefined}>
             <Input
               type='number'
-              defaultValue={initialSliderValues[0]}
               value={sliderValues[0]}
               onChange={({ currentTarget: { valueAsNumber: val } }) =>
                 setSliderValues([
@@ -136,7 +135,6 @@ export const HistogramSlider = ({
             >
               <Input
                 type='number'
-                defaultValue={initialSliderValues[0]}
                 value={sliderValues[0]}
                 onChange={(e) =>
                   setSliderValues([
@@ -156,7 +154,6 @@ export const HistogramSlider = ({
             >
               <Input
                 type='number'
-                defaultValue={initialSliderValues[1]}
                 value={sliderValues[1]}
                 onChange={(e) =>
                   setSliderValues([
