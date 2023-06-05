@@ -39,10 +39,8 @@ const unclusteredPointLayer: LayerProps = {
   source: 'location-measurement-counts',
   filter: ['!', ['has', 'point_count']],
   paint: {
-    'circle-color': '#11b4da',
-    'circle-radius': 4,
-    'circle-stroke-width': 1,
-    'circle-stroke-color': '#fff',
+    'circle-color': '#a7c0af',
+    'circle-radius': 10,
   },
 };
 

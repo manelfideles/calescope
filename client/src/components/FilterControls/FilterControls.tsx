@@ -17,5 +17,12 @@ export const FilterControls = () => {
       ));
   }, []);
 
-  return <Grid>{visibleVariables}</Grid>;
+  return (
+    <Grid>
+      {visibleVariables}
+      <GridItem padding={2}>
+        <FilterBox title='Time' mode='range' />
+      </GridItem>
+    </Grid>
+  );
 };

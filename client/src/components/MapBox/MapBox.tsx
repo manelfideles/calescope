@@ -28,24 +28,30 @@ export const MapBox = () => {
   });
 
   const onClick = (event: mapboxgl.MapLayerMouseEvent) => {
-    console.log({ event });
     const feature = event.features?.[0];
-    console.log({ feature });
     const clusterId = feature?.properties!.cluster_id;
 
-    const mapboxSource = mapRef?.current!.getSource(
-      'location-measurement-counts'
-    ) as GeoJSONSource;
+    // clicked feature is a cluster
+    if (clusterId) {
+      const mapboxSource = mapRef?.current!.getSource(
+        'location-measurement-counts'
+      ) as GeoJSONSource;
 
-    mapboxSource.getClusterExpansionZoom(clusterId, (err, zoom) => {
-      if (err || !mapRef) return;
-      mapRef.current!.easeTo({
-        // @ts-ignore ts(2339)
-        center: feature?.geometry!.coordinates,
-        zoom,
-        duration: 500,
+      mapboxSource.getClusterExpansionZoom(clusterId, (err, zoom) => {
+        if (err || !mapRef) return;
+        mapRef.current!.easeTo({
+          // @ts-ignore ts(2339)
+          center: feature?.geometry!.coordinates,
+          zoom,
+          duration: 500,
+        });
       });
-    });
+    }
+    // clicked feature is a specific measurement
+    else {
+      // @ts-ignore
+      console.log('clicked feature:', feature);
+    }
   };
 
   const mapStyle: React.CSSProperties = {
@@ -78,7 +84,7 @@ export const MapBox = () => {
       reuseMaps
       mapStyle='mapbox://styles/mapbox/light-v9'
       mapboxAccessToken={MAPBOX_TOKEN}
-      interactiveLayerIds={[clusterLayer.id!]}
+      interactiveLayerIds={[clusterLayer.id!, unclusteredPointLayer.id!]}
       onClick={onClick}
       ref={mapRef}
     >
@@ -99,12 +105,12 @@ export const MapBox = () => {
 
   return (
     <>
-      {isLoading ? <Spinner /> : <div style={mapStyle}>{mapComponent}</div>}
+      <div style={mapStyle}>{mapComponent}</div>
       <Badge
         style={{ position: 'absolute', top: '0.5rem', right: '0.5rem' }}
         fontSize='md'
       >
-        📍 Portugal
+        {'<'} Portugal {'>'}
       </Badge>
     </>
   );
