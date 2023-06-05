@@ -6,14 +6,18 @@ import { supabaseClient } from './lib';
 import { Provider as SupabaseProvider } from 'react-supabase';
 import { AuthContextProvider } from './hooks/useAuth';
 
+import { MapProvider } from 'react-map-gl';
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <ChakraProvider>
-      <SupabaseProvider value={supabaseClient}>
-        <AuthContextProvider>
-          <AppRouter />
-        </AuthContextProvider>
-      </SupabaseProvider>
-    </ChakraProvider>
+    <MapProvider>
+      <ChakraProvider>
+        <SupabaseProvider value={supabaseClient}>
+          <AuthContextProvider>
+            <AppRouter />
+          </AuthContextProvider>
+        </SupabaseProvider>
+      </ChakraProvider>
+    </MapProvider>
   </React.StrictMode>
 );

@@ -13,3 +13,7 @@ export const userSettings: Settings = {
   ],
   metricSystem: 'metric',
 };
+
+export const generateHistogramData = (length: number, n_buckets: number) => {
+  return Array.from({ length }, () => Math.floor(Math.random() * n_buckets));
+};

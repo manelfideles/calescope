@@ -10,12 +10,7 @@ import {
   Collapse,
   Icon,
   As,
-  RangeSlider,
-  RangeSliderFilledTrack,
-  RangeSliderThumb,
-  RangeSliderTrack,
   Select,
-  Button,
 } from '@chakra-ui/react';
 import {
   TiMediaFastForward,
@@ -26,6 +21,7 @@ import {
 import { BiArrowToTop, BiArrowToBottom } from 'react-icons/bi';
 import { HistogramSlider } from '../HistogramSlider';
 import { useState } from 'react';
+import { generateHistogramData } from '../../utils/mockData';
 
 interface FilterBoxProps {
   title: string;
@@ -34,10 +30,7 @@ interface FilterBoxProps {
   mode: 'range' | 'value';
 }
 
-// mock data
-const histogramData = Array.from({ length: 5000 }, () =>
-  Math.floor(Math.random() * 8)
-);
+const histogramData = generateHistogramData(5000, 8);
 
 export const FilterBox = ({ title, icon }: FilterBoxProps) => {
   const { isOpen, onToggle } = useDisclosure();

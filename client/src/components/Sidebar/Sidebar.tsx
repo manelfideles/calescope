@@ -15,7 +15,11 @@ export const Sidebar = () => {
         display='flex'
         alignItems='center'
         justifyContent='space-between'
-        padding='0.5rem'
+        margin={2}
+        padding={2}
+        bg={'white'}
+        border='1px solid gray'
+        rounded={'lg'}
       >
         <Button
           as='a'
@@ -23,10 +27,13 @@ export const Sidebar = () => {
           href='/'
           color='black'
           aria-label='Go home'
+          marginLeft={-2.5}
         >
           <AiFillHome />
         </Button>
-        <Text fontWeight='bold'>Calescope</Text>
+        <Text fontWeight='bold' marginLeft={-4}>
+          Calescope
+        </Text>
         <IconButton
           bg='none'
           border='1px solid black'
