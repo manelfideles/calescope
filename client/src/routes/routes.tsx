@@ -6,13 +6,7 @@ import { Dashboard } from '../pages/Dashboard';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
 import { Data } from '../pages/Data';
-
-type Route = {
-  path: string;
-  element: React.ReactNode;
-  pageName: string;
-  showIfLoggedOut?: boolean;
-};
+import { Route } from '../utils/types';
 
 export const routes: Route[] = [
   {

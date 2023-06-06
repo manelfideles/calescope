@@ -15,15 +15,9 @@ import { BiHide, BiShow } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 import { useClient } from 'react-supabase';
 import { useAuth } from '../../hooks/useAuth';
+import { SignUpInputs } from '../../utils/types';
 import { Form } from './Form';
 import { FormInput } from './FormInput';
-
-export type SignUpInputs = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-};
 
 export const RegisterForm = () => {
   const form = useForm<SignUpInputs>();

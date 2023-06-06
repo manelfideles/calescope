@@ -1,1 +1,0 @@
-export { HistogramSlider } from './HistogramSlider';

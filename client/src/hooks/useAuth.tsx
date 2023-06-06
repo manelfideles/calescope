@@ -1,18 +1,12 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useClient } from 'react-supabase';
-import { Session, User } from '@supabase/supabase-js';
 import { useToast } from '@chakra-ui/react';
 import { indexOf } from 'lodash';
+import { AuthState } from '../utils/types';
 
 interface AuthProviderProps {
   children: React.ReactNode;
 }
-
-type AuthState = {
-  session?: Session | null;
-  user?: User | null;
-  isLoggedIn: boolean;
-};
 
 interface AuthContextInterface {
   isLoading: boolean;

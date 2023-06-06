@@ -12,13 +12,11 @@ import { Form } from './Form';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../hooks/useAuth';
-import { SignUpInputs } from './RegisterForm';
 import { useNavigate } from 'react-router-dom';
 import { FormInput } from './FormInput';
 import { BiHide, BiShow } from 'react-icons/bi';
 import { useClient } from 'react-supabase';
-
-type SignInInputs = Pick<SignUpInputs, 'password' | 'email'>;
+import { SignInInputs } from '../../utils/types';
 
 export const LoginForm = () => {
   const form = useForm<SignInInputs>();
