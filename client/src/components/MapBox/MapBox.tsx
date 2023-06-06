@@ -4,8 +4,8 @@ import { Map, Source, Layer } from 'react-map-gl';
 import type { MapRef } from 'react-map-gl';
 import type { GeoJSONSource } from 'react-map-gl';
 import { mapboxConfig } from '../../utils/mapbox-config';
-import { sources } from '../../utils/mapbox-sources';
-import { Badge, Spinner, useToast } from '@chakra-ui/react';
+import { sources } from '../../utils/mapbox-layers';
+import { Badge, useToast } from '@chakra-ui/react';
 import { useRPC } from '../../hooks/useRPC';
 
 export const MapBox = () => {
