@@ -1,1 +1,1 @@
-export { HistogramSlider } from './HistogramSlider'
+export { HistogramSlider } from './HistogramSlider';

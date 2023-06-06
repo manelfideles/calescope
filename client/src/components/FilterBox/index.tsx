@@ -1,1 +1,1 @@
-export { FilterBox } from './FilterBox'
+export { FilterBox } from './FilterBox';

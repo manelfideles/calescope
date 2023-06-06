@@ -1,9 +1,5 @@
-import { Box } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react';
 
 export const BottomBar = () => {
-	return (
-		<Box>
-			BottomBar
-		</Box>
-	)
-}
+  return <Box>BottomBar</Box>;
+};
