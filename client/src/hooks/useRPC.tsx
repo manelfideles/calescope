@@ -15,17 +15,16 @@ export const useRPC = ({ rpcName, params }: RpcProps) => {
 
   useEffect(() => {
     setIsLoading(true);
-    runRpc(rpcName)
+    runRpc(rpcName, params)
       .then((result) => {
-        // console.log(result);
         setData(convertDataToGeoJson(result.data));
         if (result.error) setError(result.error);
       })
       .then(() => setIsLoading(false))
       .catch((error) => setError(error));
-  }, [rpcName]);
+  }, [rpcName, JSON.stringify(params)]);
 
-  const runRpc = async (rpcName: string) => {
+  const runRpc = async (rpcName: string, params: any) => {
     return await supabase.rpc(rpcName, params);
   };
 

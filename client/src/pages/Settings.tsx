@@ -256,7 +256,6 @@ export const Settings = () => {
                   <Flex gap={2} flexWrap='wrap' marginY={2}>
                     {buttonGroup}
                   </Flex>
-
                   <Button
                     onClick={onOpen}
                     variant='solid'

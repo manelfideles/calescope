@@ -9,7 +9,7 @@ import { AuthContextProvider } from './hooks/useAuth';
 import { MapProvider } from 'react-map-gl';
 
 const toastDefaultOptions: UseToastOptions = {
-  position: 'bottom-right',
+  position: 'top-right',
   duration: 5 * 1000,
   isClosable: true,
 };
