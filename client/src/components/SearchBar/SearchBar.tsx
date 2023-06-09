@@ -42,12 +42,15 @@ export const SearchBar = (props: SearchBarProps) => {
 
   const { iconPosition = 'left' } = input || {};
   const [showResults, setShowResults] = useState(false);
+  const [inputValue, setInputValue] = useState(value);
   const { map } = useMap();
 
   const onBlur = () => setTimeout(() => setShowResults(false), 200);
   const onResultSelect = (location: {
+    properties: { name: string };
     geometry: { coordinates: LngLatLike };
   }) => {
+    setInputValue(location.properties.name);
     map?.easeTo({
       center: location.geometry.coordinates,
       zoom: 18,
@@ -81,7 +84,7 @@ export const SearchBar = (props: SearchBarProps) => {
           bgColor='white'
           border='1px solid gray'
           placeholder={placeholder}
-          value={value}
+          value={inputValue}
           onChange={onSearchChange}
           onFocus={() => setShowResults(true)}
           onBlur={onBlur}
@@ -128,7 +131,7 @@ export const SearchBar = (props: SearchBarProps) => {
                 </Box>
               ))
             : !isLoading &&
-              value !== '' && (
+              inputValue !== '' && (
                 <Box>
                   <Flex alignItems='center'>
                     <Box p='0.8em' margin='0' color='black'>
