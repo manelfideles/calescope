@@ -35,11 +35,11 @@ export const SearchBar = (props: SearchBarProps) => {
   const { centerPoint, defaultZoom } = mapboxConfig;
   const [showResults, setShowResults] = useState(false);
   const [searchInputValue, setSearchInputValue] = useState('');
+  const { map } = useMap();
   const { data: searchData, isLoading } = useRPC({
     rpcName: 'search_locations_by_string',
     params: { search_term: searchInputValue },
   });
-  const { map } = useMap();
   const onBlur = () => setTimeout(() => setShowResults(false), 200);
   const onResultSelect = (location: {
     properties: { name: string };
@@ -52,8 +52,7 @@ export const SearchBar = (props: SearchBarProps) => {
       duration: 750,
     });
   };
-
-  const resetMap = () => {
+  const onSearchReset = () => {
     setSearchInputValue('');
     map?.flyTo({
       center: [centerPoint[1], centerPoint[0]],
@@ -102,7 +101,7 @@ export const SearchBar = (props: SearchBarProps) => {
         />
         {searchInputValue !== '' && (
           <InputRightElement>
-            <CloseButton marginTop='1' onClick={() => resetMap()} />
+            <CloseButton marginTop='1' onClick={onSearchReset} />
           </InputRightElement>
         )}
       </InputGroup>
