@@ -10,14 +10,16 @@ import {
   InputRightElement,
   Flex,
   Text,
+  Tag,
+  Avatar,
 } from '@chakra-ui/react';
 import { FaSearch } from 'react-icons/fa';
+import { HiLocationMarker } from 'react-icons/hi';
 
 interface Props extends BoxProps {
   value: string;
   isLoading: boolean;
   onSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  resultRenderer: (result: any) => JSX.Element;
   onResultSelect: (result: any) => void;
   resultListMaxHeight?: string;
   searchResults?: any[];
@@ -32,12 +34,11 @@ export const SearchBar = (props: Props) => {
     isLoading,
     input,
     onSearchChange,
-    resultRenderer,
     onResultSelect,
     resultListMaxHeight = '60vh',
-    placeholder = '',
+    placeholder = 'Search a location',
     searchResults = [],
-    noResultFoundText = 'No results found.',
+    noResultFoundText = 'No location found for that name. Try again!',
     ...rest
   } = props;
 
@@ -45,18 +46,13 @@ export const SearchBar = (props: Props) => {
 
   const [showResults, setShowResults] = useState(false);
 
-  useEffect(() => {
-    searchResults?.map((result: any) => ({
-      name: result.properties.name,
-      id: result.properties.id,
-      coordinates: result.geometry.coordinates,
-    }));
-  }, [searchResults]);
+  const onBlur = () => setTimeout(() => setShowResults(false), 200);
 
-  const onBlur = () => {
-    setTimeout(() => {
-      setShowResults(false);
-    }, 200);
+  const avatarNameFormatter = (locationName: string) => {
+    return locationName
+      .split(' ')
+      .map((str: string) => str.charAt(0))
+      .join('');
   };
 
   return (
@@ -104,36 +100,36 @@ export const SearchBar = (props: Props) => {
           bgColor='white'
           maxHeight={resultListMaxHeight}
           overflowY='auto'
-          border='1px solid gray'
           marginTop={2}
           w='30rem'
           rounded='lg'
-          sx={{
-            '&::-webkit-scrollbar': {
-              display: 'none',
-            },
-          }}
         >
-          {searchResults.length > 0
-            ? searchResults.map((result) => (
+          {searchResults?.length! > 0
+            ? searchResults?.map((result) => (
                 <Box
-                  key={result.id || result._id || result.key}
+                  key={result.id}
                   borderBottom='1px solid rgba(34,36,38,.1)'
                   cursor='pointer'
-                  _hover={{
-                    bgColor: '#f9fafb',
-                  }}
+                  _hover={{ bgColor: '#f9fafb' }}
                   onClick={() => onResultSelect(result)}
                 >
-                  <Flex alignItems='center'>
-                    <Box p='0.8em' margin='0' color='black'>
-                      {resultRenderer(result)}
+                  <Flex p='1rem' margin='0' alignItems='center'>
+                    <Avatar
+                      size='sm'
+                      icon={<HiLocationMarker />}
+                      marginRight={2}
+                    />
+                    <Box>
+                      <Text>
+                        <b>{result.properties.name}</b>, Portugal
+                      </Text>
                     </Box>
                   </Flex>
                 </Box>
               ))
-            : !isLoading && (
-                <Box borderBottom='1px solid rgba(34,36,38,.1)'>
+            : !isLoading &&
+              value !== '' && (
+                <Box>
                   <Flex alignItems='center'>
                     <Box p='0.8em' margin='0' color='black'>
                       <Text>{noResultFoundText}</Text>
