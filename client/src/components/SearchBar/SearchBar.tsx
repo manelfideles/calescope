@@ -10,17 +10,16 @@ import {
   InputRightElement,
   Flex,
   Text,
-  Tag,
   Avatar,
 } from '@chakra-ui/react';
 import { FaSearch } from 'react-icons/fa';
 import { HiLocationMarker } from 'react-icons/hi';
+import { LngLatLike, useMap } from 'react-map-gl';
 
-interface Props extends BoxProps {
+interface SearchBarProps extends BoxProps {
   value: string;
   isLoading: boolean;
   onSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onResultSelect: (result: any) => void;
   resultListMaxHeight?: string;
   searchResults?: any[];
   placeholder?: string;
@@ -28,13 +27,12 @@ interface Props extends BoxProps {
   noResultFoundText?: string;
 }
 
-export const SearchBar = (props: Props) => {
+export const SearchBar = (props: SearchBarProps) => {
   const {
     value,
     isLoading,
     input,
     onSearchChange,
-    onResultSelect,
     resultListMaxHeight = '60vh',
     placeholder = 'Search a location',
     searchResults = [],
@@ -43,16 +41,18 @@ export const SearchBar = (props: Props) => {
   } = props;
 
   const { iconPosition = 'left' } = input || {};
-
   const [showResults, setShowResults] = useState(false);
+  const { map } = useMap();
 
   const onBlur = () => setTimeout(() => setShowResults(false), 200);
-
-  const avatarNameFormatter = (locationName: string) => {
-    return locationName
-      .split(' ')
-      .map((str: string) => str.charAt(0))
-      .join('');
+  const onResultSelect = (location: {
+    geometry: { coordinates: LngLatLike };
+  }) => {
+    map?.easeTo({
+      center: location.geometry.coordinates,
+      zoom: 18,
+      duration: 500,
+    });
   };
 
   return (

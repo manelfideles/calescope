@@ -14,15 +14,14 @@ export const Dashboard = () => {
 
   return (
     <>
+      <MapBox />
       <SearchBar
         value={searchValue}
         isLoading={isLoadingSearch}
         onSearchChange={(e) => setSearchValue(e.target.value)}
-        onResultSelect={(location) => console.log({ location })}
         searchResults={searchValue === '' ? [] : searchData?.features}
       />
       <Sidebar />
-      <MapBox />
       <BottomBar />
     </>
   );

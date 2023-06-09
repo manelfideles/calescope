@@ -87,6 +87,7 @@ export const MapBox = () => {
       interactiveLayerIds={[clusterLayer.id!, unclusteredPointLayer.id!]}
       onClick={onClick}
       ref={mapRef}
+      id='map'
     >
       <Source
         id='location-measurement-counts'
