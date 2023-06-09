@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Input,
   InputGroup,
@@ -11,31 +11,28 @@ import {
   Flex,
   Text,
   Avatar,
+  CloseButton,
 } from '@chakra-ui/react';
 import { FaSearch } from 'react-icons/fa';
 import { HiLocationMarker } from 'react-icons/hi';
 import { LngLatLike, useMap } from 'react-map-gl';
 import { useRPC } from '../../hooks/useRPC';
+import { mapboxConfig } from '../../utils/mapbox-config';
 
 interface SearchBarProps extends BoxProps {
   resultListMaxHeight?: string;
   placeholder?: string;
-  input?: { iconPosition: 'left' | 'right' };
   noResultFoundText?: string;
 }
 
 export const SearchBar = (props: SearchBarProps) => {
   const {
-    input,
     resultListMaxHeight = '60vh',
     placeholder = 'Search a location',
     noResultFoundText = 'No location found for that name. Try again!',
     ...rest
   } = props;
-
-  // searchValue === '' ? [] : searchData?.features
-
-  const { iconPosition = 'left' } = input || {};
+  const { centerPoint, defaultZoom } = mapboxConfig;
   const [showResults, setShowResults] = useState(false);
   const [searchInputValue, setSearchInputValue] = useState('');
   const { data: searchData, isLoading } = useRPC({
@@ -56,6 +53,15 @@ export const SearchBar = (props: SearchBarProps) => {
     });
   };
 
+  const resetMap = () => {
+    setSearchInputValue('');
+    map?.flyTo({
+      center: [centerPoint[1], centerPoint[0]],
+      zoom: defaultZoom,
+      duration: 750,
+    });
+  };
+
   return (
     <Box
       position='absolute'
@@ -67,15 +73,22 @@ export const SearchBar = (props: SearchBarProps) => {
       marginTop={2}
       {...rest}
     >
-      <InputGroup width='30rem'>
-        {iconPosition === 'left' && (
-          <InputLeftElement
-            pointerEvents='none'
-            children={
-              isLoading ? <Spinner size='sm' /> : <Icon as={FaSearch} />
-            }
-          />
-        )}
+      <InputGroup
+        width='25rem'
+        display='flex'
+        alignItems='center'
+        justifyContent='center'
+      >
+        <InputLeftElement
+          pointerEvents='none'
+          children={
+            isLoading ? (
+              <Spinner size='sm' marginTop='1' />
+            ) : (
+              <Icon as={FaSearch} marginTop='1' />
+            )
+          }
+        />
         <Input
           rounded='lg'
           h='44px'
@@ -87,13 +100,10 @@ export const SearchBar = (props: SearchBarProps) => {
           onFocus={() => setShowResults(true)}
           onBlur={onBlur}
         />
-        {iconPosition === 'right' && (
-          <InputRightElement
-            pointerEvents='none'
-            children={
-              isLoading ? <Spinner size='sm' /> : <Icon as={FaSearch} />
-            }
-          />
+        {searchInputValue !== '' && (
+          <InputRightElement>
+            <CloseButton marginTop='1' onClick={() => resetMap()} />
+          </InputRightElement>
         )}
       </InputGroup>
       {showResults && (
