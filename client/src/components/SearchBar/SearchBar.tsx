@@ -15,13 +15,10 @@ import {
 import { FaSearch } from 'react-icons/fa';
 import { HiLocationMarker } from 'react-icons/hi';
 import { LngLatLike, useMap } from 'react-map-gl';
+import { useRPC } from '../../hooks/useRPC';
 
 interface SearchBarProps extends BoxProps {
-  value: string;
-  isLoading: boolean;
-  onSearchChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   resultListMaxHeight?: string;
-  searchResults?: any[];
   placeholder?: string;
   input?: { iconPosition: 'left' | 'right' };
   noResultFoundText?: string;
@@ -29,32 +26,33 @@ interface SearchBarProps extends BoxProps {
 
 export const SearchBar = (props: SearchBarProps) => {
   const {
-    value,
-    isLoading,
     input,
-    onSearchChange,
     resultListMaxHeight = '60vh',
     placeholder = 'Search a location',
-    searchResults = [],
     noResultFoundText = 'No location found for that name. Try again!',
     ...rest
   } = props;
 
+  // searchValue === '' ? [] : searchData?.features
+
   const { iconPosition = 'left' } = input || {};
   const [showResults, setShowResults] = useState(false);
-  const [inputValue, setInputValue] = useState(value);
+  const [searchInputValue, setSearchInputValue] = useState('');
+  const { data: searchData, isLoading } = useRPC({
+    rpcName: 'search_locations_by_string',
+    params: { search_term: searchInputValue },
+  });
   const { map } = useMap();
-
   const onBlur = () => setTimeout(() => setShowResults(false), 200);
   const onResultSelect = (location: {
     properties: { name: string };
     geometry: { coordinates: LngLatLike };
   }) => {
-    setInputValue(location.properties.name);
-    map?.easeTo({
+    setSearchInputValue(location.properties.name);
+    map?.flyTo({
       center: location.geometry.coordinates,
       zoom: 18,
-      duration: 500,
+      duration: 750,
     });
   };
 
@@ -84,8 +82,8 @@ export const SearchBar = (props: SearchBarProps) => {
           bgColor='white'
           border='1px solid gray'
           placeholder={placeholder}
-          value={inputValue}
-          onChange={onSearchChange}
+          value={searchInputValue}
+          onChange={(e) => setSearchInputValue(e.target.value)}
           onFocus={() => setShowResults(true)}
           onBlur={onBlur}
         />
@@ -107,8 +105,8 @@ export const SearchBar = (props: SearchBarProps) => {
           w='30rem'
           rounded='lg'
         >
-          {searchResults?.length! > 0
-            ? searchResults?.map((result) => (
+          {searchInputValue !== '' && searchData?.features.length! > 0
+            ? searchData?.features.map((result: any) => (
                 <Box
                   key={result.id}
                   borderBottom='1px solid rgba(34,36,38,.1)'
@@ -131,7 +129,7 @@ export const SearchBar = (props: SearchBarProps) => {
                 </Box>
               ))
             : !isLoading &&
-              inputValue !== '' && (
+              searchInputValue !== '' && (
                 <Box>
                   <Flex alignItems='center'>
                     <Box p='0.8em' margin='0' color='black'>
