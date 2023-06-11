@@ -40,3 +40,8 @@ export type Route = {
   pageName: string;
   showIfLoggedOut?: boolean;
 };
+
+export type SelectedLocation = {
+  locationId: number;
+  isVisible: boolean;
+};

@@ -10,14 +10,14 @@ import {
   InputRightElement,
   Flex,
   Text,
-  Avatar,
   CloseButton,
 } from '@chakra-ui/react';
 import { FaSearch } from 'react-icons/fa';
-import { HiLocationMarker } from 'react-icons/hi';
 import { LngLatLike, useMap } from 'react-map-gl';
 import { useRPC } from '../../hooks/useRPC';
 import { mapboxConfig } from '../../utils/mapbox-config';
+import { LocationTag } from '../LocationTag';
+import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 
 interface SearchBarProps extends BoxProps {
   resultListMaxHeight?: string;
@@ -40,6 +40,8 @@ export const SearchBar = (props: SearchBarProps) => {
     rpcName: 'search_locations_by_string',
     params: { search_term: searchInputValue },
   });
+  const { locations } = useSelectedLocations();
+
   const onBlur = () => setTimeout(() => setShowResults(false), 200);
   const onResultSelect = (location: {
     properties: { name: string };
@@ -123,18 +125,11 @@ export const SearchBar = (props: SearchBarProps) => {
                   _hover={{ bgColor: '#f9fafb' }}
                   onClick={() => onResultSelect(result)}
                 >
-                  <Flex p='1rem' margin='0' alignItems='center'>
-                    <Avatar
-                      size='sm'
-                      icon={<HiLocationMarker />}
-                      marginRight={2}
-                    />
-                    <Box>
-                      <Text>
-                        <b>{result.properties.name}</b>, Portugal
-                      </Text>
-                    </Box>
-                  </Flex>
+                  <LocationTag
+                    name={result.properties.name}
+                    isSelected={locations.includes(result.id)}
+                    country='Portugal'
+                  />
                 </Box>
               ))
             : !isLoading &&

@@ -6,15 +6,21 @@ import {
   Tag,
   TagLeftIcon,
   TagLabel,
+  IconButton,
+  Flex,
 } from '@chakra-ui/react';
 import { Card } from '../Card';
 import { BsExclamationLg } from 'react-icons/bs';
+import { BiTrash, BiHide, BiShow } from 'react-icons/bi';
 import { useMemo } from 'react';
 import { useSelectedLocations } from '../../hooks/useSelectedLocations';
+import { D3AreaGraph } from '../d3-graphs/D3AreaGraph';
+import { areaChartData } from '../../utils/mockData';
 
 export const BottomBar = () => {
   const { onToggle, isOpen } = useDisclosure();
-  const { locations, removeLocation } = useSelectedLocations();
+  const { locations, removeLocation, toggleLocationVisibility } =
+    useSelectedLocations();
 
   const emptyBottomBar = useMemo(
     () => (
@@ -41,12 +47,34 @@ export const BottomBar = () => {
   );
 
   const locationDetails = (
-    <Box>
-      {' '}
-      {locations.map((locationId) => (
-        <span>{locationId}</span>
-      ))}{' '}
-    </Box>
+    <>
+      {locations.map(({ locationId, isVisible }) => (
+        <Flex gap={1}>
+          <Tag fontWeight='normal'>{`Location ${locationId}`}</Tag>
+          <IconButton
+            onClick={() => {
+              toggleLocationVisibility(locationId);
+              console.log(locationId, isVisible);
+            }}
+            size='xs'
+            p={0}
+            icon={isVisible ? <BiHide /> : <BiShow />}
+            aria-label='hide-location'
+          />
+          <IconButton
+            onClick={() => removeLocation(locationId)}
+            colorScheme='red'
+            size='xs'
+            p={0}
+            icon={<BiTrash />}
+            aria-label=''
+          />
+        </Flex>
+      ))}
+      <Box>
+        <D3AreaGraph width={300} height={250} data={areaChartData} />
+      </Box>
+    </>
   );
 
   return (
@@ -60,8 +88,12 @@ export const BottomBar = () => {
         boxShadow='md'
         overflow='hidden'
       >
-        <Card title='Location Details' onToggle={onToggle} isOpen={!isOpen}>
-          <Collapse in={isOpen} startingHeight={0} animateOpacity>
+        <Card title='Location Details' onToggle={onToggle} isOpen={isOpen}>
+          <Collapse
+            in={locations.length ? !isOpen : isOpen}
+            startingHeight={0}
+            animateOpacity
+          >
             {locations.length ? locationDetails : emptyBottomBar}
           </Collapse>
         </Card>
