@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import { SelectedLocation } from '../utils/types';
-import { findIndex, includes, update } from 'lodash';
+import { includes } from 'lodash';
 
 interface SelectedLocationsProviderProps {
   children: React.ReactNode;
@@ -8,7 +8,7 @@ interface SelectedLocationsProviderProps {
 
 interface SelectedLocationsContextInterface {
   locations: SelectedLocation[];
-  addLocation: (locationId: number) => void;
+  addLocation: (locationName: string, locationId: number) => void;
   removeLocation: (locationId: number) => void;
   toggleLocationVisibility: (locationId: number) => void;
   isInSelectedLocations: (locationId: number) => boolean;
@@ -42,9 +42,12 @@ export const SelectedLocationsContextProvider = ({
   const isInSelectedLocations = (locationId: number) =>
     locations.some((l) => includes(l, locationId));
 
-  const addLocation = (locationId: number) => {
+  const addLocation = (locationName: string, locationId: number) => {
     if (!isInSelectedLocations(locationId))
-      setLocations([...locations, { locationId, isVisible: true }]);
+      setLocations([
+        ...locations,
+        { locationName, locationId, isVisible: true },
+      ]);
   };
 
   const removeLocation = (locationId: number) => {

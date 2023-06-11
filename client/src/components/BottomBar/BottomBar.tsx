@@ -22,6 +22,38 @@ export const BottomBar = () => {
   const { locations, removeLocation, toggleLocationVisibility } =
     useSelectedLocations();
 
+  const selectedLocationsList = useMemo(
+    () => (
+      <Flex w='20%' flexDir='column' gap={2} overflowY='auto'>
+        {locations.map(({ locationId, locationName, isVisible }) => (
+          <Flex justifyContent='space-between' alignItems='center'>
+            <Tag fontWeight='normal' maxW='50%' p={1}>
+              {locationName}
+            </Tag>
+            <Flex gap={1}>
+              <IconButton
+                onClick={() => toggleLocationVisibility(locationId)}
+                size='xs'
+                p={0}
+                icon={isVisible ? <BiHide /> : <BiShow />}
+                aria-label='hide-location'
+              />
+              <IconButton
+                onClick={() => removeLocation(locationId)}
+                colorScheme='red'
+                size='xs'
+                p={0}
+                icon={<BiTrash />}
+                aria-label=''
+              />
+            </Flex>
+          </Flex>
+        ))}
+      </Flex>
+    ),
+    [locations]
+  );
+
   const emptyBottomBar = useMemo(
     () => (
       <Box
@@ -47,31 +79,12 @@ export const BottomBar = () => {
   );
 
   const locationDetails = (
-    <>
-      {locations.map(({ locationId, isVisible }) => (
-        <Flex gap={1}>
-          <Tag fontWeight='normal'>{`Location ${locationId}`}</Tag>
-          <IconButton
-            onClick={() => toggleLocationVisibility(locationId)}
-            size='xs'
-            p={0}
-            icon={isVisible ? <BiHide /> : <BiShow />}
-            aria-label='hide-location'
-          />
-          <IconButton
-            onClick={() => removeLocation(locationId)}
-            colorScheme='red'
-            size='xs'
-            p={0}
-            icon={<BiTrash />}
-            aria-label=''
-          />
-        </Flex>
-      ))}
+    <Flex maxH='15rem'>
+      {selectedLocationsList}
       <Box>
         <D3AreaGraph width={300} height={250} data={areaChartData} />
       </Box>
-    </>
+    </Flex>
   );
 
   return (

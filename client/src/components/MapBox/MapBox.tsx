@@ -51,7 +51,8 @@ export const MapBox = () => {
     }
     // clicked feature is a specific measurement
     else {
-      if (feature) addLocation(feature?.properties!.id);
+      if (feature)
+        addLocation(feature?.properties!.name, feature?.properties!.id);
     }
   };
 

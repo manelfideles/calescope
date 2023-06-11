@@ -44,4 +44,5 @@ export type Route = {
 export type SelectedLocation = {
   locationId: number;
   isVisible: boolean;
+  locationName: string;
 };
