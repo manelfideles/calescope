@@ -52,10 +52,7 @@ export const BottomBar = () => {
         <Flex gap={1}>
           <Tag fontWeight='normal'>{`Location ${locationId}`}</Tag>
           <IconButton
-            onClick={() => {
-              toggleLocationVisibility(locationId);
-              console.log(locationId, isVisible);
-            }}
+            onClick={() => toggleLocationVisibility(locationId)}
             size='xs'
             p={0}
             icon={isVisible ? <BiHide /> : <BiShow />}

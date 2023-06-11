@@ -7,9 +7,9 @@ import { SelectedLocationsContextProvider } from '../hooks/useSelectedLocations'
 export const Dashboard = () => {
   return (
     <>
-      <SearchBar />
       <Sidebar />
       <SelectedLocationsContextProvider>
+        <SearchBar />
         <MapBox />
         <BottomBar />
       </SelectedLocationsContextProvider>

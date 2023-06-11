@@ -11,6 +11,7 @@ interface SelectedLocationsContextInterface {
   addLocation: (locationId: number) => void;
   removeLocation: (locationId: number) => void;
   toggleLocationVisibility: (locationId: number) => void;
+  isInSelectedLocations: (locationId: number) => boolean;
 }
 
 const initialState = {
@@ -18,6 +19,7 @@ const initialState = {
   addLocation: () => null,
   removeLocation: () => null,
   toggleLocationVisibility: () => null,
+  isInSelectedLocations: () => false,
 };
 
 export const SelectedLocationsContext =
@@ -69,6 +71,7 @@ export const SelectedLocationsContextProvider = ({
         addLocation,
         removeLocation,
         toggleLocationVisibility,
+        isInSelectedLocations,
       }}
     >
       {children}

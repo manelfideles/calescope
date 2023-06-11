@@ -2,15 +2,15 @@ import { Text, Box, Flex, Avatar } from '@chakra-ui/react';
 import { HiLocationMarker } from 'react-icons/hi';
 
 interface LocationTagProps {
-  name: string;
   isSelected: boolean;
+  name: string;
   country?: string;
 }
 
 export const LocationTag = ({
+  isSelected,
   name,
   country,
-  isSelected,
 }: LocationTagProps) => {
   return (
     <Flex p='1rem' margin='0' alignItems='center'>

@@ -36,11 +36,11 @@ export const SearchBar = (props: SearchBarProps) => {
   const [showResults, setShowResults] = useState(false);
   const [searchInputValue, setSearchInputValue] = useState('');
   const { map } = useMap();
+  const { isInSelectedLocations } = useSelectedLocations();
   const { data: searchData, isLoading } = useRPC({
     rpcName: 'search_locations_by_string',
     params: { search_term: searchInputValue },
   });
-  const { locations } = useSelectedLocations();
 
   const onBlur = () => setTimeout(() => setShowResults(false), 200);
   const onResultSelect = (location: {
@@ -119,15 +119,15 @@ export const SearchBar = (props: SearchBarProps) => {
           {searchInputValue !== '' && searchData?.features.length! > 0
             ? searchData?.features.map((result: any) => (
                 <Box
-                  key={result.id}
-                  borderBottom='1px solid rgba(34,36,38,.1)'
+                  key={result.properties.id}
+                  borderBottom='1px solid gainsboro'
                   cursor='pointer'
                   _hover={{ bgColor: '#f9fafb' }}
                   onClick={() => onResultSelect(result)}
                 >
                   <LocationTag
+                    isSelected={isInSelectedLocations(result.properties.id)}
                     name={result.properties.name}
-                    isSelected={locations.includes(result.id)}
                     country='Portugal'
                   />
                 </Box>
