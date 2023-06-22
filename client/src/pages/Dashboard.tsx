@@ -6,13 +6,11 @@ import { SelectedLocationsContextProvider } from '../hooks/useSelectedLocations'
 
 export const Dashboard = () => {
   return (
-    <>
+    <SelectedLocationsContextProvider>
       <Sidebar />
-      <SelectedLocationsContextProvider>
-        <SearchBar />
-        <MapBox />
-        <BottomBar />
-      </SelectedLocationsContextProvider>
-    </>
+      <SearchBar />
+      <MapBox />
+      <BottomBar />
+    </SelectedLocationsContextProvider>
   );
 };
