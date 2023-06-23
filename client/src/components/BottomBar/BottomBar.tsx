@@ -14,8 +14,8 @@ import { BsExclamationLg } from 'react-icons/bs';
 import { BiTrash, BiHide, BiShow } from 'react-icons/bi';
 import { useMemo } from 'react';
 import { useSelectedLocations } from '../../hooks/useSelectedLocations';
-import { D3AreaGraph } from '../d3-graphs/D3AreaGraph';
 import { areaChartData } from '../../utils/mockData';
+import { XAxis, YAxis, AreaSeries, FlexibleXYPlot } from 'react-vis';
 
 export const BottomBar = () => {
   const { onToggle, isOpen } = useDisclosure();
@@ -24,9 +24,20 @@ export const BottomBar = () => {
 
   const selectedLocationsList = useMemo(
     () => (
-      <Flex w='20%' flexDir='column' gap={2} overflowY='auto'>
-        {locations.map(({ locationId, locationName, isVisible }) => (
+      <Flex
+        w='20%'
+        flexDir='column'
+        gap={2}
+        overflowY='auto'
+        borderRight='1px solid gray'
+        pr={2}
+      >
+        <Text fontWeight='600' fontSize='sm'>
+          Selected Locations
+        </Text>
+        {locations.map(({ locationId, locationName, isVisible, color }) => (
           <Flex justifyContent='space-between' alignItems='center'>
+            <Box padding={2.5} rounded='md' bgColor={color}></Box>
             <Tag fontWeight='normal' maxW='50%' p={1}>
               {locationName}
             </Tag>
@@ -39,7 +50,7 @@ export const BottomBar = () => {
                 aria-label='hide-location'
               />
               <IconButton
-                onClick={() => removeLocation(locationId)}
+                onClick={() => removeLocation(locationName, locationId)}
                 colorScheme='red'
                 size='xs'
                 p={0}
@@ -81,8 +92,14 @@ export const BottomBar = () => {
   const locationDetails = (
     <Flex maxH='15rem'>
       {selectedLocationsList}
-      <Box>
-        <D3AreaGraph width={300} height={250} data={areaChartData} />
+      <Box width='33%' height='15rem'>
+        <FlexibleXYPlot width={250} height={250}>
+          <XAxis style={{ fontSize: 'small' }} title='Altitude (m)' />
+          <YAxis style={{ fontSize: 'small' }} title='Variable (unit)' />
+          {areaChartData.map(({ data, color }) => (
+            <AreaSeries data={data} opacity={0.25} fill={color} />
+          ))}
+        </FlexibleXYPlot>
       </Box>
     </Flex>
   );
@@ -98,7 +115,7 @@ export const BottomBar = () => {
         boxShadow='md'
         overflow='hidden'
       >
-        <Card title='Location Details' onToggle={onToggle} isOpen={isOpen}>
+        <Card title='Location Details' onToggle={onToggle} isOpen={!isOpen}>
           <Collapse
             in={locations.length ? !isOpen : isOpen}
             startingHeight={0}

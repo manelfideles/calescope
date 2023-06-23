@@ -10,7 +10,7 @@ import { MapProvider } from 'react-map-gl';
 
 const toastDefaultOptions: UseToastOptions = {
   position: 'top-right',
-  duration: 5 * 1000,
+  duration: 3 * 1000,
   isClosable: true,
 };
 

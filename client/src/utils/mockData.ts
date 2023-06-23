@@ -14,18 +14,34 @@ export const userSettings: Settings = {
   metricSystem: 'metric',
 };
 
+const generateAreaChartData = (length: number = 10, upperBound: number = 40) =>
+  Array(length)
+    .fill({})
+    .map((_e, i) => ({ x: i, y: Math.random() * upperBound }));
+
 export const areaChartData = [
-  { x: 1, y: 90 },
-  { x: 2, y: 12 },
-  { x: 3, y: 34 },
-  { x: 4, y: 53 },
-  { x: 5, y: 52 },
-  { x: 6, y: 9 },
-  { x: 7, y: 18 },
-  { x: 8, y: 78 },
-  { x: 9, y: 28 },
-  { x: 10, y: 34 },
+  {
+    locationName: 'locationName-1',
+    locationId: 1,
+    data: generateAreaChartData(),
+    color: '#339999',
+  },
+  {
+    locationName: 'locationName-2',
+    locationId: 2,
+    data: generateAreaChartData(),
+    color: '#66ccff',
+  },
+  {
+    locationName: 'locationName-3',
+    locationId: 3,
+    data: generateAreaChartData(),
+    color: '#1a3177',
+  },
 ];
+
+export const getRandomColor = () =>
+  '#' + Math.floor(Math.random() * 16777215).toString(16);
 
 export const generateHistogramData = (length: number, n_buckets: number) => {
   return Array.from({ length }, () => Math.floor(Math.random() * n_buckets));

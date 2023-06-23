@@ -24,7 +24,7 @@ export const Modal = ({
   modalBody,
 }: ModalProps) => {
   return (
-    <ChakraModal onClose={onClose} isOpen={isOpen} isCentered>
+    <ChakraModal size='4xl' onClose={onClose} isOpen={isOpen} isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{modalTitle}</ModalHeader>
