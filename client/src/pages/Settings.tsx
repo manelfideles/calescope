@@ -265,7 +265,7 @@ export const Settings = () => {
                     leftIcon={<FiPlus />}
                     marginBottom={2}
                   >
-                    Add New Variable
+                    Add Data
                   </Button>
                   <UploadForm isOpen={isOpen} onClose={onClose} />
                 </Box>

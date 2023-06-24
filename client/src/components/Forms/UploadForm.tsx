@@ -19,12 +19,18 @@ import {
   TagLabel,
   TagLeftIcon,
   Text,
+  Icon,
+  Flex,
 } from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { FormInput } from './FormInput';
 import { Dropzone } from '../Dropzone';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { BsExclamationLg } from 'react-icons/bs';
+import { GrFormAdd } from 'react-icons/gr';
+import { CreatableSelect } from 'chakra-react-select';
+import { useRPC } from '../../hooks/useRPC';
+import { startCase, toLower } from 'lodash';
 
 interface UploadFormProps {
   isOpen: boolean;
@@ -34,33 +40,120 @@ interface UploadFormProps {
 export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
   const form = useForm<any>();
   const [csvContent, setCsvContent] = useState<number[][]>([]);
-  const onSubmit = () => console.log('paula bobone');
+  const onSubmit = () => console.log(form.getValues());
+  const { data, error, isLoading } = useRPC({
+    rpcName: 'search_locations_by_string',
+    params: { search_term: '' },
+  });
+
+  const locationOptions = useMemo(
+    () =>
+      data?.features!.map(
+        // @ts-ignore
+        ({ geometry: { coordinates }, properties: { name, id } }) => ({
+          label: name,
+          value: toLower(name).replace(' ', '-'),
+          coordinates,
+          id,
+        })
+      ),
+    [data]
+  );
+
+  const setLocationCoordinates = (v: any, onChange: any) => {
+    onChange(v.label);
+    if (v.__isNew__) {
+      form.setValue('location_id', null);
+      form.setValue('location_longitude', '');
+      form.setValue('location_latitude', '');
+    } else {
+      form.setValue('location_id', v.id);
+      form.setValue('location_longitude', v.coordinates?.[0]);
+      form.setValue('location_latitude', v.coordinates?.[1]);
+    }
+  };
+
+  const formatCreateLocationLabel = (inputValue: string) => (
+    <Flex alignItems='center' gap={1}>
+      <Icon as={GrFormAdd} color='blue' w={5} h={5} ml={-6} />
+      Create "{inputValue}"
+    </Flex>
+  );
+
   const steps = [
     {
       title: 'Location',
       content: (
         <>
           <GridItem pr={5} borderRight='1px solid lightgray'>
-            <FormInput name='location-name' label='Name' fieldError={undefined}>
-              <Input />
+            <FormInput
+              name='location_name'
+              label='Name'
+              fieldError={form.formState.errors.location_name}
+              isRequired
+            >
+              <Controller
+                control={form.control}
+                {...form.register('location_name', {
+                  required: 'This field is required',
+                })}
+                render={({ field: { onChange } }) => (
+                  <CreatableSelect
+                    isLoading={isLoading}
+                    onChange={(v: any) => setLocationCoordinates(v, onChange)}
+                    createOptionPosition='first'
+                    formatCreateLabel={formatCreateLocationLabel}
+                    closeMenuOnSelect
+                    options={locationOptions}
+                    placeholder='Select a location'
+                    selectedOptionStyle='check'
+                    chakraStyles={{
+                      dropdownIndicator: (provided) => ({
+                        ...provided,
+                        bg: 'transparent',
+                        px: 2,
+                        cursor: 'inherit',
+                      }),
+                      indicatorSeparator: (provided) => ({
+                        ...provided,
+                        display: 'none',
+                      }),
+                    }}
+                  />
+                )}
+              />
             </FormInput>
             <Grid templateColumns='repeat(2, 1fr)' gap={5} mt={5}>
               <GridItem>
                 <FormInput
-                  name='location-latitude'
+                  name='location_latitude'
                   label='Latitude'
-                  fieldError={undefined}
+                  fieldError={form.formState.errors.location_latitude}
+                  isRequired
                 >
-                  <Input type='number' />
+                  <Input
+                    id='location_latitude'
+                    type='number'
+                    {...form.register('location_latitude', {
+                      required: 'This field is required',
+                    })}
+                  />
                 </FormInput>
               </GridItem>
               <GridItem>
                 <FormInput
-                  name='location-longitude'
+                  name='location_longitude'
                   label='Longitude'
                   fieldError={undefined}
+                  isRequired
                 >
-                  <Input type='number' />
+                  <Input
+                    id='location_longitude'
+                    type='number'
+                    {...form.register('location_longitude', {
+                      required: 'This field is required',
+                    })}
+                  />
                 </FormInput>
               </GridItem>
             </Grid>
@@ -77,7 +170,8 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
       ),
       buttons: [
         { text: 'Cancel', handler: onClose },
-        { text: 'Next', handler: () => setActiveStep((step) => step + 1) },
+        // { text: 'Next', handler: () => setActiveStep((step) => step + 1) },
+        { text: 'Next', handler: onSubmit },
       ],
     },
     {
@@ -158,6 +252,8 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
                   flexDir='column'
                   gap={2}
                   padding={10}
+                  border='1px solid lightgray'
+                  rounded='lg'
                 >
                   <Tag colorScheme='red' padding={2}>
                     <TagLeftIcon boxSize='15px' as={BsExclamationLg} />
@@ -185,7 +281,7 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
 
   return (
     <Modal
-      modalTitle='Add New Variable'
+      modalTitle='Add Data'
       onClose={onClose}
       buttons={steps[activeStep].buttons}
       isOpen={isOpen}
