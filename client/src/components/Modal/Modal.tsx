@@ -12,16 +12,18 @@ import {
 
 interface ModalProps {
   modalTitle: string;
-  onClose: () => void;
   isOpen: boolean;
   modalBody: React.ReactNode;
+  onClose: () => void;
+  buttons: { text: string; handler: () => void }[];
 }
 
 export const Modal = ({
-  onClose,
   isOpen,
   modalTitle,
   modalBody,
+  buttons,
+  onClose,
 }: ModalProps) => {
   return (
     <ChakraModal size='4xl' onClose={onClose} isOpen={isOpen} isCentered>
@@ -32,15 +34,11 @@ export const Modal = ({
         <ModalBody>{modalBody}</ModalBody>
         <ModalFooter>
           <Flex gap={2}>
-            <Button onClick={onClose} colorScheme='red' size='xs'>
-              Cancel
+            <Button onClick={buttons[0].handler} variant='outline'>
+              {buttons[0].text}
             </Button>
-            <Button
-              onClick={() => console.log('Submit New Variable')}
-              colorScheme='green'
-              size='xs'
-            >
-              Submit
+            <Button onClick={buttons[1].handler} colorScheme='teal'>
+              {buttons[1].text}
             </Button>
           </Flex>
         </ModalFooter>
