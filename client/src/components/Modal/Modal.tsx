@@ -15,7 +15,12 @@ interface ModalProps {
   isOpen: boolean;
   modalBody: React.ReactNode;
   onClose: () => void;
-  buttons: { text: string; handler: () => void; isDisabled?: boolean }[];
+  buttons: {
+    text: string;
+    handler: () => void;
+    isDisabled?: boolean;
+    isSubmitting?: boolean;
+  }[];
 }
 
 export const Modal = ({
@@ -41,6 +46,7 @@ export const Modal = ({
               onClick={buttons[1].handler}
               colorScheme='teal'
               isDisabled={buttons[1].isDisabled}
+              isLoading={buttons[1].isSubmitting}
               type='button'
             >
               {buttons[1].text}

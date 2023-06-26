@@ -1,6 +1,5 @@
 import {
   Box,
-  useSteps,
   Stepper,
   Step,
   StepIcon,
@@ -10,19 +9,17 @@ import {
   StepStatus,
   StepTitle,
 } from '@chakra-ui/react';
-import { Dispatch, SetStateAction } from 'react';
 
 interface StepsProps {
   steps: string[];
   activeStep: number;
-  setActiveStep: Dispatch<SetStateAction<number>>;
 }
 
-export const Steps = ({ steps, activeStep, setActiveStep }: StepsProps) => {
+export const Steps = ({ steps, activeStep }: StepsProps) => {
   return (
     <Stepper index={activeStep}>
       {steps.map((step, index) => (
-        <Step key={index} onClick={() => setActiveStep(index)}>
+        <Step key={index}>
           <StepIndicator>
             <StepStatus
               complete={<StepIcon />}

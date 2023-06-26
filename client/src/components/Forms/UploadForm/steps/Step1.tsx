@@ -30,6 +30,7 @@ export const Step1 = ({ form }: StepProps) => {
       form.setValue('locationLatitude', v.coordinates?.[1]);
       setCoordinateIsDisabled(true);
     }
+    form.setValue('isNewLocation', coordinateIsDisabled);
   };
 
   const locationOptions = useMemo(

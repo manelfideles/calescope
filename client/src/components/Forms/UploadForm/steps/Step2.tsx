@@ -67,37 +67,6 @@ export const Step2 = ({ form }: StepProps) => {
           fieldError={form.formState.errors.measuredVariable}
           isRequired
         >
-          {/* <Controller
-            control={form.control}
-            {...form.register('measuredVariable', {
-              required: 'This field is required',
-            })}
-            render={({ field: { onChange } }) => (
-              <CreatableSelect
-                isLoading={isLoadingAvailableVariables}
-                onChange={(v: any) =>
-                  onChange(toLower(v?.label.replace(' ', '_')))
-                }
-                createOptionPosition='first'
-                formatCreateLabel={formatCreateLocationLabel}
-                options={availableVariableOptions}
-                placeholder='Select a location'
-                selectedOptionStyle='check'
-                chakraStyles={{
-                  dropdownIndicator: (provided) => ({
-                    ...provided,
-                    bg: 'transparent',
-                    px: 2,
-                    cursor: 'inherit',
-                  }),
-                  indicatorSeparator: (provided) => ({
-                    ...provided,
-                    display: 'none',
-                  }),
-                }}
-              />
-            )}
-          /> */}
           <CreatableSelect
             form={form}
             isLoading={isLoadingAvailableVariables}

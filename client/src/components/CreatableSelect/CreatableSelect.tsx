@@ -43,9 +43,11 @@ export const CreatableSelect = ({
               case 1:
                 onChange!(v, onFormChange);
                 break;
-              case 2:
+              case 2: {
                 onFormChange(toLower(v?.label.replace(' ', '_')));
+                form.setValue('variableId', v.id);
                 break;
+              }
               default:
                 break;
             }

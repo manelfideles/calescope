@@ -4,6 +4,7 @@ import { Steps } from '../../Steps';
 import { Grid, useSteps } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { Step1, Step2, Step3 } from './steps';
+import { useClient } from 'react-supabase';
 
 interface UploadFormProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ const formDefaultValues = {
   locationLongitude: '',
   locationId: null,
   isNewLocation: null,
+  variableId: null,
   startTimestamp: '',
   endTimestamp: '',
   measuredVariable: '',
@@ -27,8 +29,35 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
     criteriaMode: 'all',
     defaultValues: formDefaultValues,
   });
-  const onSubmit = () => console.log(form.getValues());
+  const supabase = useClient();
+  const onSubmit = async () => {
+    const formValues = form.getValues();
+    if (!formValues.locationId) {
+      const result = await supabase.rpc('insert_location', {
+        name: formValues.locationName,
+        lon: formValues.locationLongitude,
+        lat: formValues.locationLatitude,
+      });
+      formValues['locationId'] = result.data;
+    }
+    if (!formValues.variableId) {
+      const result = await supabase.rpc('insert_variable', {
+        name: formValues.measuredVariable,
+      });
+      formValues['variableId'] = result.data;
+    }
+    const result = await supabase.rpc('insert_measurement', {
+      location_id: formValues.locationId,
+      start_date: formValues.startTimestamp,
+      end_date: formValues.endTimestamp,
+      measured_variable_id: formValues.variableId,
+    });
+    formValues['measurementId'] = result.data;
 
+    console.log({ formValues });
+    // run supabase RPC to insert_values from the csv values
+    // insert_values(values, altitudes, formValues.measurementId)
+  };
   const steps = [
     {
       title: 'Location',
@@ -37,7 +66,7 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
         { text: 'Cancel', handler: onClose },
         {
           text: 'Next',
-          handler: () => console.log(form.getValues()),
+          handler: () => setActiveStep((step) => step + 1),
           isDisabled: false,
         },
       ],
@@ -63,6 +92,7 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
           text: 'Submit',
           handler: onSubmit,
           isDisabled: !form.formState.isDirty || !form.formState.isValid,
+          isSubmitting: form.formState.isSubmitting,
         },
       ],
     },
@@ -83,7 +113,6 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
           <Steps
             steps={steps.map(({ title }) => title)}
             activeStep={activeStep}
-            setActiveStep={setActiveStep}
           />
           <Form<any> form={form} onSubmit={onSubmit}>
             <Grid templateColumns='repeat(2, 1fr)' gap={5} mt={5}>
