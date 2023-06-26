@@ -5,9 +5,10 @@ import { convertDataToGeoJson } from '../utils/misc';
 interface RpcProps {
   rpcName: string;
   params?: any;
+  convertToJson?: boolean;
 }
 
-export const useRPC = ({ rpcName, params }: RpcProps) => {
+export const useRPC = ({ rpcName, params, convertToJson = true }: RpcProps) => {
   const supabase = useClient();
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<PostgrestError | null>(null);
@@ -17,7 +18,9 @@ export const useRPC = ({ rpcName, params }: RpcProps) => {
     setIsLoading(true);
     runRpc(rpcName, params)
       .then((result) => {
-        setData(convertDataToGeoJson(result.data));
+        setData(
+          convertToJson ? convertDataToGeoJson(result.data) : result.data
+        );
         if (result.error) setError(result.error);
       })
       .then(() => setIsLoading(false))

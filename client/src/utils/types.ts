@@ -8,6 +8,10 @@ export type User = {
   userSettings: Settings;
 };
 
+export interface StepProps {
+  form: any;
+}
+
 export type Settings = {
   variables: Array<Variable>;
   metricSystem: 'imperial' | 'metric';
