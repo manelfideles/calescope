@@ -89,7 +89,7 @@ export const Settings = () => {
 
   const fetchVariables = async () => {
     let { data: variables, error } = await supabase
-      .from('variables')
+      .from('test__variables')
       .select('*');
     if (error) toast({ status: 'error', title: error.message });
     else {

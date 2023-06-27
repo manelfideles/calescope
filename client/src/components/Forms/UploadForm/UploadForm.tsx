@@ -52,6 +52,10 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
       end_date: formValues.endTimestamp,
       measured_variable_id: formValues.variableId,
     });
+    // TbTemperature
+    // TbCloudRain
+    // WiHumidity
+    // TbCalendarTime
     formValues['measurementId'] = result.data;
 
     console.log({ formValues });
