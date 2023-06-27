@@ -1,4 +1,4 @@
-import { Box, Text, IconButton, Button } from '@chakra-ui/react';
+import { Box, Text, IconButton } from '@chakra-ui/react';
 import { FilterControls } from '../FilterControls';
 import { BiArrowToLeft } from 'react-icons/bi';
 import { AiFillHome } from 'react-icons/ai';
@@ -13,7 +13,6 @@ const SidebarHeader = () => (
     bg='white'
     border='1px solid gray'
     rounded='lg'
-    zIndex={1}
   >
     <IconButton
       as='a'
@@ -46,6 +45,7 @@ export const Sidebar = () => {
       flexDirection='column'
       position='fixed'
       inset='0 0 0'
+      zIndex={1}
     >
       <SidebarHeader />
       <FilterControls />

@@ -5,16 +5,18 @@ import { Dispatch, SetStateAction } from 'react';
 
 interface DropzoneProps {
   setCsvContent: Dispatch<SetStateAction<number[][]>>;
+  form: any;
 }
 
-export const Dropzone = ({ setCsvContent }: DropzoneProps) => {
+export const Dropzone = ({ setCsvContent, form }: DropzoneProps) => {
   const { CSVReader } = useCSVReader();
   return (
     <CSVReader
       //@ts-ignore
-      onUploadAccepted={({ data }: (number | string)[]) =>
-        setCsvContent(data.slice(1))
-      }
+      onUploadAccepted={({ data }: (number | string)[]) => {
+        setCsvContent(data.slice(1));
+        form.setValue('values', data.slice(1));
+      }}
     >
       {({ getRootProps, acceptedFile, getRemoveFileProps }: any) => {
         return (

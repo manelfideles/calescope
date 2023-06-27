@@ -1,10 +1,12 @@
 import { Modal } from '../../Modal';
 import { Form } from '../Form';
 import { Steps } from '../../Steps';
-import { Grid, useSteps } from '@chakra-ui/react';
+import { Grid, useSteps, useToast } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { Step1, Step2, Step3 } from './steps';
 import { useClient } from 'react-supabase';
+import { useState } from 'react';
+import { removeValueRowsWithOneElement } from '../../../utils/misc';
 
 interface UploadFormProps {
   isOpen: boolean;
@@ -30,37 +32,47 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
     defaultValues: formDefaultValues,
   });
   const supabase = useClient();
+  const toast = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const onSubmit = async () => {
     const formValues = form.getValues();
+    setIsSubmitting(true);
     if (!formValues.locationId) {
-      const result = await supabase.rpc('insert_location', {
+      const { data: locationId } = await supabase.rpc('insert_location', {
         name: formValues.locationName,
         lon: formValues.locationLongitude,
         lat: formValues.locationLatitude,
       });
-      formValues['locationId'] = result.data;
+      formValues['locationId'] = locationId;
     }
     if (!formValues.variableId) {
-      const result = await supabase.rpc('insert_variable', {
+      const { data: variableId } = await supabase.rpc('insert_variable', {
         name: formValues.measuredVariable,
       });
-      formValues['variableId'] = result.data;
+      formValues['variableId'] = variableId;
     }
-    const result = await supabase.rpc('insert_measurement', {
+    const { data: measurementId } = await supabase.rpc('insert_measurement', {
       location_id: formValues.locationId,
       start_date: formValues.startTimestamp,
       end_date: formValues.endTimestamp,
       measured_variable_id: formValues.variableId,
     });
-    // TbTemperature
-    // TbCloudRain
-    // WiHumidity
-    // TbCalendarTime
-    formValues['measurementId'] = result.data;
-
+    formValues['measurementId'] = measurementId;
+    const { data, error } = await supabase.rpc('insert_values', {
+      arr: removeValueRowsWithOneElement(formValues.values),
+      measurement_id: formValues.measurementId,
+    });
     console.log({ formValues });
-    // run supabase RPC to insert_values from the csv values
-    // insert_values(values, altitudes, formValues.measurementId)
+    setIsSubmitting(false);
+    console.log(data);
+    if (!data)
+      toast({
+        status: 'success',
+        title: 'Success',
+        description: 'Data uploaded!',
+      });
+    if (error?.code)
+      toast({ status: 'error', title: 'Error', description: error.details });
   };
   const steps = [
     {
@@ -95,8 +107,9 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
         {
           text: 'Submit',
           handler: onSubmit,
-          isDisabled: !form.formState.isDirty || !form.formState.isValid,
-          isSubmitting: form.formState.isSubmitting,
+          // isDisabled: !form.formState.isDirty || !form.formState.isValid,
+          isDisabled: false,
+          isSubmitting,
         },
       ],
     },

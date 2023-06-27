@@ -13,7 +13,9 @@ import {
   TagLeftIcon,
   TagLabel,
   Box,
+  Flex,
 } from '@chakra-ui/react';
+import { startCase } from 'lodash';
 import { useState } from 'react';
 import { BsExclamationLg } from 'react-icons/bs';
 import { StepProps } from '../../../../utils/types';
@@ -29,9 +31,12 @@ export const Step3 = ({ form }: StepProps) => {
         <FormInput
           label='Upload .csv file'
           name='file-upload'
-          fieldError={undefined}
+          fieldError={form.formState.errors.values}
+          {...form.register('values', {
+            required: 'Select a file to upload it to Calescope',
+          })}
         >
-          <Dropzone setCsvContent={setCsvContent} />
+          <Dropzone setCsvContent={setCsvContent} form={form} />
         </FormInput>
       </GridItem>
       <GridItem>
@@ -41,15 +46,17 @@ export const Step3 = ({ form }: StepProps) => {
             <Table size='sm'>
               <Thead>
                 <Tr>
-                  <Th>ID</Th>
-                  <Th isNumeric>Value</Th>
+                  <Th isNumeric>ID</Th>
+                  <Th isNumeric>
+                    {startCase(form.getValues().measuredVariable)}
+                  </Th>
                   <Th isNumeric>Altitude</Th>
-                  <Th isNumeric>Measurement Id</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {csvContent.slice(1, 6).map((row: number[]) => (
+                {csvContent.slice(1, 6).map((row: number[], index: number) => (
                   <Tr>
+                    <Td textAlign='right'>{index}</Td>
                     {row.map((elem: number) => (
                       <Td isNumeric>{elem}</Td>
                     ))}
@@ -58,9 +65,7 @@ export const Step3 = ({ form }: StepProps) => {
               </Tbody>
             </Table>
           ) : (
-            <Box
-              display='flex'
-              justifyContent='center'
+            <Flex
               alignItems='center'
               flexDir='column'
               gap={2}
@@ -75,7 +80,7 @@ export const Step3 = ({ form }: StepProps) => {
               <Text textAlign='center' padding={2}>
                 Select a file to see the first 5 rows.
               </Text>
-            </Box>
+            </Flex>
           )}
         </TableContainer>
       </GridItem>

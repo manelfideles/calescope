@@ -19,3 +19,6 @@ export const convertDataToGeoJson = (data: Array<any>) => {
     })),
   };
 };
+
+export const removeValueRowsWithOneElement = (array: string[][]) =>
+  array.filter((elem) => elem.length == 2);

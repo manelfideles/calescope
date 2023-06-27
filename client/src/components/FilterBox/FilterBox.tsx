@@ -70,13 +70,7 @@ export const FilterBox = ({
 
   return (
     <>
-      <Card
-        title={title}
-        hasTooltip
-        tooltipText={`This variable represents the ${title.toLowerCase()} variable you've uploaded to the platform.`}
-        onToggle={onToggle}
-        isOpen={isOpen}
-      >
+      <Card title={title} onToggle={onToggle} isOpen={isOpen}>
         <Collapse in={isOpen} animateOpacity>
           {isTimeFilter ? (
             <TimeFilter />
