@@ -1,0 +1,1 @@
+export { LocationTag } from './LocationTag';

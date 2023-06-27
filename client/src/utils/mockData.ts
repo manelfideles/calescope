@@ -14,6 +14,35 @@ export const userSettings: Settings = {
   metricSystem: 'metric',
 };
 
+const generateAreaChartData = (length: number = 10, upperBound: number = 40) =>
+  Array(length)
+    .fill({})
+    .map((_e, i) => ({ x: i, y: Math.random() * upperBound }));
+
+export const areaChartData = [
+  {
+    locationName: 'locationName-1',
+    locationId: 1,
+    data: generateAreaChartData(),
+    color: '#339999',
+  },
+  {
+    locationName: 'locationName-2',
+    locationId: 2,
+    data: generateAreaChartData(),
+    color: '#66ccff',
+  },
+  {
+    locationName: 'locationName-3',
+    locationId: 3,
+    data: generateAreaChartData(),
+    color: '#1a3177',
+  },
+];
+
+export const getRandomColor = () =>
+  '#' + Math.floor(Math.random() * 16777215).toString(16);
+
 export const generateHistogramData = (length: number, n_buckets: number) => {
   return Array.from({ length }, () => Math.floor(Math.random() * n_buckets));
 };

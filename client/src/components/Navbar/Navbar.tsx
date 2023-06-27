@@ -13,25 +13,30 @@ import { routes } from '../../routes/routes';
 import { dropRight } from 'lodash';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 export const Navbar = () => {
   const linkColor = useColorModeValue('gray.600', 'gray.200');
   const linkHoverColor = useColorModeValue('black', 'white');
-  const { authState, signOut } = useAuth();
+  const {
+    authState: { isLoggedIn, user },
+    signOut,
+  } = useAuth();
   const navigate = useNavigate();
 
-  const userDisplayName = authState?.isLoggedIn
-    ? authState.user?.user_metadata.firstName +
-      ' ' +
-      authState.user?.user_metadata.lastName
+  const userDisplayName = isLoggedIn
+    ? user?.user_metadata.firstName + ' ' + user?.user_metadata.lastName
     : undefined;
 
+  useEffect(() => {
+    if (!isLoggedIn) navigate('/login');
+  }, [isLoggedIn]);
+
   const navItems = dropRight(routes, 2)
-    .filter(({ showIfLoggedOut }) => showIfLoggedOut !== authState.isLoggedIn)
+    .filter(({ showIfLoggedOut }) => showIfLoggedOut !== isLoggedIn)
     .map(({ pageName, path }) => (
       <Link
-        fontSize={'sm'}
-        fontWeight={500}
+        fontSize='sm'
         color={linkColor}
         _hover={{ textDecoration: 'none', color: linkHoverColor }}
       >
@@ -42,33 +47,24 @@ export const Navbar = () => {
   return (
     <Box marginBottom={5}>
       <Flex minH='60px' py={{ base: 2 }} px={{ base: 4 }} align='center'>
-        <Flex flex={{ base: 1 }} justify='flex-start'>
-          <Flex>
-            <Stack direction={'row'} spacing={4}>
-              {navItems}
-            </Stack>
-          </Flex>
+        <Flex flex={{ base: 1 }} justify='flex-start' gap={5}>
+          {navItems}
         </Flex>
-
-        {authState?.isLoggedIn ? (
-          <Stack justify='center' align='center' direction='row' spacing={7}>
-            <Box display='flex' alignItems='center' gap={2}>
+        {isLoggedIn ? (
+          <Flex gap={7}>
+            <Flex alignItems='center' gap={2}>
               <Text fontWeight='500'>{userDisplayName}</Text>
               <Avatar name={userDisplayName} src='' size='sm' />
-            </Box>
+            </Flex>
             <Button
-              display={{ base: 'none', md: 'inline-flex' }}
               fontSize='sm'
               fontWeight={600}
               colorScheme='red'
-              onClick={() => {
-                signOut();
-                navigate('/');
-              }}
+              onClick={() => signOut()}
             >
               Logout
             </Button>
-          </Stack>
+          </Flex>
         ) : (
           <Stack
             flex={{ base: 1, md: 0 }}
@@ -90,10 +86,8 @@ export const Navbar = () => {
               display={{ base: 'none', md: 'inline-flex' }}
               fontSize='sm'
               fontWeight={600}
-              color='white'
-              bg='pink.400'
               href='/register'
-              _hover={{ bg: 'pink.600' }}
+              colorScheme='teal'
             >
               Sign Up
             </Button>

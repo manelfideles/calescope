@@ -33,12 +33,7 @@ export const RegisterForm = () => {
 
   return (
     <Form<SignUpInputs> form={form} onSubmit={onSubmit}>
-      <Box
-        rounded={'lg'}
-        bg={useColorModeValue('white', 'gray.700')}
-        boxShadow={'lg'}
-        p={8}
-      >
+      <Box rounded='lg' bg='white' boxShadow='lg' p={8}>
         <Stack spacing={4}>
           <HStack>
             <FormInput
@@ -104,19 +99,15 @@ export const RegisterForm = () => {
               </InputRightElement>
             </InputGroup>
           </FormInput>
-          <Stack spacing={10} pt={2}>
-            <Button
-              type='submit'
-              isLoading={isLoading}
-              loadingText='Submitting...'
-              size='lg'
-              bg={'blue.400'}
-              color={'white'}
-              _hover={{ bg: 'blue.500' }}
-            >
-              Sign up
-            </Button>
-          </Stack>
+          <Button
+            type='submit'
+            isLoading={isLoading}
+            loadingText='Submitting...'
+            size='lg'
+            colorScheme='teal'
+          >
+            Sign up
+          </Button>
         </Stack>
       </Box>
     </Form>

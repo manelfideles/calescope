@@ -7,6 +7,7 @@ import { mapboxConfig } from '../../utils/mapbox-config';
 import { sources } from '../../utils/mapbox-layers';
 import { Badge, useToast } from '@chakra-ui/react';
 import { useRPC } from '../../hooks/useRPC';
+import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 
 export const MapBox = () => {
   const toast = useToast();
@@ -26,6 +27,7 @@ export const MapBox = () => {
     rpcName: 'get_measurement_counts',
     params: {},
   });
+  const { addLocation } = useSelectedLocations();
 
   const onClick = (event: mapboxgl.MapLayerMouseEvent) => {
     const feature = event.features?.[0];
@@ -49,8 +51,8 @@ export const MapBox = () => {
     }
     // clicked feature is a specific measurement
     else {
-      // @ts-ignore
-      console.log('clicked feature:', feature);
+      if (feature)
+        addLocation(feature?.properties!.name, feature?.properties!.id);
     }
   };
 
@@ -87,6 +89,7 @@ export const MapBox = () => {
       interactiveLayerIds={[clusterLayer.id!, unclusteredPointLayer.id!]}
       onClick={onClick}
       ref={mapRef}
+      id='map'
     >
       <Source
         id='location-measurement-counts'

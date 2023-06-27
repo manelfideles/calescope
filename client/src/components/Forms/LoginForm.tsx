@@ -33,9 +33,9 @@ export const LoginForm = () => {
   return (
     <Form<SignInInputs> form={form} onSubmit={onSubmit}>
       <Box
-        rounded={'lg'}
+        rounded='lg'
         bg={useColorModeValue('white', 'gray.700')}
-        boxShadow={'lg'}
+        boxShadow='lg'
         p={8}
       >
         <Stack spacing={4}>
@@ -63,7 +63,7 @@ export const LoginForm = () => {
                 id='password'
                 {...form.register('password', { required: 'This is required' })}
               />
-              <InputRightElement h={'full'}>
+              <InputRightElement h='full'>
                 <IconButton
                   aria-label='show/hide password'
                   variant='ghost'
@@ -77,9 +77,7 @@ export const LoginForm = () => {
           </FormInput>
           <Stack spacing={10}>
             <Button
-              bg={'blue.400'}
-              color={'white'}
-              _hover={{ bg: 'blue.500' }}
+              colorScheme='teal'
               type='submit'
               loadingText='Signing in...'
               isLoading={isLoading}

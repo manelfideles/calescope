@@ -8,6 +8,10 @@ export type User = {
   userSettings: Settings;
 };
 
+export interface StepProps {
+  form: any;
+}
+
 export type Settings = {
   variables: Array<Variable>;
   metricSystem: 'imperial' | 'metric';
@@ -39,4 +43,11 @@ export type Route = {
   element: React.ReactNode;
   pageName: string;
   showIfLoggedOut?: boolean;
+};
+
+export type SelectedLocation = {
+  locationId: number;
+  isVisible: boolean;
+  locationName: string;
+  color: string;
 };

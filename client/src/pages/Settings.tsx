@@ -25,14 +25,14 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useClient } from 'react-supabase';
 import { Variable } from '../utils/types';
 import { toLower, startCase } from 'lodash';
-import { Modal } from '../components/Modal';
+import { UploadForm } from '../components/Forms/UploadForm';
 
 export const Settings = () => {
   const {
     authState: { user },
     updateUser,
   } = useAuth();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const supabase = useClient();
   const toast = useToast();
   const [isEditing, setIsEditing] = useState(false);
@@ -89,7 +89,7 @@ export const Settings = () => {
 
   const fetchVariables = async () => {
     let { data: variables, error } = await supabase
-      .from('variables')
+      .from('test__variables')
       .select('*');
     if (error) toast({ status: 'error', title: error.message });
     else {
@@ -256,7 +256,6 @@ export const Settings = () => {
                   <Flex gap={2} flexWrap='wrap' marginY={2}>
                     {buttonGroup}
                   </Flex>
-
                   <Button
                     onClick={onOpen}
                     variant='solid'
@@ -266,22 +265,9 @@ export const Settings = () => {
                     leftIcon={<FiPlus />}
                     marginBottom={2}
                   >
-                    Add New Variable
+                    Add Data
                   </Button>
-                  <Modal
-                    modalTitle='Add New Variable'
-                    onClose={onClose}
-                    isOpen={isOpen}
-                    modalBody={
-                      <FormInput
-                        name='new-variable-name'
-                        label='Variable Name'
-                        fieldError={undefined}
-                      >
-                        <Input />
-                      </FormInput>
-                    }
-                  />
+                  <UploadForm isOpen={isOpen} onClose={onClose} />
                 </Box>
               </Stack>
             </GridItem>

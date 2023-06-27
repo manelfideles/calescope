@@ -1,7 +1,6 @@
 import {
   Grid,
   GridItem,
-  Tooltip,
   Text,
   IconButton,
   Icon,
@@ -14,20 +13,11 @@ import { FiHelpCircle } from 'react-icons/fi';
 interface CardProps {
   children: React.ReactNode;
   title: string;
-  hasTooltip?: boolean;
-  tooltipText?: string;
   onToggle: () => void;
   isOpen: boolean;
 }
 
-export const Card = ({
-  children,
-  title,
-  hasTooltip,
-  tooltipText,
-  onToggle,
-  isOpen,
-}: CardProps) => {
+export const Card = ({ children, title, onToggle, isOpen }: CardProps) => {
   return (
     <Box
       rounded='lg'
@@ -41,11 +31,7 @@ export const Card = ({
           alignItems='center'
           justifyContent='space-between'
         >
-          {hasTooltip ? (
-            <Tooltip label={tooltipText} placement='start'>
-              <Icon as={FiHelpCircle} />
-            </Tooltip>
-          ) : null}
+          <Icon as={FiHelpCircle} />
           <Text fontWeight='bold'>{title}</Text>
           <IconButton
             bg='none'

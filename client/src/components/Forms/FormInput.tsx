@@ -24,11 +24,14 @@ export const FormInput = ({
 }: FormInputProps) => {
   return (
     <Box>
-      <FormControl isRequired={isRequired ?? false}>
+      <FormControl
+        isRequired={isRequired ?? false}
+        isInvalid={fieldError ?? false}
+      >
         {!!label && <FormLabel fontSize='sm'>{label}</FormLabel>}
         {children}
-        {!!helperText && <FormHelperText>{helperText}</FormHelperText>}
         <FormErrorMessage>{fieldError && fieldError.message}</FormErrorMessage>
+        {!!helperText && <FormHelperText>{helperText}</FormHelperText>}
       </FormControl>
     </Box>
   );
