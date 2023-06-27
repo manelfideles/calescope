@@ -35,6 +35,18 @@ export const FilterControls = () => {
         <GridItem padding={2} key='time'>
           <FilterBox title='Time' isTimeFilter />
         </GridItem>,
+        <GridItem padding={2} key='altitude'>
+          <GraphSliderContextProvider
+            defaultSliderValues={defaultSliderValues!}
+          >
+            <FilterBox
+              title='Altitude'
+              graphComponent={
+                <D3Histogram data={histogramData} height={50} width={190} />
+              }
+            />
+          </GraphSliderContextProvider>
+        </GridItem>,
       ]);
   }, []);
 
