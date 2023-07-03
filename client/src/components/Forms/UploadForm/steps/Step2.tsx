@@ -72,7 +72,7 @@ export const Step2 = ({ form }: StepProps) => {
             isLoading={isLoadingAvailableVariables}
             options={availableVariableOptions}
             fieldName='measuredVariable'
-            placeholderText='Select a location'
+            placeholderText='Select a variable'
             stepNumber={2}
           />
         </FormInput>

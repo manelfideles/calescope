@@ -48,7 +48,6 @@ export const SelectedLocationsContextProvider = ({
   const addLocation = (locationName: string, locationId: number) => {
     if (!isInSelectedLocations(locationId)) {
       const color = getRandomColor();
-      console.log({ color });
       setLocations([
         ...locations,
         { locationName, locationId, isVisible: true, color },

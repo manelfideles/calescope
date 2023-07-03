@@ -58,13 +58,12 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
       measured_variable_id: formValues.variableId,
     });
     formValues['measurementId'] = measurementId;
+    console.log({ formValues });
     const { data, error } = await supabase.rpc('insert_values', {
       arr: removeValueRowsWithOneElement(formValues.values),
       measurement_id: formValues.measurementId,
     });
-    console.log({ formValues });
     setIsSubmitting(false);
-    console.log(data);
     if (!data)
       toast({
         status: 'success',
@@ -107,7 +106,6 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
         {
           text: 'Submit',
           handler: onSubmit,
-          // isDisabled: !form.formState.isDirty || !form.formState.isValid,
           isDisabled: false,
           isSubmitting,
         },
