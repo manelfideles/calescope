@@ -50,7 +50,7 @@ export const SelectedLocationsContextProvider = ({
       const color = getRandomColor();
       setLocations([
         ...locations,
-        { locationName, locationId, isVisible: true, color },
+        { locationName, locationId, isVisible: true, color: color ?? 'black' },
       ]);
       toast({
         status: 'info',

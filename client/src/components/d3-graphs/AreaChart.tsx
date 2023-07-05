@@ -25,15 +25,15 @@ export const AreaChart = ({ data, seriesColor }: AreaChartProps) => {
         'measured_variable_id'
       ),
       values: elem[1],
-      color: seriesColor.filter(
-        (colors: any) => colors.locationId === Number(elem[0])
-      )[0].color,
+      color:
+        seriesColor.filter(
+          (colors: any) => colors.locationId === Number(elem[0])
+        )[0]?.color ?? 'black',
       isVisible: seriesColor.filter(
         (colors: any) => colors.locationId === Number(elem[0])
-      )[0].isVisible,
+      )[0]?.isVisible,
     })
   );
-  console.log({ dataByLocation, seriesColor });
   return (
     <FlexibleXYPlot width={425} height={250}>
       <HorizontalGridLines />
@@ -47,8 +47,8 @@ export const AreaChart = ({ data, seriesColor }: AreaChartProps) => {
       {dataByLocation.map((locationData) => (
         <LineMarkSeries
           data={locationData.values}
-          opacity={0.25}
-          color={locationData.color}
+          opacity={locationData.isVisible ? 0.4 : 0.3}
+          color={locationData.isVisible ? locationData.color : 'lightgray'}
         />
       ))}
       <Highlight

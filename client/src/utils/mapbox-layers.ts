@@ -1,4 +1,4 @@
-import type { LayerProps } from 'react-map-gl';
+import type { LayerProps, HeatmapLayer } from 'react-map-gl';
 
 const clusterLayer: LayerProps = {
   id: 'clusters',
@@ -44,8 +44,18 @@ const unclusteredPointLayer: LayerProps = {
   },
 };
 
+export const interpolationLayer: LayerProps = {
+  id: 'interpolation-layer',
+  type: 'fill',
+  paint: {
+    'fill-color': ['interpolate', ['linear'], ['get', 'solRad'], 0, 0, 6, 1],
+    'fill-opacity': ['interpolate', ['linear'], ['get', 'solRad']],
+  },
+};
+
 export const sources = {
   clusterLayer,
   clusterCountLayer,
   unclusteredPointLayer,
+  interpolationLayer,
 };

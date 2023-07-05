@@ -21,7 +21,8 @@ import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 import { useRPC } from '../../hooks/useRPC';
 import '../../../node_modules/react-vis/dist/style.css';
 import { AreaChart } from '../d3-graphs/AreaChart';
-import { map, omit, pick, startCase, uniqBy } from 'lodash';
+import { map, omit, startCase, uniqBy } from 'lodash';
+import { HeatMap } from '../d3-graphs/HeatMap';
 
 export const BottomBar = () => {
   const { onToggle, isOpen } = useDisclosure();
@@ -34,6 +35,7 @@ export const BottomBar = () => {
   } = useRPC({
     rpcName: 'get_filtered_values',
     convertToJson: false,
+    // TODO: These values will be controlled by the sidebar context
     params: {
       min_altitude: 10,
       max_altitude: 100,
@@ -42,10 +44,6 @@ export const BottomBar = () => {
       selected_location_ids: map(locations, 'locationId'),
     },
   });
-
-  useEffect(() => {
-    if (!isLoadingChartData) console.log(areaChartData, locations);
-  }, [isLoadingChartData, locations]);
 
   const selectedLocationsList = useMemo(
     () => (
@@ -62,7 +60,7 @@ export const BottomBar = () => {
               p={2}
             >
               <Flex flexDir='row' align='center' gap={1}>
-                <Box p={2} rounded='lg' bgColor={color} opacity={0.35} />
+                <Box p={2} rounded='lg' bgColor={color} opacity={0.45} />
                 {locationName}
               </Flex>
             </Button>
@@ -118,7 +116,6 @@ export const BottomBar = () => {
           templateColumns='repeat(2, 1fr)'
           pt={5}
           borderLeft='1px solid gray'
-          gap={5}
         >
           <GridItem ml={3}>
             <Select ml={10} w='375px'>
@@ -136,6 +133,9 @@ export const BottomBar = () => {
                 omit(elem, ['locationName'])
               )}
             />
+          </GridItem>
+          <GridItem>
+            <HeatMap />
           </GridItem>
         </Grid>
       </Flex>

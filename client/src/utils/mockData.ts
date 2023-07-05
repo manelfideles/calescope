@@ -46,3 +46,16 @@ export const getRandomColor = () =>
 export const generateHistogramData = (length: number, n_buckets: number) => {
   return Array.from({ length }, () => Math.floor(Math.random() * n_buckets));
 };
+
+export const interpolationData = [
+  {
+    lon: -8.402028,
+    lat: 40.222645,
+    val: 16,
+  },
+  {
+    lon: -8.42241867112619,
+    lat: 40.225139306405,
+    val: 20,
+  },
+];

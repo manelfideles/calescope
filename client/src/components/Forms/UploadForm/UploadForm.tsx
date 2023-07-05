@@ -58,7 +58,6 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
       measured_variable_id: formValues.variableId,
     });
     formValues['measurementId'] = measurementId;
-    console.log({ formValues });
     const { data, error } = await supabase.rpc('insert_values', {
       arr: removeValueRowsWithOneElement(formValues.values),
       measurement_id: formValues.measurementId,
