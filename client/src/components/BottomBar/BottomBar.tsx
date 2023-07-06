@@ -10,19 +10,16 @@ import {
   Flex,
   Button,
   Select,
-  GridItem,
-  Grid,
 } from '@chakra-ui/react';
 import { Card } from '../Card';
 import { BsExclamationLg } from 'react-icons/bs';
 import { BiTrash, BiHide, BiShow } from 'react-icons/bi';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 import { useRPC } from '../../hooks/useRPC';
 import '../../../node_modules/react-vis/dist/style.css';
 import { AreaChart } from '../d3-graphs/AreaChart';
 import { map, omit, startCase, uniqBy } from 'lodash';
-import { HeatMap } from '../d3-graphs/HeatMap';
 
 export const BottomBar = () => {
   const { onToggle, isOpen } = useDisclosure();
@@ -37,10 +34,10 @@ export const BottomBar = () => {
     convertToJson: false,
     // TODO: These values will be controlled by the sidebar context
     params: {
-      min_altitude: 10,
+      min_altitude: 0,
       max_altitude: 100,
-      min_val: 5,
-      max_val: 50,
+      min_val: 0,
+      max_val: 18,
       selected_location_ids: map(locations, 'locationId'),
     },
   });
@@ -112,32 +109,21 @@ export const BottomBar = () => {
     () => (
       <Flex>
         <Box>{selectedLocationsList}</Box>
-        <Grid
-          templateColumns='repeat(2, 1fr)'
-          pt={5}
-          borderLeft='1px solid gray'
-        >
-          <GridItem ml={3}>
-            <Select ml={10} w='375px'>
-              {uniqBy(areaChartData, 'measuredVariableId').map(
-                ({ measured_variable_id, variable_name }: any) => (
-                  <option value={measured_variable_id}>
-                    {startCase(variable_name)}
-                  </option>
-                )
-              )}
-            </Select>
-            <AreaChart
-              data={areaChartData}
-              seriesColor={map(locations, (elem) =>
-                omit(elem, ['locationName'])
-              )}
-            />
-          </GridItem>
-          <GridItem>
-            <HeatMap />
-          </GridItem>
-        </Grid>
+        <Box pt={5} borderLeft='1px solid gray'>
+          <Select ml={10} w='375px'>
+            {uniqBy(areaChartData, 'measuredVariableId').map(
+              ({ measured_variable_id, variable_name }: any) => (
+                <option value={measured_variable_id}>
+                  {startCase(variable_name)}
+                </option>
+              )
+            )}
+          </Select>
+          <AreaChart
+            data={areaChartData}
+            seriesColor={map(locations, (elem) => omit(elem, ['locationName']))}
+          />
+        </Box>
       </Flex>
     ),
     [isLoadingChartData, selectedLocationsList]
@@ -146,7 +132,8 @@ export const BottomBar = () => {
   return (
     <Box position='fixed' right={0} bottom='0' padding={2} display='flex'>
       <Box
-        width={locations.length ? '80vw' : '30vw'}
+        width={locations.length ? 'fit-content' : '30vw'}
+        minWidth='30rem'
         transition='bottom 1.2s ease-out'
         transform={isOpen ? 'none' : 'translateY(100%'}
         backgroundColor='white'

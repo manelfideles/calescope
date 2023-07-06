@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState } from 'react';
+import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Map, Source, Layer } from 'react-map-gl';
 import type { MapRef, GeoJSONSource } from 'react-map-gl';
@@ -111,7 +111,7 @@ export const MapBox = () => {
         opacity:
           JSON.stringify(features) === '{}' // || !isInterpolationLayerVisible
             ? 0
-            : 0.25,
+            : 0.4,
         aoi,
       });
       mapRef.current?.getMap().addLayer(layer);
@@ -122,18 +122,40 @@ export const MapBox = () => {
     }
   }, [
     JSON.stringify(features),
-    mapRef?.current?.getLayer('interpolation-layer'),
+    !!mapRef?.current?.getLayer('interpolation-layer'),
   ]);
 
-  const onUpdate = useCallback((ev: any) => {
-    setFeatures((currFeatures) => {
-      const newFeatures: any = { ...currFeatures };
-      for (const f of ev.features) {
-        newFeatures[f.id] = f;
-      }
-      return newFeatures;
-    });
-  }, []);
+  const onUpdate = useCallback(
+    (ev: any) => {
+      mapRef.current?.getMap().removeLayer('interpolation-layer');
+      setFeatures((currFeatures) => {
+        const newFeatures: any = { ...currFeatures };
+        for (const f of ev.features) {
+          newFeatures[f.id] = f;
+        }
+        return newFeatures;
+      });
+    },
+    [setFeatures]
+  );
+
+  const controls = useMemo(
+    () => (
+      <DrawControl
+        position='bottom-left'
+        displayControlsDefault={false}
+        controls={{
+          polygon: !!!mapRef?.current?.getLayer('interpolation-layer'),
+          trash: true,
+        }}
+        // defaultMode='static'
+        onCreate={onUpdate}
+        onUpdate={onUpdate}
+        onDelete={() => setFeatures({})}
+      />
+    ),
+    [mapRef?.current?.getLayer('interpolation-layer')]
+  );
 
   return (
     <div style={mapStyle}>
@@ -161,18 +183,7 @@ export const MapBox = () => {
           <Layer {...clusterCountLayer} />
           <Layer {...unclusteredPointLayer} />
         </Source>
-        <DrawControl
-          position='bottom-left'
-          displayControlsDefault={false}
-          controls={{
-            polygon: isPolygonButtonVisible,
-            trash: true,
-          }}
-          // defaultMode='static'
-          onCreate={onUpdate}
-          onUpdate={onUpdate}
-          onDelete={() => setFeatures({})}
-        />
+        {controls}
       </Map>
     </div>
   );
