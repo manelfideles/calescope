@@ -6,9 +6,15 @@ interface RpcProps {
   rpcName: string;
   params?: any;
   convertToJson?: boolean;
+  properties?: string[];
 }
 
-export const useRPC = ({ rpcName, params, convertToJson = true }: RpcProps) => {
+export const useRPC = ({
+  rpcName,
+  params,
+  convertToJson = true,
+  properties = ['id', 'name', 'measurementCount'],
+}: RpcProps) => {
   const supabase = useClient();
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<PostgrestError | null>(null);
@@ -19,7 +25,9 @@ export const useRPC = ({ rpcName, params, convertToJson = true }: RpcProps) => {
     runRpc(rpcName, params)
       .then((result) => {
         setData(
-          convertToJson ? convertDataToGeoJson(result.data) : result.data
+          convertToJson
+            ? convertDataToGeoJson(result.data, properties)
+            : result.data
         );
         if (result.error) setError(result.error);
       })

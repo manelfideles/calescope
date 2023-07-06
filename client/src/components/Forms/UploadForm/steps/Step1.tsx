@@ -6,6 +6,13 @@ import { useRPC } from '../../../../hooks/useRPC';
 import { StepProps } from '../../../../utils/types';
 import { FormInput } from '../../FormInput';
 
+// TODO - CS-30:
+// Implement Mapbox Search API support to display
+// the inserted coordinates in the UploadForm component.
+//
+// MapBox Search API URL
+// https://api.mapbox.com/search/searchbox/v1/reverse?longitude={LONGITUDE}&latitude={LATITUDE}&language=de&access_token={MAPBOX_TOKEN}
+
 export const Step1 = ({ form }: StepProps) => {
   const [coordinateIsDisabled, setCoordinateIsDisabled] = useState(false);
   const {

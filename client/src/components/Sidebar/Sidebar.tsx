@@ -45,6 +45,7 @@ export const Sidebar = () => {
       flexDirection='column'
       position='fixed'
       inset='0 0 0'
+      h='fit-content'
       zIndex={1}
     >
       <SidebarHeader />

@@ -1,6 +1,5 @@
 import {
   Box,
-  useColorModeValue,
   Stack,
   HStack,
   Input,
@@ -9,11 +8,10 @@ import {
   IconButton,
   Button,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { BiHide, BiShow } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
-import { useClient } from 'react-supabase';
 import { useAuth } from '../../hooks/useAuth';
 import { SignUpInputs } from '../../utils/types';
 import { Form } from './Form';
@@ -21,15 +19,19 @@ import { FormInput } from './FormInput';
 
 export const RegisterForm = () => {
   const form = useForm<SignUpInputs>();
-  const supabase = useClient();
   const [showPassword, setShowPassword] = useState(false);
-  const { signUp, isLoading } = useAuth();
+  const {
+    signUp,
+    isLoading,
+    authState: { isLoggedIn },
+  } = useAuth();
   const navigate = useNavigate();
 
-  const onSubmit = (userData: any) => {
-    signUp(userData);
-    supabase.auth.onAuthStateChange((event, session) => navigate('/'));
-  };
+  useEffect(() => {
+    if (isLoggedIn) navigate('/');
+  }, [isLoggedIn]);
+
+  const onSubmit = (userData: any) => signUp(userData);
 
   return (
     <Form<SignUpInputs> form={form} onSubmit={onSubmit}>

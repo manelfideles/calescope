@@ -1,4 +1,7 @@
-export const convertDataToGeoJson = (data: Array<any>) => {
+export const convertDataToGeoJson = (
+  data: Array<any>,
+  propertiesArr: Array<string>
+) => {
   return {
     type: 'FeatureCollection',
     crs: {
@@ -7,11 +10,13 @@ export const convertDataToGeoJson = (data: Array<any>) => {
     },
     features: data.map((elem) => ({
       type: 'Feature',
-      properties: {
-        id: elem.id,
-        name: elem.name,
-        measurementCount: elem.measurementCount,
-      },
+      properties: propertiesArr.reduce(
+        (accumulator, currentValue) => ({
+          ...accumulator,
+          [`${currentValue}`]: elem[currentValue],
+        }),
+        {}
+      ),
       geometry: {
         type: 'Point',
         coordinates: [elem.lon, elem.lat],

@@ -9,26 +9,29 @@ import {
   InputRightElement,
 } from '@chakra-ui/react';
 import { Form } from './Form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { FormInput } from './FormInput';
 import { BiHide, BiShow } from 'react-icons/bi';
-import { useClient } from 'react-supabase';
 import { SignInInputs } from '../../utils/types';
 
 export const LoginForm = () => {
   const form = useForm<SignInInputs>();
-  const supabase = useClient();
   const [showPassword, setShowPassword] = useState(false);
-  const { signIn, isLoading } = useAuth();
+  const {
+    signIn,
+    isLoading,
+    authState: { isLoggedIn },
+  } = useAuth();
   const navigate = useNavigate();
 
-  const onSubmit = (userData: any) => {
-    signIn(userData);
-    supabase.auth.onAuthStateChange((event, session) => navigate('/'));
-  };
+  useEffect(() => {
+    if (isLoggedIn) navigate('/');
+  }, [isLoggedIn]);
+
+  const onSubmit = (userData: any) => signIn(userData);
 
   return (
     <Form<SignInInputs> form={form} onSubmit={onSubmit}>
