@@ -11,6 +11,11 @@ import {
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
+  NumberInput,
+  NumberInputField,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInputStepper,
 } from '@chakra-ui/react';
 import { MdGraphicEq } from 'react-icons/md';
 import { useGraphSlider } from '../../hooks/useGraphSlider';
@@ -71,19 +76,26 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
           gap: 55,
         }}
       >
-        <Input
-          type='number'
+        <NumberInput
           size='sm'
           value={sliderValues[0]}
-          onChange={({ currentTarget: { valueAsNumber: val } }) =>
+          onChange={(_valueAsString, valueAsNumber) =>
             setSliderValues([
-              val,
-              val < defaultSliderValues[1] ? val + 1 : defaultSliderValues[1],
+              valueAsNumber,
+              valueAsNumber < defaultSliderValues[1]
+                ? valueAsNumber + 1
+                : defaultSliderValues[1],
             ])
           }
           min={defaultSliderValues[0]}
           max={defaultSliderValues[1] - 1}
-        />
+        >
+          <NumberInputField />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
       </FormInput>
     ) : (
       <>
@@ -93,16 +105,21 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
           fieldError={undefined}
           style={{ width: '100%' }}
         >
-          <Input
-            type='number'
+          <NumberInput
             size='sm'
             value={sliderValues[0]}
-            onChange={(e) =>
-              setSliderValues([e.currentTarget.valueAsNumber, sliderValues[1]])
+            onChange={(_valueAsString, valueAsNumber) =>
+              setSliderValues([valueAsNumber, sliderValues[1]])
             }
             min={defaultSliderValues[0]}
             max={sliderValues[1]}
-          />
+          >
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
         </FormInput>
         <Text marginTop={6} px={2}>
           -
@@ -113,16 +130,21 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
           fieldError={undefined}
           style={{ width: '100%' }}
         >
-          <Input
-            type='number'
+          <NumberInput
             size='sm'
             value={sliderValues[1]}
-            onChange={(e) =>
-              setSliderValues([sliderValues[0], e.currentTarget.valueAsNumber])
+            onChange={(_valueAsString, valueAsNumber) =>
+              setSliderValues([sliderValues[0], valueAsNumber])
             }
             min={sliderValues[0] + 1}
             max={defaultSliderValues[1]}
-          />
+          >
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
         </FormInput>
       </>
     );
