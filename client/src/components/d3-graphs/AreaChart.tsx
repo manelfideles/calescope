@@ -47,7 +47,7 @@ export const AreaChart = ({ data, seriesColor }: AreaChartProps) => {
       {dataByLocation.map((locationData) => (
         <LineMarkSeries
           data={locationData.values}
-          opacity={locationData.isVisible ? 0.4 : 0.3}
+          opacity={locationData.isVisible ? 0.5 : 0.2}
           color={locationData.isVisible ? locationData.color : 'lightgray'}
         />
       ))}

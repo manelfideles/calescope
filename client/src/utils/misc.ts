@@ -27,3 +27,20 @@ export const convertDataToGeoJson = (
 
 export const removeValueRowsWithOneElement = (array: string[][]) =>
   array.filter((elem) => elem.length == 2);
+
+export const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+export const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+export const DATE_FORMAT = 'yyyy-MM-dd';

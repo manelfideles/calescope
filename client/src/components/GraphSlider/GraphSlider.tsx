@@ -60,9 +60,20 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
 
   const sliderFormInputs =
     mode === 'value' ? (
-      <FormInput label='Value' name='variable-value' fieldError={undefined}>
+      <FormInput
+        label='Value'
+        name='variable-value'
+        fieldError={undefined}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 55,
+        }}
+      >
         <Input
           type='number'
+          size='sm'
           value={sliderValues[0]}
           onChange={({ currentTarget: { valueAsNumber: val } }) =>
             setSliderValues([
@@ -76,9 +87,15 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
       </FormInput>
     ) : (
       <>
-        <FormInput label='Min' name='min-range-value' fieldError={undefined}>
+        <FormInput
+          label='Min'
+          name='min-range-value'
+          fieldError={undefined}
+          style={{ width: '100%' }}
+        >
           <Input
             type='number'
+            size='sm'
             value={sliderValues[0]}
             onChange={(e) =>
               setSliderValues([e.currentTarget.valueAsNumber, sliderValues[1]])
@@ -87,10 +104,18 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
             max={sliderValues[1]}
           />
         </FormInput>
-        <Text marginTop={6}> to </Text>
-        <FormInput label='Max' name='max-range-value' fieldError={undefined}>
+        <Text marginTop={6} px={2}>
+          -
+        </Text>
+        <FormInput
+          label='Max'
+          name='max-range-value'
+          fieldError={undefined}
+          style={{ width: '100%' }}
+        >
           <Input
             type='number'
+            size='sm'
             value={sliderValues[1]}
             onChange={(e) =>
               setSliderValues([sliderValues[0], e.currentTarget.valueAsNumber])
@@ -106,7 +131,7 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
     <Box>
       {graphComponent}
       {sliderThumbInputs}
-      <Flex alignItems='center' justifyContent='space-between'>
+      <Flex alignItems='center' mt={3}>
         {sliderFormInputs}
       </Flex>
     </Box>

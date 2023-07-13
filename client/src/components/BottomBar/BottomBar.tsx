@@ -37,7 +37,7 @@ export const BottomBar = () => {
       min_altitude: 0,
       max_altitude: 100,
       min_val: 0,
-      max_val: 18,
+      max_val: 500,
       selected_location_ids: map(locations, 'locationId'),
     },
   });

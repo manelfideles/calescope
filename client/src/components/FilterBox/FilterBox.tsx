@@ -1,10 +1,8 @@
 import {
-  Text,
   GridItem,
   useDisclosure,
   Collapse,
   Select,
-  Box,
   Flex,
 } from '@chakra-ui/react';
 import { GraphSlider } from '../GraphSlider';
@@ -16,23 +14,9 @@ import { useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './Calendar.css';
-
-const MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-const DATE_FORMAT = 'yyyy-MM-dd';
+import { DATE_FORMAT, MONTHS, WEEKDAYS } from '../../utils/misc';
+import { useFormContext } from 'react-hook-form';
+import { FormInput } from '../Forms/FormInput';
 
 interface FilterBoxProps {
   title: string;
@@ -67,6 +51,7 @@ export const FilterBox = ({
 }: FilterBoxProps) => {
   const { isOpen, onToggle } = useDisclosure();
   const { setMode } = useGraphSlider();
+  const form = useFormContext();
 
   return (
     <>
@@ -76,27 +61,34 @@ export const FilterBox = ({
             <TimeFilter />
           ) : (
             <>
-              <GridItem
-                marginTop={2}
-                display='flex'
-                justifyContent='space-between'
-                alignItems='center'
-              >
-                <Text>Mode</Text>
-                <Select
-                  defaultValue='value'
-                  size='sm'
-                  width='fit-content'
-                  onChange={(e) => setMode(e.currentTarget.value)}
+              <GridItem marginTop={2}>
+                <FormInput
+                  name='mode'
+                  label='Mode'
+                  fieldError={undefined}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width: '100%',
+                  }}
                 >
-                  <option value='value'>Value</option>
-                  <option value='range'>Range</option>
-                </Select>
+                  <Select
+                    defaultValue='value'
+                    size='sm'
+                    width='fit-content'
+                    {...form.register('mode')}
+                    onChange={(e) => setMode(e.currentTarget.value)}
+                  >
+                    <option value='value'>Value</option>
+                    <option value='range'>Range</option>
+                  </Select>
+                </FormInput>
               </GridItem>
               <GridItem marginTop={2} alignItems='center'>
                 <GraphSlider graphComponent={graphComponent} />
               </GridItem>
-              <FilterBoxMediaControls />
+              {/* <FilterBoxMediaControls /> */}
             </>
           )}
         </Collapse>

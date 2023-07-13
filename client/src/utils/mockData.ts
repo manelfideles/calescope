@@ -53,7 +53,7 @@ export const interpolationData = [
     lat: 40.222645,
     val: 16,
   },
-  {
+  /* {
     lon: -8.42241867112619,
     lat: 40.225139306405,
     val: 20,
@@ -97,5 +97,5 @@ export const interpolationData = [
     lon: -8.40355022347606,
     lat: 40.2182898879968,
     val: 76.3,
-  },
+  }, */
 ];
