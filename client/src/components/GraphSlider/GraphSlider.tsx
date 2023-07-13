@@ -25,6 +25,16 @@ interface GraphSliderProps {
   graphComponent: React.ReactNode;
 }
 
+const NumberInputComponents = (
+  <>
+    <NumberInputField />
+    <NumberInputStepper>
+      <NumberIncrementStepper />
+      <NumberDecrementStepper />
+    </NumberInputStepper>
+  </>
+);
+
 export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
   const { mode, defaultSliderValues, sliderValues, setSliderValues } =
     useGraphSlider();
@@ -90,11 +100,7 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
           min={defaultSliderValues[0]}
           max={defaultSliderValues[1] - 1}
         >
-          <NumberInputField />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
+          {NumberInputComponents}
         </NumberInput>
       </FormInput>
     ) : (
@@ -114,11 +120,7 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
             min={defaultSliderValues[0]}
             max={sliderValues[1]}
           >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
+            {NumberInputComponents}
           </NumberInput>
         </FormInput>
         <Text marginTop={6} px={2}>
@@ -139,11 +141,7 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
             min={sliderValues[0] + 1}
             max={defaultSliderValues[1]}
           >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
+            {NumberInputComponents}
           </NumberInput>
         </FormInput>
       </>

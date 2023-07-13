@@ -166,7 +166,7 @@ export const Settings = () => {
           ) : undefined}
         </GridItem>
         <GridItem>
-          <Grid templateColumns='repeat(2, 1fr)'>
+          <Grid templateColumns='repeat(2, 1fr)' gap={50}>
             <GridItem>
               <Stack fontSize='sm' fontWeight='bold'>
                 <Box>
