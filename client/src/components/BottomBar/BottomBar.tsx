@@ -144,8 +144,8 @@ export const BottomBar = () => {
             {!locations.length ? (
               emptyBottomBar
             ) : (
-              <Flex>
-                <Box>{selectedLocationsList}</Box>
+              <Flex pt={3}>
+                {selectedLocationsList}
                 <Box pt={5} borderLeft='1px solid gray'>
                   <Select
                     ml={10}

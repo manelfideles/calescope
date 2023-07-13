@@ -1,4 +1,4 @@
-import type { LayerProps, HeatmapLayer } from 'react-map-gl';
+import type { LayerProps } from 'react-map-gl';
 
 const clusterLayer: LayerProps = {
   id: 'clusters',
@@ -39,17 +39,34 @@ const unclusteredPointLayer: LayerProps = {
   source: 'location-measurement-counts',
   filter: ['!', ['has', 'point_count']],
   paint: {
-    'circle-color': '#a7c0af',
+    'circle-color': '#a1a1a1',
     'circle-radius': 10,
   },
 };
 
-export const interpolationLayer: LayerProps = {
-  id: 'interpolation-layer',
-  type: 'fill',
+const selectedLocationLayer: LayerProps = {
+  id: 'selected-location',
+  type: 'circle',
+  source: 'location-measurement-counts',
+  filter: ['!', ['has', 'point_count']],
   paint: {
-    'fill-color': ['interpolate', ['linear'], ['get', 'solRad'], 0, 0, 6, 1],
-    'fill-opacity': ['interpolate', ['linear'], ['get', 'solRad']],
+    'circle-color': 'green',
+    'circle-stroke-width': 10,
+    'circle-stroke-color': '#c6f6d5',
+    'circle-radius': 10,
+  },
+};
+
+const locationLabels: LayerProps = {
+  id: 'location-labels',
+  type: 'symbol',
+  source: 'location-measurement-counts',
+  filter: ['!', ['has', 'point_count']],
+  layout: {
+    'text-field': '{name} - {id}',
+    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+    'text-size': 10,
+    'text-offset': [0, -2.5],
   },
 };
 
@@ -57,5 +74,6 @@ export const sources = {
   clusterLayer,
   clusterCountLayer,
   unclusteredPointLayer,
-  interpolationLayer,
+  locationLabels,
+  selectedLocationLayer,
 };

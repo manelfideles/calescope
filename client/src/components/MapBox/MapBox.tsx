@@ -33,7 +33,13 @@ export const MapBox = () => {
   const [features, setFeatures] = useState<Record<string, SelectedFeature>>({});
   const [isPolygonButtonVisible, setIsPolygonButtonVisible] = useState(true);
   const { MAPBOX_TOKEN, centerPoint, defaultZoom } = mapboxConfig;
-  const { clusterLayer, clusterCountLayer, unclusteredPointLayer } = sources;
+  const {
+    clusterLayer,
+    clusterCountLayer,
+    unclusteredPointLayer,
+    locationLabels,
+    selectedLocationLayer,
+  } = sources;
   const mapRef = useRef<MapRef>(null);
   const initialViewState = {
     latitude: centerPoint[0],
@@ -162,13 +168,21 @@ export const MapBox = () => {
           polygon: !!!mapRef?.current?.getLayer('interpolation-layer'),
           trash: true,
         }}
-        // defaultMode='static'
         onCreate={onUpdate}
         onUpdate={onUpdate}
         onDelete={() => setFeatures({})}
       />
     ),
     [isPolygonButtonVisible]
+  );
+
+  const selectedLocationsFilter = useMemo(
+    () => [
+      'in',
+      ['get', 'id'],
+      ['literal', locations.map(({ locationId }) => locationId)],
+    ],
+    [locations]
   );
 
   return (
@@ -180,7 +194,11 @@ export const MapBox = () => {
         minZoom={2}
         mapStyle='mapbox://styles/mapbox/light-v9'
         mapboxAccessToken={MAPBOX_TOKEN}
-        interactiveLayerIds={[clusterLayer.id!, unclusteredPointLayer.id!]}
+        interactiveLayerIds={[
+          clusterLayer.id!,
+          unclusteredPointLayer.id!,
+          selectedLocationLayer.id!,
+        ]}
         onClick={onClick}
         ref={mapRef}
         id='map'
@@ -196,7 +214,10 @@ export const MapBox = () => {
           <Layer {...clusterLayer} />
           <Layer {...clusterCountLayer} />
           <Layer {...unclusteredPointLayer} />
+          <Layer {...locationLabels} />
+          <Layer {...selectedLocationLayer} filter={selectedLocationsFilter} />
         </Source>
+        {console.log(mapRef.current?.getLayer('selected-location'))}
         {controls}
       </Map>
     </div>
