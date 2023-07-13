@@ -47,9 +47,9 @@ export const Settings = () => {
       firstName: user?.user_metadata.firstName,
       lastName: user?.user_metadata.lastName,
       userSettings: {
-        metricSystem: localStorage.getItem('settings')
+        unitSystem: localStorage.getItem('settings')
           ? JSON.parse(localStorage.getItem('settings')!).userSettings
-              .metricSystem
+              .unitSystem
           : 'metric',
       },
     },
@@ -212,18 +212,16 @@ export const Settings = () => {
                 <Box>
                   <Text as='u'>Unit System</Text>
                   <FormInput
-                    name='userSettings.metricSystem'
+                    name='userSettings.unitSystem'
                     label=''
-                    fieldError={
-                      form.formState.errors.userSettings?.metricSystem
-                    }
+                    fieldError={form.formState.errors.userSettings?.unitSystem}
                   >
                     <Select
                       size='sm'
                       width='50%'
                       isDisabled={!isEditing}
                       marginY={2}
-                      {...form.register('userSettings.metricSystem')}
+                      {...form.register('userSettings.unitSystem')}
                     >
                       <option value='metric'>Metric</option>
                       <option value='imperial'>Imperial</option>
