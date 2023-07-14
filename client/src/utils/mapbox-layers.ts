@@ -63,7 +63,7 @@ const locationLabels: LayerProps = {
   source: 'location-measurement-counts',
   filter: ['!', ['has', 'point_count']],
   layout: {
-    'text-field': '{name} - {id}',
+    'text-field': '{name}',
     'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
     'text-size': 10,
     'text-offset': [0, -2.5],

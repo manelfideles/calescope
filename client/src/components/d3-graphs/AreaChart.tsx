@@ -60,10 +60,6 @@ export const AreaChart = ({
     [selectedVariableId]
   );
 
-  useEffect(() => {
-    console.log({ data });
-  }, [data]);
-
   return (
     <>
       {selectedVariableId > 0 ? (

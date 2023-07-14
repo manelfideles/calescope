@@ -217,7 +217,6 @@ export const MapBox = () => {
           <Layer {...locationLabels} />
           <Layer {...selectedLocationLayer} filter={selectedLocationsFilter} />
         </Source>
-        {console.log(mapRef.current?.getLayer('selected-location'))}
         {controls}
       </Map>
     </div>
