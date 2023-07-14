@@ -47,16 +47,7 @@ export const FilterControls = () => {
             defaultSliderValues={defaultSliderValues!}
             variableId={id}
           >
-            <FilterBox
-              title={name}
-              graphComponent={
-                <D3Histogram
-                  data={generateHistogramData(5000, 8)}
-                  height={50}
-                  width={190}
-                />
-              }
-            />
+            <FilterBox title={name} withGraphComponent />
           </GraphSliderContextProvider>
         </GridItem>
       ));
@@ -67,24 +58,15 @@ export const FilterControls = () => {
       <Grid>
         {visibleVariables}
         <GridItem padding={2} key='time'>
-          <FilterBox title='Time' isTimeFilter />
+          <FilterBox title='Time' withGraphComponent={false} />
         </GridItem>
         <GridItem padding={2} key='altitude'>
           <GraphSliderContextProvider
             defaultSliderValues={defaultSliderValues!}
-            // in the RPC, we use -1 to signify the "altitude" variable
+            // in the RPC, we use -1 to as the "altitude" variable's key
             variableId={-1}
           >
-            <FilterBox
-              title='Altitude'
-              graphComponent={
-                <D3Histogram
-                  data={generateHistogramData(5000, 8)}
-                  height={50}
-                  width={190}
-                />
-              }
-            />
+            <FilterBox title='Altitude' withGraphComponent />
           </GraphSliderContextProvider>
         </GridItem>
         <GridItem>

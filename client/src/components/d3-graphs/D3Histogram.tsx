@@ -14,13 +14,14 @@ export const D3Histogram = ({
   width = 190,
   height = 50,
 }: D3HistogramProps) => {
-  const { mode, defaultSliderValues, sliderValues } = useGraphSlider();
+  const { mode, sliderRange, defaultSliderValues, sliderValues } =
+    useGraphSlider();
   const x = scaleLinear()
     .domain(extent(data) as [number, number])
     .range([0, width]);
   const bins = bin()
     .domain(x.domain() as [number, number])
-    .thresholds(x.ticks(defaultSliderValues[1]))(data)
+    .thresholds(x.ticks(sliderRange?.[1] ?? defaultSliderValues[1]))(data)
     .map((bin) => ({
       ...bin,
       length: bin.length,

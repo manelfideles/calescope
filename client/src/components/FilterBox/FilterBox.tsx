@@ -1,4 +1,11 @@
-import { GridItem, useDisclosure, Collapse, Select } from '@chakra-ui/react';
+import {
+  GridItem,
+  useDisclosure,
+  Collapse,
+  Select,
+  Spinner,
+  Flex,
+} from '@chakra-ui/react';
 import { GraphSlider } from '../GraphSlider';
 import { max as _max } from 'lodash';
 import { FilterBoxMediaControls } from '../FilterBoxMediaControls';
@@ -15,20 +22,17 @@ import {
 } from '../../utils/misc';
 import { useFormContext } from 'react-hook-form';
 import { FormInput } from '../Forms/FormInput';
+import { D3Histogram } from '../d3-graphs/D3Histogram';
+import { useEffect } from 'react';
 
 interface FilterBoxProps {
   title: string;
-  isTimeFilter?: boolean;
-  graphComponent?: React.ReactNode;
+  withGraphComponent?: boolean;
 }
 
-export const FilterBox = ({
-  title,
-  isTimeFilter,
-  graphComponent,
-}: FilterBoxProps) => {
+export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
   const { isOpen, onToggle } = useDisclosure();
-  const { setMode } = useGraphSlider();
+  const { histogramData, isLoadingHistogramData, setMode } = useGraphSlider();
   const { setValue, register } = useFormContext();
 
   return (
@@ -60,7 +64,7 @@ export const FilterBox = ({
             </FormInput>
           </GridItem>
           <GridItem marginTop={2} alignItems='center'>
-            {isTimeFilter ? (
+            {!withGraphComponent ? (
               <FormInput name='time' fieldError={undefined} label={''}>
                 <Calendar
                   formatLongDate={(_, date) => DATE_FORMAT[date.getDate()]}
@@ -75,8 +79,16 @@ export const FilterBox = ({
                   onChange={(d: any) => setValue('time.val', dateConverter(d))}
                 />
               </FormInput>
+            ) : isLoadingHistogramData ? (
+              <Flex alignItems='center' justifyContent='center' padding={2}>
+                <Spinner size='sm' />
+              </Flex>
             ) : (
-              <GraphSlider graphComponent={graphComponent} />
+              <GraphSlider
+                graphComponent={
+                  <D3Histogram data={histogramData} height={50} width={190} />
+                }
+              />
             )}
           </GridItem>
           {/* <FilterBoxMediaControls /> */}

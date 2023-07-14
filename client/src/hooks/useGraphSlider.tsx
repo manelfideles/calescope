@@ -8,6 +8,8 @@ import {
 } from 'react';
 import { useSelectedLocations } from './useSelectedLocations';
 import { useRPC } from './useRPC';
+import { countBy } from 'lodash';
+import { generateHistogramData } from '../utils/mockData';
 
 interface GraphSliderProviderProps {
   children: React.ReactNode;
@@ -23,6 +25,8 @@ interface GraphSliderContextInterface {
   setMode: Dispatch<SetStateAction<string>>;
   sliderRange: number[];
   isLoadingSliderRange: boolean;
+  histogramData: any[];
+  isLoadingHistogramData: boolean;
 }
 
 const initialState = {
@@ -33,6 +37,8 @@ const initialState = {
   setMode: () => null,
   sliderRange: [],
   isLoadingSliderRange: true,
+  histogramData: [],
+  isLoadingHistogramData: true,
 };
 
 export const GraphSliderContext =
@@ -55,18 +61,33 @@ export const GraphSliderContextProvider = ({
   const [mode, setMode] = useState('value');
   const { locations } = useSelectedLocations();
   const [sliderRange, setSliderRange] = useState<number[]>([]);
+  const [countData, setCountData] = useState<any>([]);
   const { data: variableSliderRange, isLoading: isLoadingSliderRange } = useRPC(
     {
       rpcName: 'get_variable_value_range',
       convertToJson: false,
       params: {
         variable_id: variableId,
-        location_ids: locations?.map(({ locationId }) => locationId) ?? [
-          ...Array(20).keys(),
-        ],
+        location_ids:
+          locations.length === 0
+            ? [...Array(20).keys()]
+            : locations?.map(({ locationId }) => locationId),
       },
     }
   );
+  const { data: histogramData, isLoading: isLoadingHistogramData } = useRPC({
+    rpcName: 'get_measurement_counts_for_variable',
+    convertToJson: false,
+    params: {
+      variable_id: variableId,
+      min_value: sliderRange[0] ?? 0,
+      max_value: sliderRange[1] ?? 100,
+      location_ids:
+        locations.length === 0
+          ? [...Array(20).keys()]
+          : locations?.map(({ locationId }) => locationId),
+    },
+  });
 
   useEffect(() => {
     if (!isLoadingSliderRange && variableSliderRange) {
@@ -74,6 +95,16 @@ export const GraphSliderContextProvider = ({
         variableSliderRange?.[0]?.min_value,
         variableSliderRange?.[0]?.max_value,
       ]);
+      if (!isLoadingHistogramData && histogramData) {
+        console.log(generateHistogramData(10, 8));
+        const data = Object.entries(
+          countBy(histogramData, 'variable_value')
+        ).map((elem) => ({ value: Number(elem[0]), count: elem[1] }));
+        console.log('BU CE TA', { data });
+        setCountData(
+          histogramData.map((d: Record<string, number>) => d.variable_value)
+        );
+      }
     }
   }, [variableSliderRange, isLoadingSliderRange]);
 
@@ -87,6 +118,8 @@ export const GraphSliderContextProvider = ({
         setSliderValues,
         sliderRange,
         isLoadingSliderRange,
+        histogramData: countData,
+        isLoadingHistogramData,
       }}
     >
       {children}
