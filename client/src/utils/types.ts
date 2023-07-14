@@ -14,7 +14,7 @@ export interface StepProps {
 
 export type Settings = {
   variables: Array<Variable>;
-  metricSystem: 'imperial' | 'metric';
+  unitSystem: 'imperial' | 'metric';
 };
 
 export type Variable = {

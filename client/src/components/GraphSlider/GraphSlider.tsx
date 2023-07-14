@@ -11,6 +11,11 @@ import {
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
+  NumberInput,
+  NumberInputField,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInputStepper,
 } from '@chakra-ui/react';
 import { MdGraphicEq } from 'react-icons/md';
 import { useGraphSlider } from '../../hooks/useGraphSlider';
@@ -19,6 +24,16 @@ import { FormInput } from '../Forms/FormInput';
 interface GraphSliderProps {
   graphComponent: React.ReactNode;
 }
+
+const NumberInputComponents = (
+  <>
+    <NumberInputField />
+    <NumberInputStepper>
+      <NumberIncrementStepper />
+      <NumberDecrementStepper />
+    </NumberInputStepper>
+  </>
+);
 
 export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
   const { mode, defaultSliderValues, sliderValues, setSliderValues } =
@@ -60,44 +75,74 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
 
   const sliderFormInputs =
     mode === 'value' ? (
-      <FormInput label='Value' name='variable-value' fieldError={undefined}>
-        <Input
-          type='number'
+      <FormInput
+        label='Value'
+        name='variable-value'
+        fieldError={undefined}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 55,
+        }}
+      >
+        <NumberInput
+          size='sm'
           value={sliderValues[0]}
-          onChange={({ currentTarget: { valueAsNumber: val } }) =>
+          onChange={(_valueAsString, valueAsNumber) =>
             setSliderValues([
-              val,
-              val < defaultSliderValues[1] ? val + 1 : defaultSliderValues[1],
+              valueAsNumber,
+              valueAsNumber < defaultSliderValues[1]
+                ? valueAsNumber + 1
+                : defaultSliderValues[1],
             ])
           }
           min={defaultSliderValues[0]}
           max={defaultSliderValues[1] - 1}
-        />
+        >
+          {NumberInputComponents}
+        </NumberInput>
       </FormInput>
     ) : (
       <>
-        <FormInput label='Min' name='min-range-value' fieldError={undefined}>
-          <Input
-            type='number'
+        <FormInput
+          label='Min'
+          name='min-range-value'
+          fieldError={undefined}
+          style={{ width: '100%' }}
+        >
+          <NumberInput
+            size='sm'
             value={sliderValues[0]}
-            onChange={(e) =>
-              setSliderValues([e.currentTarget.valueAsNumber, sliderValues[1]])
+            onChange={(_valueAsString, valueAsNumber) =>
+              setSliderValues([valueAsNumber, sliderValues[1]])
             }
             min={defaultSliderValues[0]}
             max={sliderValues[1]}
-          />
+          >
+            {NumberInputComponents}
+          </NumberInput>
         </FormInput>
-        <Text marginTop={6}> to </Text>
-        <FormInput label='Max' name='max-range-value' fieldError={undefined}>
-          <Input
-            type='number'
+        <Text marginTop={6} px={2}>
+          -
+        </Text>
+        <FormInput
+          label='Max'
+          name='max-range-value'
+          fieldError={undefined}
+          style={{ width: '100%' }}
+        >
+          <NumberInput
+            size='sm'
             value={sliderValues[1]}
-            onChange={(e) =>
-              setSliderValues([sliderValues[0], e.currentTarget.valueAsNumber])
+            onChange={(_valueAsString, valueAsNumber) =>
+              setSliderValues([sliderValues[0], valueAsNumber])
             }
             min={sliderValues[0] + 1}
             max={defaultSliderValues[1]}
-          />
+          >
+            {NumberInputComponents}
+          </NumberInput>
         </FormInput>
       </>
     );
@@ -106,7 +151,7 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
     <Box>
       {graphComponent}
       {sliderThumbInputs}
-      <Flex alignItems='center' justifyContent='space-between'>
+      <Flex alignItems='center' mt={3}>
         {sliderFormInputs}
       </Flex>
     </Box>

@@ -14,15 +14,20 @@ import {
 import { Card } from '../Card';
 import { BsExclamationLg } from 'react-icons/bs';
 import { BiTrash, BiHide, BiShow } from 'react-icons/bi';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 import { useRPC } from '../../hooks/useRPC';
 import '../../../node_modules/react-vis/dist/style.css';
 import { AreaChart } from '../d3-graphs/AreaChart';
-import { map, omit, startCase, uniqBy } from 'lodash';
+import { groupBy, map, omit, startCase, uniqBy } from 'lodash';
+import { User } from '../../utils/types';
 
 export const BottomBar = () => {
+  const [selectedVariableId, setSelectedVariableId] = useState(0);
   const { onToggle, isOpen } = useDisclosure();
+  const {
+    userSettings: { variables },
+  }: User = JSON.parse(localStorage.getItem('settings') ?? '') ?? [];
   const { locations, removeLocation, toggleLocationVisibility } =
     useSelectedLocations();
   const {
@@ -37,7 +42,7 @@ export const BottomBar = () => {
       min_altitude: 0,
       max_altitude: 100,
       min_val: 0,
-      max_val: 18,
+      max_val: 500,
       selected_location_ids: map(locations, 'locationId'),
     },
   });
@@ -92,7 +97,7 @@ export const BottomBar = () => {
         padding={10}
       >
         <Tag colorScheme='red' padding={2}>
-          <TagLeftIcon boxSize='12px' as={BsExclamationLg} />
+          <TagLeftIcon boxSize='1rem' as={BsExclamationLg} />
           <TagLabel textAlign='center'>No location selected</TagLabel>
         </Tag>
         <Text textAlign='center' padding={2} maxWidth='20rem'>
@@ -105,28 +110,17 @@ export const BottomBar = () => {
     []
   );
 
-  const locationDetails = useMemo(
-    () => (
-      <Flex>
-        <Box>{selectedLocationsList}</Box>
-        <Box pt={5} borderLeft='1px solid gray'>
-          <Select ml={10} w='375px'>
-            {uniqBy(areaChartData, 'measuredVariableId').map(
-              ({ measured_variable_id, variable_name }: any) => (
-                <option value={measured_variable_id}>
-                  {startCase(variable_name)}
-                </option>
-              )
-            )}
-          </Select>
-          <AreaChart
-            data={areaChartData}
-            seriesColor={map(locations, (elem) => omit(elem, ['locationName']))}
-          />
-        </Box>
-      </Flex>
-    ),
-    [isLoadingChartData, selectedLocationsList]
+  // TODO: Only display the variable as an option
+  // if it's present in the user settings
+  const variableSelectOptions = useMemo(
+    () =>
+      uniqBy(areaChartData, 'measured_variable_id').map(
+        ({ measured_variable_id, variable_name }: any) => ({
+          value: measured_variable_id,
+          text: startCase(variable_name),
+        })
+      ),
+    [isLoadingChartData]
   );
 
   return (
@@ -147,7 +141,34 @@ export const BottomBar = () => {
             startingHeight={0}
             animateOpacity
           >
-            {locations.length ? locationDetails : emptyBottomBar}
+            {!locations.length ? (
+              emptyBottomBar
+            ) : (
+              <Flex pt={3}>
+                {selectedLocationsList}
+                <Box pt={5} borderLeft='1px solid gray'>
+                  <Select
+                    ml={10}
+                    w='375px'
+                    placeholder='Select a variable'
+                    onChange={({ currentTarget: { value } }) =>
+                      setSelectedVariableId(Number(value))
+                    }
+                  >
+                    {variableSelectOptions.map(({ value, text }) => (
+                      <option value={value}>{text}</option>
+                    ))}
+                  </Select>
+                  <AreaChart
+                    selectedVariableId={selectedVariableId}
+                    data={areaChartData}
+                    seriesColor={map(locations, (elem) =>
+                      omit(elem, ['locationName'])
+                    )}
+                  />
+                </Box>
+              </Flex>
+            )}
           </Collapse>
         </Card>
       </Box>

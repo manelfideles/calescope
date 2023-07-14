@@ -13,6 +13,7 @@ interface FormInputProps {
   isRequired?: boolean;
   fieldError: any;
   children: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
 export const FormInput = ({
@@ -21,18 +22,19 @@ export const FormInput = ({
   isRequired,
   fieldError,
   helperText,
+  style,
 }: FormInputProps) => {
   return (
-    <Box>
-      <FormControl
-        isRequired={isRequired ?? false}
-        isInvalid={fieldError ?? false}
-      >
+    <FormControl
+      isRequired={isRequired ?? false}
+      isInvalid={fieldError ?? false}
+    >
+      <Box style={style}>
         {!!label && <FormLabel fontSize='sm'>{label}</FormLabel>}
         {children}
         <FormErrorMessage>{fieldError && fieldError.message}</FormErrorMessage>
         {!!helperText && <FormHelperText>{helperText}</FormHelperText>}
-      </FormControl>
-    </Box>
+      </Box>
+    </FormControl>
   );
 };

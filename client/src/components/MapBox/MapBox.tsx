@@ -1,5 +1,4 @@
 import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
-import 'mapbox-gl/dist/mapbox-gl.css';
 import { Map, Source, Layer } from 'react-map-gl';
 import type { MapRef, GeoJSONSource } from 'react-map-gl';
 import { mapboxConfig } from '../../utils/mapbox-config';
@@ -7,10 +6,12 @@ import { sources } from '../../utils/mapbox-layers';
 import { useToast } from '@chakra-ui/react';
 import { useRPC } from '../../hooks/useRPC';
 import { useSelectedLocations } from '../../hooks/useSelectedLocations';
-import { interpolationData } from '../../utils/mockData';
 import { MapboxInterpolateHeatmapLayer } from 'mapbox-gl-interpolate-heatmap';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { DrawControl } from './DrawControl';
+import { map } from 'lodash';
+
+import 'mapbox-gl/dist/mapbox-gl.css';
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
 const mapStyle: React.CSSProperties = {
   position: 'absolute',
@@ -36,7 +37,8 @@ export const MapBox = () => {
     clusterLayer,
     clusterCountLayer,
     unclusteredPointLayer,
-    interpolationLayer,
+    locationLabels,
+    selectedLocationLayer,
   } = sources;
   const mapRef = useRef<MapRef>(null);
   const initialViewState = {
@@ -53,6 +55,23 @@ export const MapBox = () => {
     rpcName: 'get_measurement_counts',
     convertToJson: true,
     params: {},
+  });
+  const {
+    data: idwData,
+    error: idwError,
+    isLoading: isLoadingIdwData,
+  } = useRPC({
+    // TODO: These values will be controlled by the sidebar context
+    rpcName: 'get_filtered_values',
+    convertToJson: false,
+    params: {
+      min_altitude: 50,
+      max_altitude: 55,
+      min_val: 0,
+      max_val: 500,
+      // use selected locations for the interpolation
+      selected_location_ids: map(locations, 'locationId'),
+    },
   });
 
   const onClick = (event: mapboxgl.MapLayerMouseEvent) => {
@@ -99,19 +118,19 @@ export const MapBox = () => {
   }, [isLoading, locations]);
 
   useEffect(() => {
-    console.log(features);
+    console.log(idwData?.map(({ x, lat, lon }: any) => ({ val: x, lat, lon })));
+  }, [idwData]);
+
+  useEffect(() => {
     if (JSON.stringify(features) !== '{}') {
       const aoi = Object.values(features)[0]?.geometry!.coordinates[0].map(
         (coords: any) => ({ lon: coords[0], lat: coords[1] })
       );
       const layer = new MapboxInterpolateHeatmapLayer({
-        data: interpolationData,
+        data: idwData?.map(({ x, lat, lon }: any) => ({ val: x, lat, lon })),
         id: 'interpolation-layer',
         framebufferFactor: 0.1,
-        opacity:
-          JSON.stringify(features) === '{}' // || !isInterpolationLayerVisible
-            ? 0
-            : 0.4,
+        opacity: JSON.stringify(features) === '{}' ? 0 : 0.4,
         aoi,
       });
       mapRef.current?.getMap().addLayer(layer);
@@ -121,6 +140,7 @@ export const MapBox = () => {
       setIsPolygonButtonVisible(true);
     }
   }, [
+    isLoadingIdwData,
     JSON.stringify(features),
     !!mapRef?.current?.getLayer('interpolation-layer'),
   ]);
@@ -148,13 +168,21 @@ export const MapBox = () => {
           polygon: !!!mapRef?.current?.getLayer('interpolation-layer'),
           trash: true,
         }}
-        // defaultMode='static'
         onCreate={onUpdate}
         onUpdate={onUpdate}
         onDelete={() => setFeatures({})}
       />
     ),
-    [mapRef?.current?.getLayer('interpolation-layer')]
+    [isPolygonButtonVisible]
+  );
+
+  const selectedLocationsFilter = useMemo(
+    () => [
+      'in',
+      ['get', 'id'],
+      ['literal', locations.map(({ locationId }) => locationId)],
+    ],
+    [locations]
   );
 
   return (
@@ -166,7 +194,11 @@ export const MapBox = () => {
         minZoom={2}
         mapStyle='mapbox://styles/mapbox/light-v9'
         mapboxAccessToken={MAPBOX_TOKEN}
-        interactiveLayerIds={[clusterLayer.id!, unclusteredPointLayer.id!]}
+        interactiveLayerIds={[
+          clusterLayer.id!,
+          unclusteredPointLayer.id!,
+          selectedLocationLayer.id!,
+        ]}
         onClick={onClick}
         ref={mapRef}
         id='map'
@@ -182,6 +214,8 @@ export const MapBox = () => {
           <Layer {...clusterLayer} />
           <Layer {...clusterCountLayer} />
           <Layer {...unclusteredPointLayer} />
+          <Layer {...locationLabels} />
+          <Layer {...selectedLocationLayer} filter={selectedLocationsFilter} />
         </Source>
         {controls}
       </Map>
