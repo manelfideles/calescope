@@ -80,8 +80,8 @@ export const GraphSliderContextProvider = ({
     convertToJson: false,
     params: {
       variable_id: variableId,
-      min_value: sliderRange[0] ?? 0,
-      max_value: sliderRange[1] ?? 100,
+      min_value: Math.round(sliderRange?.[0] ?? 0),
+      max_value: Math.round(sliderRange?.[1] ?? 100),
       location_ids:
         locations.length === 0
           ? [...Array(20).keys()]
@@ -96,11 +96,12 @@ export const GraphSliderContextProvider = ({
         variableSliderRange?.[0]?.max_value,
       ]);
       if (!isLoadingHistogramData && histogramData) {
-        console.log(generateHistogramData(10, 8));
-        const data = Object.entries(
-          countBy(histogramData, 'variable_value')
-        ).map((elem) => ({ value: Number(elem[0]), count: elem[1] }));
-        console.log('BU CE TA', { data });
+        console.log(
+          histogramData.map((d: Record<string, number>) => d.variable_value),
+          countBy(
+            histogramData.map((d: Record<string, number>) => d.variable_value)
+          )
+        );
         setCountData(
           histogramData.map((d: Record<string, number>) => d.variable_value)
         );
