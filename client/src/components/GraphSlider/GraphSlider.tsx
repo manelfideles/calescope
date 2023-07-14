@@ -2,7 +2,6 @@ import {
   Box,
   Text,
   Flex,
-  Input,
   RangeSlider,
   RangeSliderFilledTrack,
   RangeSliderThumb,
@@ -16,10 +15,12 @@ import {
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInputStepper,
+  Spinner,
 } from '@chakra-ui/react';
 import { MdGraphicEq } from 'react-icons/md';
 import { useGraphSlider } from '../../hooks/useGraphSlider';
 import { FormInput } from '../Forms/FormInput';
+import { useEffect } from 'react';
 
 interface GraphSliderProps {
   graphComponent: React.ReactNode;
@@ -36,8 +37,22 @@ const NumberInputComponents = (
 );
 
 export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
-  const { mode, defaultSliderValues, sliderValues, setSliderValues } =
-    useGraphSlider();
+  const {
+    mode,
+    sliderRange,
+    defaultSliderValues,
+    sliderValues,
+    setSliderValues,
+    isLoadingSliderRange,
+  } = useGraphSlider();
+
+  const MIN_SLIDER_VALUE = Math.round(sliderRange[0] ?? defaultSliderValues[0]);
+  const MAX_SLIDER_VALUE = Math.round(sliderRange[1] ?? defaultSliderValues[1]);
+
+  useEffect(
+    () => console.log({ MIN_SLIDER_VALUE, MAX_SLIDER_VALUE }),
+    [sliderRange]
+  );
 
   const sliderThumbInputs =
     mode === 'value' ? (
@@ -45,7 +60,8 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
         defaultValue={defaultSliderValues[0]}
         value={sliderValues[0]}
         onChange={(val) => setSliderValues([val, val + 1])}
-        max={defaultSliderValues[1]}
+        min={MIN_SLIDER_VALUE}
+        max={MAX_SLIDER_VALUE}
       >
         <SliderTrack bg='red.100'>
           <SliderFilledTrack bg='tomato' />
@@ -58,8 +74,8 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
       <RangeSlider
         value={sliderValues}
         onChange={setSliderValues}
-        min={defaultSliderValues[0]}
-        max={defaultSliderValues[1]}
+        min={MIN_SLIDER_VALUE}
+        max={MAX_SLIDER_VALUE}
       >
         <RangeSliderTrack bg='red.100'>
           <RangeSliderFilledTrack bg='tomato' />
@@ -92,13 +108,13 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
           onChange={(_valueAsString, valueAsNumber) =>
             setSliderValues([
               valueAsNumber,
-              valueAsNumber < defaultSliderValues[1]
+              valueAsNumber < MAX_SLIDER_VALUE
                 ? valueAsNumber + 1
-                : defaultSliderValues[1],
+                : MAX_SLIDER_VALUE,
             ])
           }
-          min={defaultSliderValues[0]}
-          max={defaultSliderValues[1] - 1}
+          min={MIN_SLIDER_VALUE}
+          max={MAX_SLIDER_VALUE - 1}
         >
           {NumberInputComponents}
         </NumberInput>
@@ -117,7 +133,7 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
             onChange={(_valueAsString, valueAsNumber) =>
               setSliderValues([valueAsNumber, sliderValues[1]])
             }
-            min={defaultSliderValues[0]}
+            min={MIN_SLIDER_VALUE}
             max={sliderValues[1]}
           >
             {NumberInputComponents}
@@ -139,7 +155,7 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
               setSliderValues([sliderValues[0], valueAsNumber])
             }
             min={sliderValues[0] + 1}
-            max={defaultSliderValues[1]}
+            max={MAX_SLIDER_VALUE}
           >
             {NumberInputComponents}
           </NumberInput>
@@ -149,11 +165,19 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
 
   return (
     <Box>
-      {graphComponent}
-      {sliderThumbInputs}
-      <Flex alignItems='center' mt={3}>
-        {sliderFormInputs}
-      </Flex>
+      {isLoadingSliderRange ? (
+        <Flex alignItems='center' justifyContent='center'>
+          <Spinner size='sm' />
+        </Flex>
+      ) : (
+        <>
+          {graphComponent}
+          {sliderThumbInputs}
+          <Flex alignItems='center' mt={3}>
+            {sliderFormInputs}
+          </Flex>
+        </>
+      )}
     </Box>
   );
 };

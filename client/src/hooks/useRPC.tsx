@@ -16,7 +16,7 @@ export const useRPC = ({
   properties = ['id', 'name', 'measurementCount'],
 }: RpcProps) => {
   const supabase = useClient();
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<any>(undefined);
   const [error, setError] = useState<PostgrestError | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 

@@ -11,7 +11,7 @@ export const userSettings: Settings = {
     { id: 7, name: 'Example 7', isSelected: false },
     { id: 8, name: 'Example 8', isSelected: false },
   ],
-  metricSystem: 'metric',
+  unitSystem: 'metric',
 };
 
 const generateAreaChartData = (length: number = 10, upperBound: number = 40) =>
@@ -46,56 +46,3 @@ export const getRandomColor = () =>
 export const generateHistogramData = (length: number, n_buckets: number) => {
   return Array.from({ length }, () => Math.floor(Math.random() * n_buckets));
 };
-
-export const interpolationData = [
-  {
-    lon: -8.402028,
-    lat: 40.222645,
-    val: 16,
-  },
-  /* {
-    lon: -8.42241867112619,
-    lat: 40.225139306405,
-    val: 20,
-  },
-  {
-    lon: -8.42888798564339,
-    lat: 40.2209505471073,
-    val: 5,
-  },
-  {
-    lon: -8.39957490384027,
-    lat: 40.2247451644405,
-    val: 37.5,
-  },
-  {
-    lon: -8.39727987464586,
-    lat: 40.2228444234987,
-    val: 25,
-  },
-  {
-    lon: -8.42262686613226,
-    lat: 40.2240673261461,
-    val: 9.35,
-  },
-  {
-    lon: -8.43018130754563,
-    lat: 40.2221973437929,
-    val: 3.3,
-  },
-  {
-    lon: -8.43730043314126,
-    lat: 40.2191692143264,
-    val: -2.3,
-  },
-  {
-    lon: -8.395038,
-    lat: 40.237747,
-    val: 5.3,
-  },
-  {
-    lon: -8.40355022347606,
-    lat: 40.2182898879968,
-    val: 76.3,
-  }, */
-];

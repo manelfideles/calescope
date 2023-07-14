@@ -3,12 +3,16 @@ import {
   Dispatch,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from 'react';
+import { useSelectedLocations } from './useSelectedLocations';
+import { useRPC } from './useRPC';
 
 interface GraphSliderProviderProps {
   children: React.ReactNode;
   defaultSliderValues: number[];
+  variableId: number;
 }
 
 interface GraphSliderContextInterface {
@@ -17,6 +21,8 @@ interface GraphSliderContextInterface {
   setSliderValues: Dispatch<SetStateAction<number[]>>;
   mode: string;
   setMode: Dispatch<SetStateAction<string>>;
+  sliderRange: number[];
+  isLoadingSliderRange: boolean;
 }
 
 const initialState = {
@@ -25,6 +31,8 @@ const initialState = {
   setSliderValues: () => null,
   mode: 'value',
   setMode: () => null,
+  sliderRange: [],
+  isLoadingSliderRange: true,
 };
 
 export const GraphSliderContext =
@@ -40,10 +48,35 @@ export const useGraphSlider = () => {
 export const GraphSliderContextProvider = ({
   children,
   defaultSliderValues,
+  variableId,
 }: GraphSliderProviderProps) => {
   const [sliderValues, setSliderValues] =
     useState<number[]>(defaultSliderValues);
   const [mode, setMode] = useState('value');
+  const { locations } = useSelectedLocations();
+  const [sliderRange, setSliderRange] = useState<number[]>([]);
+  const { data: variableSliderRange, isLoading: isLoadingSliderRange } = useRPC(
+    {
+      rpcName: 'get_variable_value_range',
+      convertToJson: false,
+      params: {
+        variable_id: variableId,
+        location_ids: locations?.map(({ locationId }) => locationId) ?? [
+          ...Array(20).keys(),
+        ],
+      },
+    }
+  );
+
+  useEffect(() => {
+    if (!isLoadingSliderRange && variableSliderRange) {
+      setSliderRange([
+        variableSliderRange?.[0]?.min_value,
+        variableSliderRange?.[0]?.max_value,
+      ]);
+    }
+  }, [variableSliderRange, isLoadingSliderRange]);
+
   return (
     <GraphSliderContext.Provider
       value={{
@@ -52,6 +85,8 @@ export const GraphSliderContextProvider = ({
         defaultSliderValues,
         sliderValues,
         setSliderValues,
+        sliderRange,
+        isLoadingSliderRange,
       }}
     >
       {children}
