@@ -1,5 +1,5 @@
 import { groupBy, pick, startCase, uniqBy } from 'lodash';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import {
   AreaSeriesPoint,
   FlexibleXYPlot,

@@ -6,7 +6,7 @@ import { useRPC } from '../../../../hooks/useRPC';
 import { StepProps } from '../../../../utils/types';
 import { FormInput } from '../../FormInput';
 
-// TODO - CS-30:
+// TODO @CS-30:
 // Implement Mapbox Search API support to display
 // the inserted coordinates in the UploadForm component.
 //
@@ -15,11 +15,7 @@ import { FormInput } from '../../FormInput';
 
 export const Step1 = ({ form }: StepProps) => {
   const [coordinateIsDisabled, setCoordinateIsDisabled] = useState(false);
-  const {
-    data: locationData,
-    error: locationError,
-    isLoading: isLoadingLocations,
-  } = useRPC({
+  const { data: locationData, isLoading: isLoadingLocations } = useRPC({
     rpcName: 'search_locations_by_string',
     params: { search_term: '' },
   });

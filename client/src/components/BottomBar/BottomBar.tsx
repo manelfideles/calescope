@@ -14,12 +14,12 @@ import {
 import { Card } from '../Card';
 import { BsExclamationLg } from 'react-icons/bs';
 import { BiTrash, BiHide, BiShow } from 'react-icons/bi';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 import { useRPC } from '../../hooks/useRPC';
 import '../../../node_modules/react-vis/dist/style.css';
 import { AreaChart } from '../d3-graphs/AreaChart';
-import { groupBy, map, omit, startCase, uniqBy } from 'lodash';
+import { map, omit, startCase, uniqBy } from 'lodash';
 import { User } from '../../utils/types';
 
 export const BottomBar = () => {
@@ -37,7 +37,8 @@ export const BottomBar = () => {
   } = useRPC({
     rpcName: 'get_filtered_values',
     convertToJson: false,
-    // TODO: These values will be controlled by the sidebar context
+    // TODO @CS-31:
+    // These values will be controlled by the sidebar context
     params: {
       min_altitude: 0,
       max_altitude: 100,
@@ -110,7 +111,8 @@ export const BottomBar = () => {
     []
   );
 
-  // TODO: Only display the variable as an option
+  // TODO @CS-33:
+  // Only display the variable as an option
   // if it's present in the user settings
   const variableSelectOptions = useMemo(
     () =>
