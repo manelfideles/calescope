@@ -11,19 +11,12 @@ import { max as _max } from 'lodash';
 import { FilterBoxMediaControls } from '../FilterBoxMediaControls';
 import { Card } from '../Card';
 import { useGraphSlider } from '../../hooks/useGraphSlider';
-import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './Calendar.css';
-import {
-  DATE_FORMAT,
-  MONTHS,
-  WEEKDAYS,
-  convertDateToTimestamptz as dateConverter,
-} from '../../utils/misc';
 import { useFormContext } from 'react-hook-form';
 import { FormInput } from '../Forms/FormInput';
 import { D3Histogram } from '../d3-graphs/D3Histogram';
-import { useEffect } from 'react';
+import { CustomCalendar } from '../CustomCalendar';
 
 interface FilterBoxProps {
   title: string;
@@ -33,7 +26,7 @@ interface FilterBoxProps {
 export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
   const { isOpen, onToggle } = useDisclosure();
   const { histogramData, isLoadingHistogramData, setMode } = useGraphSlider();
-  const { setValue, register } = useFormContext();
+  const { register } = useFormContext();
 
   return (
     <>
@@ -65,20 +58,7 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
           </GridItem>
           <GridItem marginTop={2} alignItems='center'>
             {!withGraphComponent ? (
-              <FormInput name='time' fieldError={undefined} label={''}>
-                <Calendar
-                  formatLongDate={(_, date) => DATE_FORMAT[date.getDate()]}
-                  formatMonthYear={(_, date) =>
-                    MONTHS[date.getMonth()] +
-                    " '" +
-                    date.getFullYear().toString().substring(2)
-                  }
-                  formatMonth={(_, date) => MONTHS[date.getMonth()]}
-                  formatShortWeekday={(_, date) => WEEKDAYS[date.getDay()]}
-                  defaultValue={new Date()}
-                  onChange={(d: any) => setValue('time.val', dateConverter(d))}
-                />
-              </FormInput>
+              <CustomCalendar />
             ) : isLoadingHistogramData ? (
               <Flex alignItems='center' justifyContent='center' padding={2}>
                 <Spinner size='sm' />

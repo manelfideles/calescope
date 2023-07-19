@@ -20,7 +20,7 @@ import {
 import { MdGraphicEq } from 'react-icons/md';
 import { useGraphSlider } from '../../hooks/useGraphSlider';
 import { FormInput } from '../Forms/FormInput';
-import { useEffect } from 'react';
+import { useMemo } from 'react';
 
 interface GraphSliderProps {
   graphComponent: React.ReactNode;
@@ -46,12 +46,13 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
     isLoadingSliderRange,
   } = useGraphSlider();
 
-  const MIN_SLIDER_VALUE = Math.round(sliderRange[0] ?? defaultSliderValues[0]);
-  const MAX_SLIDER_VALUE = Math.round(sliderRange[1] ?? defaultSliderValues[1]);
-
-  useEffect(
-    () => console.log({ MIN_SLIDER_VALUE, MAX_SLIDER_VALUE }),
-    [sliderRange]
+  const MIN_SLIDER_VALUE = useMemo(
+    () => Math.round(sliderRange[0] ?? defaultSliderValues[0]),
+    [isLoadingSliderRange]
+  );
+  const MAX_SLIDER_VALUE = useMemo(
+    () => Math.round(sliderRange[1] ?? defaultSliderValues[1]),
+    [isLoadingSliderRange]
   );
 
   const sliderThumbInputs =

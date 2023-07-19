@@ -131,12 +131,12 @@ export const MapBox = () => {
     else toast.close(loadingToastId);
   }, [isLoading, locations]);
 
-  useEffect(() => {
-    console.log(
-      'idwData: ',
-      idwData?.map(({ x, lat, lon }: any) => ({ val: x, lat, lon }))
-    );
-  }, [idwData]);
+  // useEffect(() => {
+  //   console.log(
+  //     'idwData: ',
+  //     idwData?.map(({ x, lat, lon }: any) => ({ val: x, lat, lon }))
+  //   );
+  // }, [idwData]);
 
   useEffect(
     () => toggleIdwLayerCreation(),

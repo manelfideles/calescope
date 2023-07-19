@@ -8,8 +8,6 @@ import {
 } from 'react';
 import { useSelectedLocations } from './useSelectedLocations';
 import { useRPC } from './useRPC';
-import { countBy } from 'lodash';
-import { generateHistogramData } from '../utils/mockData';
 
 interface GraphSliderProviderProps {
   children: React.ReactNode;
@@ -91,17 +89,21 @@ export const GraphSliderContextProvider = ({
 
   useEffect(() => {
     if (!isLoadingSliderRange && variableSliderRange) {
-      setSliderRange([
-        variableSliderRange?.[0]?.min_value,
-        variableSliderRange?.[0]?.max_value,
-      ]);
+      if (variableSliderRange?.[0]?.min_value != null) {
+        console.log({ variableSliderRange });
+        setSliderRange([
+          variableSliderRange?.[0]?.min_value,
+          variableSliderRange?.[0]?.max_value,
+        ]);
+      }
       if (!isLoadingHistogramData && histogramData) {
-        console.log(
-          histogramData.map((d: Record<string, number>) => d.variable_value),
-          countBy(
-            histogramData.map((d: Record<string, number>) => d.variable_value)
-          )
-        );
+        // for debug purposes
+        // console.log(
+        //   histogramData.map((d: Record<string, number>) => d.variable_value),
+        //   countBy(
+        //     histogramData.map((d: Record<string, number>) => d.variable_value)
+        //   )
+        // );
         setCountData(
           histogramData.map((d: Record<string, number>) => d.variable_value)
         );

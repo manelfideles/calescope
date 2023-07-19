@@ -56,9 +56,17 @@ export const FilterControls = () => {
   return (
     <Form form={form} onSubmit={() => console.log(form.getValues())}>
       <Grid>
+        {/* Dynamic Variables */}
         {visibleVariables}
+
+        {/* Static Variables */}
         <GridItem padding={2} key='time'>
-          <FilterBox title='Time' withGraphComponent={false} />
+          <GraphSliderContextProvider
+            variableId={-2}
+            defaultSliderValues={defaultSliderValues!}
+          >
+            <FilterBox title='Time' withGraphComponent={false} />
+          </GraphSliderContextProvider>
         </GridItem>
         <GridItem padding={2} key='altitude'>
           <GraphSliderContextProvider
