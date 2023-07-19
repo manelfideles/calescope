@@ -66,7 +66,7 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
             ) : (
               <GraphSlider
                 graphComponent={
-                  <D3Histogram data={histogramData} height={50} width={190} />
+                  <D3Histogram data={histogramData} height={75} width={190} />
                 }
               />
             )}

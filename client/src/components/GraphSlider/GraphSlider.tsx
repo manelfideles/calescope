@@ -45,14 +45,8 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
     isLoadingSliderRange,
   } = useGraphSlider();
 
-  const MIN_SLIDER_VALUE = useMemo(
-    () => Math.round(sliderRange[0] ?? 0),
-    [isLoadingSliderRange]
-  );
-  const MAX_SLIDER_VALUE = useMemo(
-    () => Math.round(sliderRange[1] ?? 25),
-    [isLoadingSliderRange]
-  );
+  const MIN_SLIDER_VALUE = useMemo(() => sliderRange?.[0] ?? 0, [sliderRange]);
+  const MAX_SLIDER_VALUE = useMemo(() => sliderRange?.[1] ?? 25, [sliderRange]);
 
   const sliderThumbInputs =
     mode === 'value' ? (
@@ -81,10 +75,10 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
         <RangeSliderTrack bg='red.100'>
           <RangeSliderFilledTrack bg='tomato' />
         </RangeSliderTrack>
-        <RangeSliderThumb boxSize={4} index={0} defaultValue={sliderValues[0]}>
+        <RangeSliderThumb boxSize={4} index={0} defaultValue={MIN_SLIDER_VALUE}>
           <Box color='tomato' as={MdGraphicEq} />
         </RangeSliderThumb>
-        <RangeSliderThumb boxSize={4} index={1} defaultValue={sliderValues[1]}>
+        <RangeSliderThumb boxSize={4} index={1} defaultValue={MAX_SLIDER_VALUE}>
           <Box color='tomato' as={MdGraphicEq} />
         </RangeSliderThumb>
       </RangeSlider>
@@ -116,7 +110,7 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
             ])
           }
           min={MIN_SLIDER_VALUE}
-          max={MAX_SLIDER_VALUE - 1}
+          max={MAX_SLIDER_VALUE}
         >
           {NumberInputComponents}
         </NumberInput>
@@ -167,7 +161,7 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
 
   return (
     <Box>
-      {isLoadingSliderRange ? (
+      {isLoadingSliderRange && !sliderRange ? (
         <Flex alignItems='center' justifyContent='center'>
           <Spinner size='sm' />
         </Flex>

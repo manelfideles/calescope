@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { useSelectedLocations } from './useSelectedLocations';
 import { useRPC } from './useRPC';
+import { countBy, max, min } from 'lodash';
 
 interface GraphSliderProviderProps {
   children: React.ReactNode;
@@ -73,8 +74,8 @@ export const GraphSliderContextProvider = ({
     convertToJson: false,
     params: {
       variable_id: variableId,
-      min_value: Math.round(sliderRange?.[0] ?? 0),
-      max_value: Math.round(sliderRange?.[1] ?? 100),
+      min_value: Math.floor(sliderRange?.[0] ?? 0),
+      max_value: Math.ceil(sliderRange?.[1] ?? 100),
       location_ids:
         locations.length === 0
           ? [...Array(20).keys()]
@@ -86,20 +87,19 @@ export const GraphSliderContextProvider = ({
     if (!isLoadingSliderRange && variableSliderRange) {
       if (variableSliderRange?.[0]?.min_value != null) {
         console.log({ variableSliderRange });
-        setSliderRange([
-          variableSliderRange?.[0]?.min_value,
-          variableSliderRange?.[0]?.max_value,
-        ]);
-        setSliderValues(sliderRange);
+        const formattedRange = [
+          Math.floor(variableSliderRange?.[0]?.min_value),
+          Math.ceil(variableSliderRange?.[0]?.max_value),
+        ];
+        setSliderRange(formattedRange);
+        setSliderValues(formattedRange);
       }
       if (!isLoadingHistogramData && histogramData) {
-        /* for debug purposes
-        console.log(
-          histogramData.map((d: Record<string, number>) => d.variable_value),
-          countBy(
-            histogramData.map((d: Record<string, number>) => d.variable_value)
-          )
-        ); */
+        // for debug purposes
+        const countsByValue = countBy(
+          histogramData.map((d: Record<string, number>) => d.variable_value)
+        );
+        console.log({ countsByValue });
         setCountData(
           histogramData.map((d: Record<string, number>) => d.variable_value)
         );
