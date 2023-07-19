@@ -2,16 +2,10 @@ import { Button, Grid, GridItem } from '@chakra-ui/react';
 import { FilterBox } from '../FilterBox';
 import { useMemo } from 'react';
 import { User } from '../../utils/types';
-import { generateHistogramData } from '../../utils/mockData';
-import { max } from 'lodash';
-import { D3Histogram } from '../d3-graphs/D3Histogram';
 import { GraphSliderContextProvider } from '../../hooks/useGraphSlider';
 import { useForm } from 'react-hook-form';
 import { Form } from '../Forms/Form';
 import { convertDateToTimestamptz as dateConverter } from '../../utils/misc';
-
-const histogramData = generateHistogramData(5000, 8);
-const defaultSliderValues = [0, max(histogramData)!];
 
 type SliderValuesType = {
   mode: 'value' | 'range';
@@ -43,10 +37,7 @@ export const FilterControls = () => {
       .filter(({ isSelected }) => isSelected)
       .map(({ name, id }) => (
         <GridItem padding={2} key={id}>
-          <GraphSliderContextProvider
-            defaultSliderValues={defaultSliderValues!}
-            variableId={id}
-          >
+          <GraphSliderContextProvider variableId={id}>
             <FilterBox title={name} withGraphComponent />
           </GraphSliderContextProvider>
         </GridItem>
@@ -61,19 +52,13 @@ export const FilterControls = () => {
 
         {/* Static Variables */}
         <GridItem padding={2} key='time'>
-          <GraphSliderContextProvider
-            variableId={-2}
-            defaultSliderValues={defaultSliderValues!}
-          >
+          <GraphSliderContextProvider variableId={-2}>
             <FilterBox title='Time' withGraphComponent={false} />
           </GraphSliderContextProvider>
         </GridItem>
         <GridItem padding={2} key='altitude'>
-          <GraphSliderContextProvider
-            defaultSliderValues={defaultSliderValues!}
-            // in the RPC, we use -1 to as the "altitude" variable's key
-            variableId={-1}
-          >
+          {/* in the RPC, we use -1 to as the "altitude" variable's key */}
+          <GraphSliderContextProvider variableId={-1}>
             <FilterBox title='Altitude' withGraphComponent />
           </GraphSliderContextProvider>
         </GridItem>

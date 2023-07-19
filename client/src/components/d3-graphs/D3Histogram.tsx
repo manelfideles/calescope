@@ -14,15 +14,8 @@ export const D3Histogram = ({
   width = 190,
   height = 50,
 }: D3HistogramProps) => {
-  const { mode, sliderRange, defaultSliderValues, sliderValues } =
-    useGraphSlider();
-  const x = useMemo(
-    () =>
-      scaleLinear()
-        .domain(sliderRange ?? defaultSliderValues)
-        .range([0, width]),
-    [data]
-  );
+  const { mode, sliderRange, sliderValues } = useGraphSlider();
+  const x = scaleLinear().domain(sliderRange).range([0, width]);
   const bins = bin()
     .domain(x.domain() as [number, number])
     .thresholds(x.ticks(sliderRange?.[1]))(data)

@@ -40,25 +40,24 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
   const {
     mode,
     sliderRange,
-    defaultSliderValues,
     sliderValues,
     setSliderValues,
     isLoadingSliderRange,
   } = useGraphSlider();
 
   const MIN_SLIDER_VALUE = useMemo(
-    () => Math.round(sliderRange[0] ?? defaultSliderValues[0]),
+    () => Math.round(sliderRange[0] ?? 0),
     [isLoadingSliderRange]
   );
   const MAX_SLIDER_VALUE = useMemo(
-    () => Math.round(sliderRange[1] ?? defaultSliderValues[1]),
+    () => Math.round(sliderRange[1] ?? 25),
     [isLoadingSliderRange]
   );
 
   const sliderThumbInputs =
     mode === 'value' ? (
       <Slider
-        defaultValue={defaultSliderValues[0]}
+        defaultValue={MIN_SLIDER_VALUE}
         value={sliderValues[0]}
         onChange={(val) => setSliderValues([val, val + 1])}
         min={MIN_SLIDER_VALUE}
@@ -67,13 +66,14 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
         <SliderTrack bg='red.100'>
           <SliderFilledTrack bg='tomato' />
         </SliderTrack>
-        <SliderThumb boxSize={4} defaultValue={sliderValues[0]}>
+        <SliderThumb boxSize={4} defaultValue={MIN_SLIDER_VALUE}>
           <Box color='tomato' as={MdGraphicEq} />
         </SliderThumb>
       </Slider>
     ) : (
       <RangeSlider
         value={sliderValues}
+        aria-label={['min', 'max']}
         onChange={setSliderValues}
         min={MIN_SLIDER_VALUE}
         max={MAX_SLIDER_VALUE}
@@ -105,6 +105,7 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
       >
         <NumberInput
           size='sm'
+          defaultValue={MIN_SLIDER_VALUE}
           value={sliderValues[0]}
           onChange={(_valueAsString, valueAsNumber) =>
             setSliderValues([

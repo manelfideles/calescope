@@ -11,12 +11,10 @@ import { useRPC } from './useRPC';
 
 interface GraphSliderProviderProps {
   children: React.ReactNode;
-  defaultSliderValues: number[];
   variableId: number;
 }
 
 interface GraphSliderContextInterface {
-  defaultSliderValues: number[];
   sliderValues: number[];
   setSliderValues: Dispatch<SetStateAction<number[]>>;
   mode: string;
@@ -28,7 +26,6 @@ interface GraphSliderContextInterface {
 }
 
 const initialState = {
-  defaultSliderValues: [],
   sliderValues: [],
   setSliderValues: () => null,
   mode: 'value',
@@ -51,11 +48,9 @@ export const useGraphSlider = () => {
 
 export const GraphSliderContextProvider = ({
   children,
-  defaultSliderValues,
   variableId,
 }: GraphSliderProviderProps) => {
-  const [sliderValues, setSliderValues] =
-    useState<number[]>(defaultSliderValues);
+  const [sliderValues, setSliderValues] = useState<number[]>([]);
   const [mode, setMode] = useState('value');
   const { locations } = useSelectedLocations();
   const [sliderRange, setSliderRange] = useState<number[]>([]);
@@ -95,15 +90,16 @@ export const GraphSliderContextProvider = ({
           variableSliderRange?.[0]?.min_value,
           variableSliderRange?.[0]?.max_value,
         ]);
+        setSliderValues(sliderRange);
       }
       if (!isLoadingHistogramData && histogramData) {
-        // for debug purposes
-        // console.log(
-        //   histogramData.map((d: Record<string, number>) => d.variable_value),
-        //   countBy(
-        //     histogramData.map((d: Record<string, number>) => d.variable_value)
-        //   )
-        // );
+        /* for debug purposes
+        console.log(
+          histogramData.map((d: Record<string, number>) => d.variable_value),
+          countBy(
+            histogramData.map((d: Record<string, number>) => d.variable_value)
+          )
+        ); */
         setCountData(
           histogramData.map((d: Record<string, number>) => d.variable_value)
         );
@@ -116,7 +112,6 @@ export const GraphSliderContextProvider = ({
       value={{
         mode,
         setMode,
-        defaultSliderValues,
         sliderValues,
         setSliderValues,
         sliderRange,
