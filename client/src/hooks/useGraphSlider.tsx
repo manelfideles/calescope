@@ -75,7 +75,7 @@ export const GraphSliderContextProvider = ({
     params: {
       variable_id: variableId,
       min_value: Math.floor(sliderRange?.[0] ?? 0),
-      max_value: Math.ceil(sliderRange?.[1] ?? 100),
+      max_value: Math.ceil(sliderRange?.[1] ?? 220),
       location_ids:
         locations.length === 0
           ? [...Array(20).keys()]

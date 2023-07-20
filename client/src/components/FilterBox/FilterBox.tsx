@@ -5,10 +5,10 @@ import {
   Select,
   Spinner,
   Flex,
+  Input,
 } from '@chakra-ui/react';
 import { GraphSlider } from '../GraphSlider';
 import { max as _max } from 'lodash';
-import { FilterBoxMediaControls } from '../FilterBoxMediaControls';
 import { Card } from '../Card';
 import { useGraphSlider } from '../../hooks/useGraphSlider';
 import 'react-calendar/dist/Calendar.css';
@@ -16,7 +16,6 @@ import './Calendar.css';
 import { useFormContext } from 'react-hook-form';
 import { FormInput } from '../Forms/FormInput';
 import { D3Histogram } from '../d3-graphs/D3Histogram';
-import { CustomCalendar } from '../CustomCalendar';
 
 interface FilterBoxProps {
   title: string;
@@ -25,8 +24,16 @@ interface FilterBoxProps {
 
 export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
   const { isOpen, onToggle } = useDisclosure();
-  const { histogramData, isLoadingHistogramData, setMode } = useGraphSlider();
-  const { register } = useFormContext();
+  const { histogramData, isLoadingHistogramData, setMode, mode } =
+    useGraphSlider();
+  const { register, setValue } = useFormContext();
+  const formatInsertedDate = (date: string | string[]) => {
+    const formatter = (d: string) =>
+      d.replace('T', ' ').slice(0, 16) + ':00+00';
+    return Array.isArray(date)
+      ? date.map((d: string) => formatter(d))
+      : formatter(date);
+  };
 
   return (
     <>
@@ -58,7 +65,42 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
           </GridItem>
           <GridItem marginTop={2} alignItems='center'>
             {!withGraphComponent ? (
-              <CustomCalendar />
+              <>
+                <FormInput
+                  name='time'
+                  label={
+                    mode === 'value' ? 'Select Datetime' : 'Start Datetime'
+                  }
+                  fieldError={undefined}
+                >
+                  <Input
+                    size='sm'
+                    type='datetime-local'
+                    defaultValue={new Date().toISOString().slice(0, 16)}
+                    mb={4}
+                    {...register('time.val.start_date', {
+                      setValueAs: (v) => formatInsertedDate(v),
+                    })}
+                  />
+                </FormInput>
+                {mode === 'range' && (
+                  <FormInput
+                    name='time'
+                    label='End Datetime'
+                    fieldError={undefined}
+                  >
+                    <Input
+                      size='sm'
+                      type='datetime-local'
+                      defaultValue={undefined}
+                      mb={4}
+                      {...register('time.val.end_date', {
+                        setValueAs: (v) => formatInsertedDate(v),
+                      })}
+                    />
+                  </FormInput>
+                )}
+              </>
             ) : isLoadingHistogramData ? (
               <Flex alignItems='center' justifyContent='center' padding={2}>
                 <Spinner size='sm' />

@@ -40,8 +40,50 @@ export const areaChartData = [
   },
 ];
 
-export const getRandomColor = () =>
-  '#' + Math.floor(Math.random() * 16777215).toString(16);
+export const getRandomColor = () => {
+  const colorArray = [
+    // plasma
+    '#0D0887',
+    '#41049D',
+    '#6A00A8',
+    '#8F0DA4',
+    '#B12A90',
+    '#CC4778',
+    '#E16462',
+    '#F2844B',
+    '#FCA636',
+    '#FCCE25',
+    '#F0F921',
+    // cubehelix default
+    '#23171B',
+    '#4A58DD',
+    '#2F9DF5',
+    '#27D7C4',
+    '#4DF884',
+    '#95FB51',
+    '#DEDD32',
+    '#FFA423',
+    '#F65F18',
+    '#BA2208',
+    '#900C00',
+    // cividis
+    '#002051',
+    '#0A326A',
+    '#2B446E',
+    '#4D566D',
+    '#696970',
+    '#7F7C75',
+    '#948F78',
+    '#ADA476',
+    '#CABA6A',
+    '#EAD156',
+    '#FDEA45',
+  ];
+  const randomIndex = Math.floor(Math.random() * (colorArray.length - 1));
+  console.log({ randomIndex });
+
+  return colorArray[randomIndex];
+};
 
 export const generateHistogramData = (length: number, n_buckets: number) => {
   return Array.from({ length }, () => Math.floor(Math.random() * n_buckets));
