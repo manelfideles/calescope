@@ -1,11 +1,12 @@
 import { Button, Grid, GridItem } from '@chakra-ui/react';
 import { FilterBox } from '../FilterBox';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { User } from '../../utils/types';
 import { GraphSliderContextProvider } from '../../hooks/useGraphSlider';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { Form } from '../Forms/Form';
 import { convertDateToTimestamptz as dateConverter } from '../../utils/misc';
+import { debounce } from 'lodash';
 
 type SliderValuesType = {
   mode: 'value' | 'range';
@@ -25,13 +26,18 @@ export const FilterControls = () => {
         ...prevVal,
         [curVal]: {
           mode: 'value' as const,
-          val: curVal == 'time' ? dateConverter(new Date()) : 0,
+          val:
+            curVal == 'time'
+              ? {
+                  startVal: dateConverter(new Date()),
+                  endVal: dateConverter(new Date()),
+                }
+              : 0,
         },
       }),
       {}
     );
   const form = useForm<Record<string, SliderValuesType>>({ defaultValues });
-
   const visibleVariables = useMemo(() => {
     return variables
       .filter(({ isSelected }) => isSelected)
@@ -43,9 +49,18 @@ export const FilterControls = () => {
         </GridItem>
       ));
   }, []);
+  const onSubmit = () => console.log(form.getValues());
+  const debouncedOnSubmit = debounce(onSubmit, 500);
+
+  useEffect(() => {
+    const subscription = form.watch(() =>
+      form.handleSubmit(debouncedOnSubmit)()
+    );
+    return () => subscription.unsubscribe();
+  }, [form.watch, form.handleSubmit]);
 
   return (
-    <Form form={form} onSubmit={() => console.log(form.getValues())}>
+    <Form form={form} onSubmit={debouncedOnSubmit} isReactive>
       <Grid>
         {/* Dynamic Variables */}
         {visibleVariables}
@@ -61,9 +76,6 @@ export const FilterControls = () => {
           <GraphSliderContextProvider variableId={-1}>
             <FilterBox title='Altitude' withGraphComponent />
           </GraphSliderContextProvider>
-        </GridItem>
-        <GridItem>
-          <Button type='submit'>Search</Button>
         </GridItem>
       </Grid>
     </Form>

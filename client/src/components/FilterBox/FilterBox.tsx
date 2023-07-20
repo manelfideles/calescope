@@ -26,13 +26,11 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
   const { isOpen, onToggle } = useDisclosure();
   const { histogramData, isLoadingHistogramData, setMode, mode } =
     useGraphSlider();
-  const { register, setValue } = useFormContext();
-  const formatInsertedDate = (date: string | string[]) => {
+  const { register } = useFormContext();
+  const formatInsertedDate = (date: string) => {
     const formatter = (d: string) =>
       d.replace('T', ' ').slice(0, 16) + ':00+00';
-    return Array.isArray(date)
-      ? date.map((d: string) => formatter(d))
-      : formatter(date);
+    return !date.length ? '' : formatter(date);
   };
 
   return (
@@ -78,7 +76,7 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
                     type='datetime-local'
                     defaultValue={new Date().toISOString().slice(0, 16)}
                     mb={4}
-                    {...register('time.val.start_date', {
+                    {...register('time.val.startVal', {
                       setValueAs: (v) => formatInsertedDate(v),
                     })}
                   />
@@ -92,9 +90,9 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
                     <Input
                       size='sm'
                       type='datetime-local'
-                      defaultValue={undefined}
+                      defaultValue={new Date().toISOString().slice(0, 16)}
                       mb={4}
-                      {...register('time.val.end_date', {
+                      {...register('time.val.endVal', {
                         setValueAs: (v) => formatInsertedDate(v),
                       })}
                     />
@@ -107,13 +105,13 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
               </Flex>
             ) : (
               <GraphSlider
+                title={title.toLocaleLowerCase()}
                 graphComponent={
-                  <D3Histogram data={histogramData} height={75} width={190} />
+                  <D3Histogram data={histogramData} height={75} width={173} />
                 }
               />
             )}
           </GridItem>
-          {/* <FilterBoxMediaControls /> */}
         </Collapse>
       </Card>
     </>

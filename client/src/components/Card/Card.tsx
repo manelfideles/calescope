@@ -36,7 +36,7 @@ export const Card = ({ children, title, onToggle, isOpen }: CardProps) => {
           <IconButton
             bg='none'
             onClick={onToggle}
-            border='1px solid black'
+            border='1px solid gray'
             padding='0.25rem'
             size='56px'
             aria-label='collapse/expand'

@@ -86,7 +86,6 @@ export const GraphSliderContextProvider = ({
   useEffect(() => {
     if (!isLoadingSliderRange && variableSliderRange) {
       if (variableSliderRange?.[0]?.min_value != null) {
-        console.log({ variableSliderRange });
         const formattedRange = [
           Math.floor(variableSliderRange?.[0]?.min_value),
           Math.ceil(variableSliderRange?.[0]?.max_value),
