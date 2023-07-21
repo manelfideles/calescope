@@ -14,13 +14,14 @@ import {
 import { Card } from '../Card';
 import { BsExclamationLg } from 'react-icons/bs';
 import { BiTrash, BiHide, BiShow } from 'react-icons/bi';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 import { useRPC } from '../../hooks/useRPC';
 import '../../../node_modules/react-vis/dist/style.css';
 import { AreaChart } from '../d3-graphs/AreaChart';
 import { map, omit, startCase, uniqBy } from 'lodash';
 import { User } from '../../utils/types';
+import { useSidebarFormValues } from '../../hooks/useSidebarFormValues';
 
 export const BottomBar = () => {
   const [selectedVariableId, setSelectedVariableId] = useState(0);
@@ -30,6 +31,12 @@ export const BottomBar = () => {
   }: User = JSON.parse(localStorage.getItem('settings') ?? '') ?? [];
   const { locations, removeLocation, toggleLocationVisibility } =
     useSelectedLocations();
+  const sidebarFormValues = useSidebarFormValues();
+
+  useEffect(() => {
+    console.log({ sidebarFormValues });
+  }, [sidebarFormValues]);
+
   const {
     data: areaChartData,
     error,
@@ -41,9 +48,9 @@ export const BottomBar = () => {
     // These values will be controlled by the sidebar context
     params: {
       min_altitude: 0,
-      max_altitude: 100,
+      max_altitude: 500,
       min_val: 0,
-      max_val: 500,
+      max_val: 10,
       selected_location_ids: map(locations, 'locationId'),
     },
   });

@@ -95,10 +95,10 @@ export const GraphSliderContextProvider = ({
       }
       if (!isLoadingHistogramData && histogramData) {
         // for debug purposes
-        const countsByValue = countBy(
+        /* const countsByValue = countBy(
           histogramData.map((d: Record<string, number>) => d.variable_value)
         );
-        console.log({ countsByValue });
+        console.log({ countsByValue }); */
         setCountData(
           histogramData.map((d: Record<string, number>) => d.variable_value)
         );

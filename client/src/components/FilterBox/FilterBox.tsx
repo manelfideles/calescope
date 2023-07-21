@@ -27,11 +27,8 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
   const { histogramData, isLoadingHistogramData, setMode, mode } =
     useGraphSlider();
   const { register } = useFormContext();
-  const formatInsertedDate = (date: string) => {
-    const formatter = (d: string) =>
-      d.replace('T', ' ').slice(0, 16) + ':00+00';
-    return !date.length ? '' : formatter(date);
-  };
+  const formatInsertedDate = (date: string) =>
+    !date.length ? '' : date.replace('T', ' ').slice(0, 16) + ':00+00';
 
   return (
     <>
@@ -66,9 +63,7 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
               <>
                 <FormInput
                   name='time'
-                  label={
-                    mode === 'value' ? 'Select Datetime' : 'Start Datetime'
-                  }
+                  label={mode === 'value' ? 'Datetime' : 'Start Datetime'}
                   fieldError={undefined}
                 >
                   <Input
@@ -76,7 +71,7 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
                     type='datetime-local'
                     defaultValue={new Date().toISOString().slice(0, 16)}
                     mb={4}
-                    {...register('time.val.startVal', {
+                    {...register('time.val', {
                       setValueAs: (v) => formatInsertedDate(v),
                     })}
                   />
@@ -92,7 +87,7 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
                       type='datetime-local'
                       defaultValue={new Date().toISOString().slice(0, 16)}
                       mb={4}
-                      {...register('time.val.endVal', {
+                      {...register('time.val', {
                         setValueAs: (v) => formatInsertedDate(v),
                       })}
                     />

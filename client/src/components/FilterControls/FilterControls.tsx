@@ -1,43 +1,13 @@
-import { Button, Grid, GridItem } from '@chakra-ui/react';
+import { Grid, GridItem } from '@chakra-ui/react';
 import { FilterBox } from '../FilterBox';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { User } from '../../utils/types';
 import { GraphSliderContextProvider } from '../../hooks/useGraphSlider';
-import { useForm, useWatch } from 'react-hook-form';
-import { Form } from '../Forms/Form';
-import { convertDateToTimestamptz as dateConverter } from '../../utils/misc';
-import { debounce } from 'lodash';
-
-type SliderValuesType = {
-  mode: 'value' | 'range';
-  val: (string | number) | Array<string | number>;
-};
 
 export const FilterControls = () => {
   const {
     userSettings: { variables },
   }: User = JSON.parse(localStorage.getItem('settings') ?? '') ?? [];
-  const defaultValues = variables
-    .filter(({ isSelected }) => isSelected as boolean)
-    .map(({ name }) => name.toLocaleLowerCase())
-    .concat(['altitude', 'time'])
-    .reduce(
-      (prevVal, curVal) => ({
-        ...prevVal,
-        [curVal]: {
-          mode: 'value' as const,
-          val:
-            curVal == 'time'
-              ? {
-                  startVal: dateConverter(new Date()),
-                  endVal: dateConverter(new Date()),
-                }
-              : 0,
-        },
-      }),
-      {}
-    );
-  const form = useForm<Record<string, SliderValuesType>>({ defaultValues });
   const visibleVariables = useMemo(() => {
     return variables
       .filter(({ isSelected }) => isSelected)
@@ -49,35 +19,23 @@ export const FilterControls = () => {
         </GridItem>
       ));
   }, []);
-  const onSubmit = () => console.log(form.getValues());
-  const debouncedOnSubmit = debounce(onSubmit, 500);
-
-  useEffect(() => {
-    const subscription = form.watch(() =>
-      form.handleSubmit(debouncedOnSubmit)()
-    );
-    return () => subscription.unsubscribe();
-  }, [form.watch, form.handleSubmit]);
 
   return (
-    <Form form={form} onSubmit={debouncedOnSubmit} isReactive>
-      <Grid>
-        {/* Dynamic Variables */}
-        {visibleVariables}
-
-        {/* Static Variables */}
-        <GridItem padding={2} key='time'>
-          <GraphSliderContextProvider variableId={-2}>
-            <FilterBox title='Time' withGraphComponent={false} />
-          </GraphSliderContextProvider>
-        </GridItem>
-        <GridItem padding={2} key='altitude'>
-          {/* in the RPC, we use -1 to as the "altitude" variable's key */}
-          <GraphSliderContextProvider variableId={-1}>
-            <FilterBox title='Altitude' withGraphComponent />
-          </GraphSliderContextProvider>
-        </GridItem>
-      </Grid>
-    </Form>
+    <Grid>
+      {/* Dynamic Variables */}
+      {visibleVariables}
+      {/* Static Variables */}
+      <GridItem padding={2} key='time'>
+        <GraphSliderContextProvider variableId={-2}>
+          <FilterBox title='Time' withGraphComponent={false} />
+        </GraphSliderContextProvider>
+      </GridItem>
+      <GridItem padding={2} key='altitude'>
+        {/* in the RPC, we use -1 to as the "altitude" variable's key */}
+        <GraphSliderContextProvider variableId={-1}>
+          <FilterBox title='Altitude' withGraphComponent />
+        </GraphSliderContextProvider>
+      </GridItem>
+    </Grid>
   );
 };

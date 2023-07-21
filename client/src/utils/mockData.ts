@@ -80,8 +80,6 @@ export const getRandomColor = () => {
     '#FDEA45',
   ];
   const randomIndex = Math.floor(Math.random() * (colorArray.length - 1));
-  console.log({ randomIndex });
-
   return colorArray[randomIndex];
 };
 
