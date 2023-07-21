@@ -6,7 +6,6 @@ import { SelectedLocationsContextProvider } from '../hooks/useSelectedLocations'
 import { SliderValuesType, User } from '../utils/types';
 import { useForm } from 'react-hook-form';
 import { debounce } from 'lodash';
-import { useEffect } from 'react';
 import { Form } from '../components/Forms/Form';
 
 export const Dashboard = () => {
@@ -35,13 +34,6 @@ export const Dashboard = () => {
   const form = useForm<Record<string, SliderValuesType>>({ defaultValues });
   const onSubmit = () => console.log(form.getValues());
   const debouncedOnSubmit = debounce(onSubmit, 500);
-
-  useEffect(() => {
-    const subscription = form.watch(() =>
-      form.handleSubmit(debouncedOnSubmit)()
-    );
-    return () => subscription.unsubscribe();
-  }, [form.watch, form.handleSubmit]);
 
   return (
     <SelectedLocationsContextProvider>

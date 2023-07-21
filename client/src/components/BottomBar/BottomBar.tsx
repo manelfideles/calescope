@@ -14,7 +14,7 @@ import {
 import { Card } from '../Card';
 import { BsExclamationLg } from 'react-icons/bs';
 import { BiTrash, BiHide, BiShow } from 'react-icons/bi';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 import { useRPC } from '../../hooks/useRPC';
 import '../../../node_modules/react-vis/dist/style.css';
@@ -31,12 +31,7 @@ export const BottomBar = () => {
   }: User = JSON.parse(localStorage.getItem('settings') ?? '') ?? [];
   const { locations, removeLocation, toggleLocationVisibility } =
     useSelectedLocations();
-  const sidebarFormValues = useSidebarFormValues();
-
-  useEffect(() => {
-    console.log({ sidebarFormValues });
-  }, [sidebarFormValues]);
-
+  const { altitude, time, ...dynamicVariables } = useSidebarFormValues();
   const {
     data: areaChartData,
     error,
@@ -47,10 +42,19 @@ export const BottomBar = () => {
     // TODO @CS-31:
     // These values will be controlled by the sidebar context
     params: {
-      min_altitude: 0,
-      max_altitude: 500,
-      min_val: 0,
-      max_val: 10,
+      min_altitude: altitude.mode === 'value' ? altitude.val : altitude.val[0],
+      max_altitude:
+        altitude.mode === 'value' ? altitude.val + 1 : altitude.val[1],
+      // variables_data: [{ id, min_altitude, max_altitude, min_val, max_val }, ...]
+      // Object.values(dynamicVariables)
+      min_val:
+        dynamicVariables.temperature.mode === 'value'
+          ? dynamicVariables.temperature.val
+          : dynamicVariables.temperature.val[0],
+      max_val:
+        dynamicVariables.temperature.mode === 'value'
+          ? dynamicVariables.temperature.val + 1
+          : dynamicVariables.temperature.val[1],
       selected_location_ids: map(locations, 'locationId'),
     },
   });
