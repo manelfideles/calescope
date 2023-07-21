@@ -2,7 +2,6 @@ import {
   Box,
   Text,
   Flex,
-  Input,
   RangeSlider,
   RangeSliderFilledTrack,
   RangeSliderThumb,
@@ -16,13 +15,17 @@ import {
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInputStepper,
+  Spinner,
 } from '@chakra-ui/react';
 import { MdGraphicEq } from 'react-icons/md';
 import { useGraphSlider } from '../../hooks/useGraphSlider';
 import { FormInput } from '../Forms/FormInput';
+import { useMemo } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
 
 interface GraphSliderProps {
   graphComponent: React.ReactNode;
+  title: string;
 }
 
 const NumberInputComponents = (
@@ -35,49 +38,86 @@ const NumberInputComponents = (
   </>
 );
 
-export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
-  const { mode, defaultSliderValues, sliderValues, setSliderValues } =
-    useGraphSlider();
+export const GraphSlider = ({ graphComponent, title }: GraphSliderProps) => {
+  const {
+    mode,
+    sliderRange,
+    sliderValues,
+    setSliderValues,
+    isLoadingSliderRange,
+  } = useGraphSlider();
+  const { register, control, setValue } = useFormContext();
+
+  const MIN_SLIDER_VALUE = useMemo(() => sliderRange?.[0] ?? 0, [sliderRange]);
+  const MAX_SLIDER_VALUE = useMemo(() => sliderRange?.[1] ?? 25, [sliderRange]);
 
   const sliderThumbInputs =
     mode === 'value' ? (
-      <Slider
-        defaultValue={defaultSliderValues[0]}
-        value={sliderValues[0]}
-        onChange={(val) => setSliderValues([val, val + 1])}
-        max={defaultSliderValues[1]}
-      >
-        <SliderTrack bg='red.100'>
-          <SliderFilledTrack bg='tomato' />
-        </SliderTrack>
-        <SliderThumb boxSize={4} defaultValue={sliderValues[0]}>
-          <Box color='tomato' as={MdGraphicEq} />
-        </SliderThumb>
-      </Slider>
+      <Controller
+        control={control}
+        {...register(`${title.toLocaleLowerCase()}.val`)}
+        render={({ field: { onChange } }) => (
+          <Slider
+            defaultValue={MIN_SLIDER_VALUE}
+            value={sliderValues[0]}
+            onChange={(val) => {
+              onChange(val);
+              setSliderValues([val, val + 1]);
+            }}
+            min={MIN_SLIDER_VALUE}
+            max={MAX_SLIDER_VALUE}
+          >
+            <SliderTrack bg='red.100'>
+              <SliderFilledTrack bg='tomato' />
+            </SliderTrack>
+            <SliderThumb boxSize={4} defaultValue={MIN_SLIDER_VALUE}>
+              <Box color='tomato' as={MdGraphicEq} />
+            </SliderThumb>
+          </Slider>
+        )}
+      />
     ) : (
-      <RangeSlider
-        value={sliderValues}
-        onChange={setSliderValues}
-        min={defaultSliderValues[0]}
-        max={defaultSliderValues[1]}
-      >
-        <RangeSliderTrack bg='red.100'>
-          <RangeSliderFilledTrack bg='tomato' />
-        </RangeSliderTrack>
-        <RangeSliderThumb boxSize={4} index={0} defaultValue={sliderValues[0]}>
-          <Box color='tomato' as={MdGraphicEq} />
-        </RangeSliderThumb>
-        <RangeSliderThumb boxSize={4} index={1} defaultValue={sliderValues[1]}>
-          <Box color='tomato' as={MdGraphicEq} />
-        </RangeSliderThumb>
-      </RangeSlider>
+      <Controller
+        control={control}
+        {...register(`${title.toLocaleLowerCase()}.val`)}
+        render={({ field: { onChange } }) => (
+          <RangeSlider
+            value={sliderValues}
+            aria-label={['min', 'max']}
+            onChange={(val) => {
+              onChange(val);
+              setSliderValues(val);
+            }}
+            min={MIN_SLIDER_VALUE}
+            max={MAX_SLIDER_VALUE}
+          >
+            <RangeSliderTrack bg='red.100'>
+              <RangeSliderFilledTrack bg='tomato' />
+            </RangeSliderTrack>
+            <RangeSliderThumb
+              boxSize={4}
+              index={0}
+              defaultValue={MIN_SLIDER_VALUE}
+            >
+              <Box color='tomato' as={MdGraphicEq} />
+            </RangeSliderThumb>
+            <RangeSliderThumb
+              boxSize={4}
+              index={1}
+              defaultValue={MAX_SLIDER_VALUE}
+            >
+              <Box color='tomato' as={MdGraphicEq} />
+            </RangeSliderThumb>
+          </RangeSlider>
+        )}
+      />
     );
 
   const sliderFormInputs =
     mode === 'value' ? (
       <FormInput
         label='Value'
-        name='variable-value'
+        name={`${title.toLocaleLowerCase()}.val`}
         fieldError={undefined}
         style={{
           display: 'flex',
@@ -88,17 +128,20 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
       >
         <NumberInput
           size='sm'
+          defaultValue={MIN_SLIDER_VALUE}
           value={sliderValues[0]}
-          onChange={(_valueAsString, valueAsNumber) =>
+          min={MIN_SLIDER_VALUE}
+          max={MAX_SLIDER_VALUE}
+          onChange={(_valueAsString, valueAsNumber) => {
             setSliderValues([
               valueAsNumber,
-              valueAsNumber < defaultSliderValues[1]
+              valueAsNumber < MAX_SLIDER_VALUE
                 ? valueAsNumber + 1
-                : defaultSliderValues[1],
-            ])
-          }
-          min={defaultSliderValues[0]}
-          max={defaultSliderValues[1] - 1}
+                : MAX_SLIDER_VALUE,
+            ]);
+            setValue(`${title.toLocaleLowerCase()}.val.0`, valueAsNumber);
+            setValue(`${title.toLocaleLowerCase()}.val.1`, sliderValues[1]);
+          }}
         >
           {NumberInputComponents}
         </NumberInput>
@@ -107,17 +150,19 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
       <>
         <FormInput
           label='Min'
-          name='min-range-value'
+          name={`${title.toLocaleLowerCase()}.val.0`}
           fieldError={undefined}
           style={{ width: '100%' }}
         >
           <NumberInput
             size='sm'
             value={sliderValues[0]}
-            onChange={(_valueAsString, valueAsNumber) =>
-              setSliderValues([valueAsNumber, sliderValues[1]])
-            }
-            min={defaultSliderValues[0]}
+            onChange={(_valueAsString, valueAsNumber) => {
+              setSliderValues([valueAsNumber, sliderValues[1]]);
+              setValue(`${title.toLocaleLowerCase()}.val.0`, valueAsNumber);
+              setValue(`${title.toLocaleLowerCase()}.val.1`, sliderValues[1]);
+            }}
+            min={MIN_SLIDER_VALUE}
             max={sliderValues[1]}
           >
             {NumberInputComponents}
@@ -128,18 +173,20 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
         </Text>
         <FormInput
           label='Max'
-          name='max-range-value'
+          name={`${title.toLocaleLowerCase()}.val.1`}
           fieldError={undefined}
           style={{ width: '100%' }}
         >
           <NumberInput
             size='sm'
             value={sliderValues[1]}
-            onChange={(_valueAsString, valueAsNumber) =>
-              setSliderValues([sliderValues[0], valueAsNumber])
-            }
+            onChange={(_valueAsString, valueAsNumber) => {
+              setSliderValues([sliderValues[0], valueAsNumber]);
+              setValue(`${title.toLocaleLowerCase()}.val.0`, sliderValues[0]);
+              setValue(`${title.toLocaleLowerCase()}.val.1`, valueAsNumber);
+            }}
             min={sliderValues[0] + 1}
-            max={defaultSliderValues[1]}
+            max={MAX_SLIDER_VALUE}
           >
             {NumberInputComponents}
           </NumberInput>
@@ -149,11 +196,19 @@ export const GraphSlider = ({ graphComponent }: GraphSliderProps) => {
 
   return (
     <Box>
-      {graphComponent}
-      {sliderThumbInputs}
-      <Flex alignItems='center' mt={3}>
-        {sliderFormInputs}
-      </Flex>
+      {isLoadingSliderRange && !sliderRange ? (
+        <Flex alignItems='center' justifyContent='center'>
+          <Spinner size='sm' />
+        </Flex>
+      ) : (
+        <Box padding={2}>
+          {graphComponent}
+          {sliderThumbInputs}
+          <Flex alignItems='center' mt={3}>
+            {sliderFormInputs}
+          </Flex>
+        </Box>
+      )}
     </Box>
   );
 };

@@ -63,12 +63,14 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
       measurement_id: formValues.measurementId,
     });
     setIsSubmitting(false);
-    if (!data)
+    if (!data) {
       toast({
         status: 'success',
         title: 'Success',
         description: 'Data uploaded!',
       });
+      onClose();
+    }
     if (error?.code)
       toast({ status: 'error', title: 'Error', description: error.details });
   };

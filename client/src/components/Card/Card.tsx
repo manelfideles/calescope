@@ -7,7 +7,7 @@ import {
   Box,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { BiArrowToBottom, BiArrowToTop } from 'react-icons/bi';
+import { BiChevronDown, BiChevronUp } from 'react-icons/bi';
 import { FiHelpCircle } from 'react-icons/fi';
 
 interface CardProps {
@@ -36,11 +36,11 @@ export const Card = ({ children, title, onToggle, isOpen }: CardProps) => {
           <IconButton
             bg='none'
             onClick={onToggle}
-            border='1px solid black'
+            border='1px solid gray'
             padding='0.25rem'
             size='56px'
             aria-label='collapse/expand'
-            icon={isOpen ? <BiArrowToTop /> : <BiArrowToBottom />}
+            icon={isOpen ? <BiChevronUp /> : <BiChevronDown />}
           />
         </GridItem>
         {children}

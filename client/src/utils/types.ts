@@ -38,6 +38,11 @@ export type AuthState = {
   isLoggedIn: boolean;
 };
 
+export type SliderValuesType = {
+  mode: 'value' | 'range';
+  val: (string | number) | Array<string | number>;
+};
+
 export type Route = {
   path: string;
   element: React.ReactNode;

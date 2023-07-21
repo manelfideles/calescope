@@ -13,6 +13,8 @@ import { map } from 'lodash';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
+const IDW_LAYER_ID = 'interpolation-layer';
+
 const mapStyle: React.CSSProperties = {
   position: 'absolute',
   height: '100vh',
@@ -31,15 +33,7 @@ type SelectedFeature = {
 export const MapBox = () => {
   const toast = useToast();
   const [features, setFeatures] = useState<Record<string, SelectedFeature>>({});
-  const [isPolygonButtonVisible, setIsPolygonButtonVisible] = useState(true);
   const { MAPBOX_TOKEN, centerPoint, defaultZoom } = mapboxConfig;
-  const {
-    clusterLayer,
-    clusterCountLayer,
-    unclusteredPointLayer,
-    locationLabels,
-    selectedLocationLayer,
-  } = sources;
   const mapRef = useRef<MapRef>(null);
   const initialViewState = {
     latitude: centerPoint[0],
@@ -56,12 +50,9 @@ export const MapBox = () => {
     convertToJson: true,
     params: {},
   });
-  const {
-    data: idwData,
-    error: idwError,
-    isLoading: isLoadingIdwData,
-  } = useRPC({
-    // TODO: These values will be controlled by the sidebar context
+  const { data: idwData } = useRPC({
+    // TODO @CS-31:
+    // These values will be controlled by the sidebar context
     rpcName: 'get_filtered_values',
     convertToJson: false,
     params: {
@@ -69,10 +60,33 @@ export const MapBox = () => {
       max_altitude: 55,
       min_val: 0,
       max_val: 500,
-      // use selected locations for the interpolation
+      // only uses the currently selected locations for the IDW calculation
       selected_location_ids: map(locations, 'locationId'),
     },
   });
+
+  const toggleIdwLayerCreation = (layerId: string = IDW_LAYER_ID) => {
+    if (JSON.stringify(features) !== '{}') {
+      try {
+        mapRef.current?.getMap().removeLayer(layerId);
+      } catch (error) {
+        console.error(error);
+      }
+      const aoi = Object.values(features)[0]?.geometry!.coordinates[0].map(
+        (coords: any) => ({ lon: coords[0], lat: coords[1] })
+      );
+      const layer = new MapboxInterpolateHeatmapLayer({
+        data: idwData?.map(({ x, lat, lon }: any) => ({ val: x, lat, lon })),
+        id: layerId,
+        framebufferFactor: 0.1,
+        opacity: 0.4,
+        aoi,
+      });
+      mapRef.current?.getMap().addLayer(layer);
+    } else if (mapRef.current?.getLayer(layerId)) {
+      mapRef.current?.getMap().removeLayer(layerId);
+    }
+  };
 
   const onClick = (event: mapboxgl.MapLayerMouseEvent) => {
     const feature = event.features?.[0];
@@ -117,33 +131,17 @@ export const MapBox = () => {
     else toast.close(loadingToastId);
   }, [isLoading, locations]);
 
-  useEffect(() => {
-    console.log(idwData?.map(({ x, lat, lon }: any) => ({ val: x, lat, lon })));
-  }, [idwData]);
+  // useEffect(() => {
+  //   console.log(
+  //     'idwData: ',
+  //     idwData?.map(({ x, lat, lon }: any) => ({ val: x, lat, lon }))
+  //   );
+  // }, [idwData]);
 
-  useEffect(() => {
-    if (JSON.stringify(features) !== '{}') {
-      const aoi = Object.values(features)[0]?.geometry!.coordinates[0].map(
-        (coords: any) => ({ lon: coords[0], lat: coords[1] })
-      );
-      const layer = new MapboxInterpolateHeatmapLayer({
-        data: idwData?.map(({ x, lat, lon }: any) => ({ val: x, lat, lon })),
-        id: 'interpolation-layer',
-        framebufferFactor: 0.1,
-        opacity: JSON.stringify(features) === '{}' ? 0 : 0.4,
-        aoi,
-      });
-      mapRef.current?.getMap().addLayer(layer);
-      setIsPolygonButtonVisible(false);
-    } else if (mapRef.current?.getLayer('interpolation-layer')) {
-      mapRef.current?.getMap().removeLayer('interpolation-layer');
-      setIsPolygonButtonVisible(true);
-    }
-  }, [
-    isLoadingIdwData,
-    JSON.stringify(features),
-    !!mapRef?.current?.getLayer('interpolation-layer'),
-  ]);
+  useEffect(
+    () => toggleIdwLayerCreation(),
+    [JSON.stringify(features), idwData]
+  );
 
   const onUpdate = useCallback(
     (ev: any) => {
@@ -156,24 +154,7 @@ export const MapBox = () => {
         return newFeatures;
       });
     },
-    [setFeatures]
-  );
-
-  const controls = useMemo(
-    () => (
-      <DrawControl
-        position='bottom-left'
-        displayControlsDefault={false}
-        controls={{
-          polygon: !!!mapRef?.current?.getLayer('interpolation-layer'),
-          trash: true,
-        }}
-        onCreate={onUpdate}
-        onUpdate={onUpdate}
-        onDelete={() => setFeatures({})}
-      />
-    ),
-    [isPolygonButtonVisible]
+    [idwData]
   );
 
   const selectedLocationsFilter = useMemo(
@@ -195,9 +176,9 @@ export const MapBox = () => {
         mapStyle='mapbox://styles/mapbox/light-v9'
         mapboxAccessToken={MAPBOX_TOKEN}
         interactiveLayerIds={[
-          clusterLayer.id!,
-          unclusteredPointLayer.id!,
-          selectedLocationLayer.id!,
+          sources.clusterLayer.id!,
+          sources.unclusteredPointLayer.id!,
+          sources.selectedLocationLayer.id!,
         ]}
         onClick={onClick}
         ref={mapRef}
@@ -211,13 +192,28 @@ export const MapBox = () => {
           clusterMaxZoom={14}
           clusterRadius={50}
         >
-          <Layer {...clusterLayer} />
-          <Layer {...clusterCountLayer} />
-          <Layer {...unclusteredPointLayer} />
-          <Layer {...locationLabels} />
-          <Layer {...selectedLocationLayer} filter={selectedLocationsFilter} />
+          <Layer {...sources.clusterLayer} />
+          <Layer {...sources.clusterCountLayer} />
+          <Layer {...sources.unclusteredPointLayer} />
+          <Layer {...sources.locationLabels} />
+          <Layer
+            {...sources.selectedLocationLayer}
+            filter={selectedLocationsFilter}
+          />
         </Source>
-        {controls}
+        {locations.length >= 2 && (
+          <DrawControl
+            position='bottom-left'
+            displayControlsDefault={false}
+            controls={{
+              polygon: true,
+              trash: true,
+            }}
+            onCreate={onUpdate}
+            onUpdate={onUpdate}
+            onDelete={() => setFeatures({})}
+          />
+        )}
       </Map>
     </div>
   );

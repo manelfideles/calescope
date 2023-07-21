@@ -1,35 +1,34 @@
-import { GridItem, useDisclosure, Collapse, Select } from '@chakra-ui/react';
+import {
+  GridItem,
+  useDisclosure,
+  Collapse,
+  Select,
+  Spinner,
+  Flex,
+  Input,
+} from '@chakra-ui/react';
 import { GraphSlider } from '../GraphSlider';
 import { max as _max } from 'lodash';
-import { FilterBoxMediaControls } from '../FilterBoxMediaControls';
 import { Card } from '../Card';
 import { useGraphSlider } from '../../hooks/useGraphSlider';
-import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './Calendar.css';
-import {
-  DATE_FORMAT,
-  MONTHS,
-  WEEKDAYS,
-  convertDateToTimestamptz as dateConverter,
-} from '../../utils/misc';
 import { useFormContext } from 'react-hook-form';
 import { FormInput } from '../Forms/FormInput';
+import { D3Histogram } from '../d3-graphs/D3Histogram';
 
 interface FilterBoxProps {
   title: string;
-  isTimeFilter?: boolean;
-  graphComponent?: React.ReactNode;
+  withGraphComponent?: boolean;
 }
 
-export const FilterBox = ({
-  title,
-  isTimeFilter,
-  graphComponent,
-}: FilterBoxProps) => {
+export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
   const { isOpen, onToggle } = useDisclosure();
-  const { setMode } = useGraphSlider();
-  const { setValue, register } = useFormContext();
+  const { histogramData, isLoadingHistogramData, setMode, mode } =
+    useGraphSlider();
+  const { register } = useFormContext();
+  const formatInsertedDate = (date: string) =>
+    !date.length ? '' : date.replace('T', ' ').slice(0, 16) + ':00+00';
 
   return (
     <>
@@ -60,26 +59,54 @@ export const FilterBox = ({
             </FormInput>
           </GridItem>
           <GridItem marginTop={2} alignItems='center'>
-            {isTimeFilter ? (
-              <FormInput name='time' fieldError={undefined} label={''}>
-                <Calendar
-                  formatLongDate={(_, date) => DATE_FORMAT[date.getDate()]}
-                  formatMonthYear={(_, date) =>
-                    MONTHS[date.getMonth()] +
-                    " '" +
-                    date.getFullYear().toString().substring(2)
-                  }
-                  formatMonth={(_, date) => MONTHS[date.getMonth()]}
-                  formatShortWeekday={(_, date) => WEEKDAYS[date.getDay()]}
-                  defaultValue={new Date()}
-                  onChange={(d: any) => setValue('time.val', dateConverter(d))}
-                />
-              </FormInput>
+            {!withGraphComponent ? (
+              <>
+                <FormInput
+                  name='time'
+                  label={mode === 'value' ? 'Datetime' : 'Start Datetime'}
+                  fieldError={undefined}
+                >
+                  <Input
+                    size='sm'
+                    type='datetime-local'
+                    defaultValue={new Date().toISOString().slice(0, 16)}
+                    mb={4}
+                    {...register('time.val', {
+                      setValueAs: (v) => formatInsertedDate(v),
+                    })}
+                  />
+                </FormInput>
+                {mode === 'range' && (
+                  <FormInput
+                    name='time'
+                    label='End Datetime'
+                    fieldError={undefined}
+                  >
+                    <Input
+                      size='sm'
+                      type='datetime-local'
+                      defaultValue={new Date().toISOString().slice(0, 16)}
+                      mb={4}
+                      {...register('time.val', {
+                        setValueAs: (v) => formatInsertedDate(v),
+                      })}
+                    />
+                  </FormInput>
+                )}
+              </>
+            ) : isLoadingHistogramData ? (
+              <Flex alignItems='center' justifyContent='center' padding={2}>
+                <Spinner size='sm' />
+              </Flex>
             ) : (
-              <GraphSlider graphComponent={graphComponent} />
+              <GraphSlider
+                title={title.toLocaleLowerCase()}
+                graphComponent={
+                  <D3Histogram data={histogramData} height={75} width={173} />
+                }
+              />
             )}
           </GridItem>
-          {/* <FilterBoxMediaControls /> */}
         </Collapse>
       </Card>
     </>

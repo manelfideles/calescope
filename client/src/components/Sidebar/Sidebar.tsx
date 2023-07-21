@@ -1,6 +1,6 @@
 import { Box, Text, IconButton } from '@chakra-ui/react';
 import { FilterControls } from '../FilterControls';
-import { BiArrowToLeft } from 'react-icons/bi';
+import { BiChevronLeft } from 'react-icons/bi';
 import { AiFillHome } from 'react-icons/ai';
 
 const SidebarHeader = () => (
@@ -32,7 +32,7 @@ const SidebarHeader = () => (
       padding='0.25rem'
       size='56px'
       aria-label='show/hide'
-      icon={<BiArrowToLeft />}
+      icon={<BiChevronLeft />}
     />
   </Box>
 );

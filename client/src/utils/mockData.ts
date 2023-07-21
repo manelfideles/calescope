@@ -11,7 +11,7 @@ export const userSettings: Settings = {
     { id: 7, name: 'Example 7', isSelected: false },
     { id: 8, name: 'Example 8', isSelected: false },
   ],
-  metricSystem: 'metric',
+  unitSystem: 'metric',
 };
 
 const generateAreaChartData = (length: number = 10, upperBound: number = 40) =>
@@ -40,62 +40,49 @@ export const areaChartData = [
   },
 ];
 
-export const getRandomColor = () =>
-  '#' + Math.floor(Math.random() * 16777215).toString(16);
+export const getRandomColor = () => {
+  const colorArray = [
+    // plasma
+    '#0D0887',
+    '#41049D',
+    '#6A00A8',
+    '#8F0DA4',
+    '#B12A90',
+    '#CC4778',
+    '#E16462',
+    '#F2844B',
+    '#FCA636',
+    '#FCCE25',
+    '#F0F921',
+    // cubehelix default
+    '#23171B',
+    '#4A58DD',
+    '#2F9DF5',
+    '#27D7C4',
+    '#4DF884',
+    '#95FB51',
+    '#DEDD32',
+    '#FFA423',
+    '#F65F18',
+    '#BA2208',
+    '#900C00',
+    // cividis
+    '#002051',
+    '#0A326A',
+    '#2B446E',
+    '#4D566D',
+    '#696970',
+    '#7F7C75',
+    '#948F78',
+    '#ADA476',
+    '#CABA6A',
+    '#EAD156',
+    '#FDEA45',
+  ];
+  const randomIndex = Math.floor(Math.random() * (colorArray.length - 1));
+  return colorArray[randomIndex];
+};
 
 export const generateHistogramData = (length: number, n_buckets: number) => {
   return Array.from({ length }, () => Math.floor(Math.random() * n_buckets));
 };
-
-export const interpolationData = [
-  {
-    lon: -8.402028,
-    lat: 40.222645,
-    val: 16,
-  },
-  /* {
-    lon: -8.42241867112619,
-    lat: 40.225139306405,
-    val: 20,
-  },
-  {
-    lon: -8.42888798564339,
-    lat: 40.2209505471073,
-    val: 5,
-  },
-  {
-    lon: -8.39957490384027,
-    lat: 40.2247451644405,
-    val: 37.5,
-  },
-  {
-    lon: -8.39727987464586,
-    lat: 40.2228444234987,
-    val: 25,
-  },
-  {
-    lon: -8.42262686613226,
-    lat: 40.2240673261461,
-    val: 9.35,
-  },
-  {
-    lon: -8.43018130754563,
-    lat: 40.2221973437929,
-    val: 3.3,
-  },
-  {
-    lon: -8.43730043314126,
-    lat: 40.2191692143264,
-    val: -2.3,
-  },
-  {
-    lon: -8.395038,
-    lat: 40.237747,
-    val: 5.3,
-  },
-  {
-    lon: -8.40355022347606,
-    lat: 40.2182898879968,
-    val: 76.3,
-  }, */
-];
