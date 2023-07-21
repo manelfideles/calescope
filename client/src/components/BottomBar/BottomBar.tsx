@@ -19,16 +19,32 @@ import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 import { useRPC } from '../../hooks/useRPC';
 import '../../../node_modules/react-vis/dist/style.css';
 import { AreaChart } from '../d3-graphs/AreaChart';
-import { map, omit, startCase, uniqBy } from 'lodash';
+import { map, omit, startCase } from 'lodash';
 import { User } from '../../utils/types';
 import { useSidebarFormValues } from '../../hooks/useSidebarFormValues';
+import { useLocalStorage } from 'usehooks-ts';
+
+const defaultUserValues: User = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  userSettings: {
+    variables: [],
+    unitSystem: 'metric',
+  },
+};
 
 export const BottomBar = () => {
   const [selectedVariableId, setSelectedVariableId] = useState(0);
   const { onToggle, isOpen } = useDisclosure();
-  const {
-    userSettings: { variables },
-  }: User = JSON.parse(localStorage.getItem('settings') ?? '') ?? [];
+  const [
+    {
+      userSettings: { variables },
+    },
+    _setSettings,
+  ] = useLocalStorage<User>('settings', defaultUserValues);
+
   const { locations, removeLocation, toggleLocationVisibility } =
     useSelectedLocations();
   const { altitude, time, ...dynamicVariables } = useSidebarFormValues();
@@ -122,18 +138,15 @@ export const BottomBar = () => {
     []
   );
 
-  // TODO @CS-33:
-  // Only display the variable as an option
-  // if it's present in the user settings
   const variableSelectOptions = useMemo(
     () =>
-      uniqBy(areaChartData, 'measured_variable_id').map(
-        ({ measured_variable_id, variable_name }: any) => ({
-          value: measured_variable_id,
-          text: startCase(variable_name),
-        })
-      ),
-    [isLoadingChartData]
+      variables
+        .filter(({ isSelected }) => isSelected)
+        .map(({ id, name }) => ({
+          value: id,
+          text: startCase(name),
+        })),
+    [variables]
   );
 
   return (
