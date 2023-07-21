@@ -23,9 +23,20 @@ import { useAuth } from '../hooks/useAuth';
 import { User } from '../utils/types';
 import { Link as RouterLink } from 'react-router-dom';
 import { useClient } from 'react-supabase';
-import { Variable } from '../utils/types';
 import { toLower, startCase } from 'lodash';
 import { UploadForm } from '../components/Forms/UploadForm';
+import { useLocalStorage } from 'usehooks-ts';
+
+const defaultUserValues: User = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  userSettings: {
+    variables: [],
+    unitSystem: 'metric',
+  },
+};
 
 export const Settings = () => {
   const {
@@ -37,22 +48,12 @@ export const Settings = () => {
   const toast = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [settings, setSettings] = useState<any>(
-    localStorage.getItem('settings')
-      ? JSON.parse(localStorage.getItem('settings')!).userSettings
-      : { variables: [], metricSystem: 'metric' }
+  const [settings, setSettings] = useLocalStorage<User>(
+    'settings',
+    defaultUserValues
   );
   const form = useForm<Omit<User, 'email' & 'password'>>({
-    defaultValues: {
-      firstName: user?.user_metadata.firstName,
-      lastName: user?.user_metadata.lastName,
-      userSettings: {
-        unitSystem: localStorage.getItem('settings')
-          ? JSON.parse(localStorage.getItem('settings')!).userSettings
-              .unitSystem
-          : 'metric',
-      },
-    },
+    defaultValues: settings,
   });
 
   const onSave = async () => {
@@ -63,7 +64,7 @@ export const Settings = () => {
       lastName,
       userSettings: {
         ...userSettings,
-        variables: settings.variables,
+        variables: settings.userSettings.variables,
       },
     };
     updateUser({
@@ -75,15 +76,15 @@ export const Settings = () => {
   };
 
   const handleVariableButtonClick = (variableId: number) => {
-    const idx = settings.variables.findIndex(
+    const idx = settings.userSettings.variables.findIndex(
       (v: { id: number }) => v.id === variableId
     );
-    let clickedVariable = settings.variables[idx];
+    let clickedVariable = settings.userSettings.variables[idx];
     clickedVariable = {
       ...clickedVariable!,
       isSelected: !clickedVariable?.isSelected,
     };
-    settings.variables[idx] = clickedVariable;
+    settings.userSettings.variables[idx] = clickedVariable;
     setSettings({ ...settings });
   };
 
@@ -100,7 +101,10 @@ export const Settings = () => {
       }));
       setSettings({
         ...settings,
-        variables: vars,
+        userSettings: {
+          unitSystem: settings.userSettings.unitSystem,
+          variables: vars,
+        },
       });
     }
   };
@@ -108,26 +112,26 @@ export const Settings = () => {
   const formatVariableName = (varName: string) => startCase(toLower(varName));
 
   useEffect(() => {
-    if (settings.variables.length === 0) {
+    if (settings.userSettings.variables.length === 0) {
       setIsLoading(true);
       fetchVariables();
       setIsLoading(false);
     }
   }, []);
 
-  const buttonGroup = settings.variables.map((variable: Variable) => (
+  const buttonGroup = settings.userSettings.variables.map((v) => (
     <Button
-      key={variable.id}
-      value={variable.name}
+      key={v.id}
+      value={v.name}
       isDisabled={!isEditing}
-      onClick={() => handleVariableButtonClick(variable.id)}
-      colorScheme={variable.isSelected ? 'teal' : undefined}
+      onClick={() => handleVariableButtonClick(v.id)}
+      colorScheme={v.isSelected ? 'teal' : undefined}
       variant='solid'
       fontSize='sm'
       type='button'
       fontWeight='normal'
     >
-      {variable.name}
+      {v.name}
     </Button>
   ));
 

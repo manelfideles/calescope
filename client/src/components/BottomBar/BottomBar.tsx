@@ -2,7 +2,6 @@ import {
   Box,
   Collapse,
   useDisclosure,
-  Text,
   Tag,
   TagLeftIcon,
   TagLabel,
@@ -10,6 +9,8 @@ import {
   Flex,
   Button,
   Select,
+  Link,
+  Text,
 } from '@chakra-ui/react';
 import { Card } from '../Card';
 import { BsExclamationLg } from 'react-icons/bs';
@@ -23,6 +24,7 @@ import { map, omit, startCase } from 'lodash';
 import { User } from '../../utils/types';
 import { useSidebarFormValues } from '../../hooks/useSidebarFormValues';
 import { useLocalStorage } from 'usehooks-ts';
+import { Link as ReactRouterLink } from 'react-router-dom';
 
 const defaultUserValues: User = {
   firstName: '',
@@ -36,7 +38,7 @@ const defaultUserValues: User = {
 };
 
 export const BottomBar = () => {
-  const [selectedVariableId, setSelectedVariableId] = useState(0);
+  const [selectedVariableId, setSelectedVariableId] = useState(1);
   const { onToggle, isOpen } = useDisclosure();
   const [
     {
@@ -44,7 +46,6 @@ export const BottomBar = () => {
     },
     _setSettings,
   ] = useLocalStorage<User>('settings', defaultUserValues);
-
   const { locations, removeLocation, toggleLocationVisibility } =
     useSelectedLocations();
   const { altitude, time, ...dynamicVariables } = useSidebarFormValues();
@@ -114,6 +115,17 @@ export const BottomBar = () => {
     [locations]
   );
 
+  const variableSelectOptions = useMemo(
+    () =>
+      variables
+        .filter(({ isSelected }) => isSelected)
+        .map(({ id, name }) => ({
+          value: id,
+          text: startCase(name),
+        })),
+    [variables]
+  );
+
   const emptyBottomBar = useMemo(
     () => (
       <Box
@@ -138,15 +150,41 @@ export const BottomBar = () => {
     []
   );
 
-  const variableSelectOptions = useMemo(
-    () =>
-      variables
-        .filter(({ isSelected }) => isSelected)
-        .map(({ id, name }) => ({
-          value: id,
-          text: startCase(name),
-        })),
-    [variables]
+  const noDataToDisplayDiv = useMemo(
+    () => (
+      <Box
+        display='flex'
+        justifyContent='center'
+        alignItems='center'
+        flexDir='column'
+        gap={2}
+        padding={10}
+      >
+        <Tag colorScheme='red' padding={2}>
+          <TagLeftIcon boxSize='1rem' as={BsExclamationLg} />
+          <TagLabel textAlign='center'>No data to display</TagLabel>
+        </Tag>
+        <Text textAlign='center' padding={2} maxWidth='20rem'>
+          This location has no available data for the chosen variable in the{' '}
+          <b>selected range</b>.<br />
+          Select different altitude, time, or{' '}
+          <b>
+            {variables.filter(({ id }) => id === selectedVariableId)[0].name}
+          </b>{' '}
+          ranges/values to display here. <br />
+          You can also upload data for this location and variable in the{' '}
+          <b>
+            <u>
+              <Link as={ReactRouterLink} to='/settings'>
+                Settings
+              </Link>
+            </u>
+          </b>{' '}
+          page.
+        </Text>
+      </Box>
+    ),
+    []
   );
 
   return (
@@ -177,6 +215,7 @@ export const BottomBar = () => {
                     ml={10}
                     w='375px'
                     placeholder='Select a variable'
+                    defaultValue={1}
                     onChange={({ currentTarget: { value } }) =>
                       setSelectedVariableId(Number(value))
                     }
@@ -185,13 +224,17 @@ export const BottomBar = () => {
                       <option value={value}>{text}</option>
                     ))}
                   </Select>
-                  <AreaChart
-                    selectedVariableId={selectedVariableId}
-                    data={areaChartData}
-                    seriesColor={map(locations, (elem) =>
-                      omit(elem, ['locationName'])
-                    )}
-                  />
+                  {areaChartData && areaChartData.length > 0 ? (
+                    <AreaChart
+                      selectedVariableId={selectedVariableId}
+                      data={areaChartData}
+                      seriesColor={map(locations, (elem) =>
+                        omit(elem, ['locationName'])
+                      )}
+                    />
+                  ) : (
+                    noDataToDisplayDiv
+                  )}
                 </Box>
               </Flex>
             )}

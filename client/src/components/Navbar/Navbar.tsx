@@ -34,9 +34,10 @@ export const Navbar = () => {
 
   const navItems = dropRight(routes, 2)
     .filter(({ showIfLoggedOut }) => showIfLoggedOut !== isLoggedIn)
-    .map(({ pageName, path }) => (
+    .map(({ pageName, path }, index) => (
       <Link
         fontSize='sm'
+        key={index}
         color={linkColor}
         _hover={{ textDecoration: 'none', color: linkHoverColor }}
       >
