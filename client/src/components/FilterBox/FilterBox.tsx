@@ -47,7 +47,7 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
               }}
             >
               <Select
-                defaultValue='value'
+                defaultValue='range'
                 size='sm'
                 width='fit-content'
                 {...register(`${title.toLocaleLowerCase()}.mode`)}

@@ -43,7 +43,7 @@ export const Dashboard = () => {
             ...prevVal,
             [curVal.name]: {
               id: curVal.id,
-              mode: 'value' as const,
+              mode: 'range' as const,
               val:
                 curVal.name == 'time'
                   ? new Date().toISOString().slice(0, 16)

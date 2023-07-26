@@ -49,11 +49,23 @@ export const BottomBar = () => {
   const { locations, removeLocation, toggleLocationVisibility } =
     useSelectedLocations();
   const { altitude, time, ...dynamicVariables } = useSidebarFormValues();
+  console.log({ dynamicVariables });
   const {
     data: areaChartData,
     error,
     isLoading: isLoadingChartData,
   } = useRPC({
+    /* 
+    SELECT * FROM get_filtered_values(
+      '[
+        {"variable_id": 1, "min_value": 17, "max_value": 32}, 
+        {"variable_id": 8, "min_value": 10, "max_value": 22}
+      ]',
+      100, -- Replace with min_altitude
+      200, -- Replace with max_altitude
+      '{1, 2}' -- Replace with selected_location_ids
+    );
+     */
     rpcName: 'get_filtered_values',
     convertToJson: false,
     // TODO @CS-31:
@@ -62,16 +74,12 @@ export const BottomBar = () => {
       min_altitude: altitude.mode === 'value' ? altitude.val : altitude.val[0],
       max_altitude:
         altitude.mode === 'value' ? altitude.val + 1 : altitude.val[1],
-      // variables_data: [{ id, min_altitude, max_altitude, min_val, max_val }, ...]
-      // Object.values(dynamicVariables)
-      min_val:
-        dynamicVariables.temperature.mode === 'value'
-          ? dynamicVariables.temperature.val
-          : dynamicVariables.temperature.val[0],
-      max_val:
-        dynamicVariables.temperature.mode === 'value'
-          ? dynamicVariables.temperature.val + 1
-          : dynamicVariables.temperature.val[1],
+      variable_ranges: Object.values(dynamicVariables).map((variable) => ({
+        variable_id: variable.id,
+        min_value: variable.mode === 'value' ? variable.val : variable.val[0],
+        max_value:
+          variable.mode === 'value' ? variable.val + 1 : variable.val[1],
+      })),
       selected_location_ids: map(locations, 'locationId'),
     },
   });
