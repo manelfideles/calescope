@@ -3,11 +3,26 @@ import { FilterBox } from '../FilterBox';
 import { useMemo } from 'react';
 import { User } from '../../utils/types';
 import { GraphSliderContextProvider } from '../../hooks/useGraphSlider';
+import { useLocalStorage } from 'usehooks-ts';
+
+const defaultUserValues: User = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  userSettings: {
+    variables: [],
+    unitSystem: 'metric',
+  },
+};
 
 export const FilterControls = () => {
-  const {
-    userSettings: { variables },
-  }: User = JSON.parse(localStorage.getItem('settings') ?? '') ?? [];
+  const [
+    {
+      userSettings: { variables },
+    },
+    _setSettings,
+  ] = useLocalStorage<User>('settings', defaultUserValues);
   const visibleVariables = useMemo(() => {
     return variables
       .filter(({ isSelected }) => isSelected)
@@ -18,7 +33,7 @@ export const FilterControls = () => {
           </GraphSliderContextProvider>
         </GridItem>
       ));
-  }, []);
+  }, [variables]);
 
   return (
     <Grid>

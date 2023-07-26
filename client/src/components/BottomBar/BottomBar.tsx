@@ -2,7 +2,6 @@ import {
   Box,
   Collapse,
   useDisclosure,
-  Text,
   Tag,
   TagLeftIcon,
   TagLabel,
@@ -10,6 +9,8 @@ import {
   Flex,
   Button,
   Select,
+  Link,
+  Text,
 } from '@chakra-ui/react';
 import { Card } from '../Card';
 import { BsExclamationLg } from 'react-icons/bs';
@@ -19,24 +20,52 @@ import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 import { useRPC } from '../../hooks/useRPC';
 import '../../../node_modules/react-vis/dist/style.css';
 import { AreaChart } from '../d3-graphs/AreaChart';
-import { map, omit, startCase, uniqBy } from 'lodash';
+import { map, omit, startCase } from 'lodash';
 import { User } from '../../utils/types';
 import { useSidebarFormValues } from '../../hooks/useSidebarFormValues';
+import { useLocalStorage } from 'usehooks-ts';
+import { Link as ReactRouterLink } from 'react-router-dom';
+
+const defaultUserValues: User = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  userSettings: {
+    variables: [],
+    unitSystem: 'metric',
+  },
+};
 
 export const BottomBar = () => {
-  const [selectedVariableId, setSelectedVariableId] = useState(0);
+  const [selectedVariableId, setSelectedVariableId] = useState(1);
   const { onToggle, isOpen } = useDisclosure();
-  const {
-    userSettings: { variables },
-  }: User = JSON.parse(localStorage.getItem('settings') ?? '') ?? [];
+  const [
+    {
+      userSettings: { variables },
+    },
+    _setSettings,
+  ] = useLocalStorage<User>('settings', defaultUserValues);
   const { locations, removeLocation, toggleLocationVisibility } =
     useSelectedLocations();
   const { altitude, time, ...dynamicVariables } = useSidebarFormValues();
+  console.log({ dynamicVariables });
   const {
     data: areaChartData,
     error,
     isLoading: isLoadingChartData,
   } = useRPC({
+    /* 
+    SELECT * FROM get_filtered_values(
+      '[
+        {"variable_id": 1, "min_value": 17, "max_value": 32}, 
+        {"variable_id": 8, "min_value": 10, "max_value": 22}
+      ]',
+      100, -- Replace with min_altitude
+      200, -- Replace with max_altitude
+      '{1, 2}' -- Replace with selected_location_ids
+    );
+     */
     rpcName: 'get_filtered_values',
     convertToJson: false,
     // TODO @CS-31:
@@ -45,16 +74,12 @@ export const BottomBar = () => {
       min_altitude: altitude.mode === 'value' ? altitude.val : altitude.val[0],
       max_altitude:
         altitude.mode === 'value' ? altitude.val + 1 : altitude.val[1],
-      // variables_data: [{ id, min_altitude, max_altitude, min_val, max_val }, ...]
-      // Object.values(dynamicVariables)
-      min_val:
-        dynamicVariables.temperature.mode === 'value'
-          ? dynamicVariables.temperature.val
-          : dynamicVariables.temperature.val[0],
-      max_val:
-        dynamicVariables.temperature.mode === 'value'
-          ? dynamicVariables.temperature.val + 1
-          : dynamicVariables.temperature.val[1],
+      variable_ranges: Object.values(dynamicVariables).map((variable) => ({
+        variable_id: variable.id,
+        min_value: variable.mode === 'value' ? variable.val : variable.val[0],
+        max_value:
+          variable.mode === 'value' ? variable.val + 1 : variable.val[1],
+      })),
       selected_location_ids: map(locations, 'locationId'),
     },
   });
@@ -98,6 +123,17 @@ export const BottomBar = () => {
     [locations]
   );
 
+  const variableSelectOptions = useMemo(
+    () =>
+      variables
+        .filter(({ isSelected }) => isSelected)
+        .map(({ id, name }) => ({
+          value: id,
+          text: startCase(name),
+        })),
+    [variables]
+  );
+
   const emptyBottomBar = useMemo(
     () => (
       <Box
@@ -122,18 +158,41 @@ export const BottomBar = () => {
     []
   );
 
-  // TODO @CS-33:
-  // Only display the variable as an option
-  // if it's present in the user settings
-  const variableSelectOptions = useMemo(
-    () =>
-      uniqBy(areaChartData, 'measured_variable_id').map(
-        ({ measured_variable_id, variable_name }: any) => ({
-          value: measured_variable_id,
-          text: startCase(variable_name),
-        })
-      ),
-    [isLoadingChartData]
+  const noDataToDisplayDiv = useMemo(
+    () => (
+      <Box
+        display='flex'
+        justifyContent='center'
+        alignItems='center'
+        flexDir='column'
+        gap={2}
+        padding={10}
+      >
+        <Tag colorScheme='red' padding={2}>
+          <TagLeftIcon boxSize='1rem' as={BsExclamationLg} />
+          <TagLabel textAlign='center'>No data to display</TagLabel>
+        </Tag>
+        <Text textAlign='center' padding={2} maxWidth='20rem'>
+          This location has no available data for the chosen variable in the{' '}
+          <b>selected range</b>.<br />
+          Select different altitude, time, or{' '}
+          <b>
+            {variables.filter(({ id }) => id === selectedVariableId)[0].name}
+          </b>{' '}
+          ranges/values to display here. <br />
+          You can also upload data for this location and variable in the{' '}
+          <b>
+            <u>
+              <Link as={ReactRouterLink} to='/settings'>
+                Settings
+              </Link>
+            </u>
+          </b>{' '}
+          page.
+        </Text>
+      </Box>
+    ),
+    []
   );
 
   return (
@@ -164,6 +223,7 @@ export const BottomBar = () => {
                     ml={10}
                     w='375px'
                     placeholder='Select a variable'
+                    defaultValue={1}
                     onChange={({ currentTarget: { value } }) =>
                       setSelectedVariableId(Number(value))
                     }
@@ -172,13 +232,17 @@ export const BottomBar = () => {
                       <option value={value}>{text}</option>
                     ))}
                   </Select>
-                  <AreaChart
-                    selectedVariableId={selectedVariableId}
-                    data={areaChartData}
-                    seriesColor={map(locations, (elem) =>
-                      omit(elem, ['locationName'])
-                    )}
-                  />
+                  {areaChartData && areaChartData.length > 0 ? (
+                    <AreaChart
+                      selectedVariableId={selectedVariableId}
+                      data={areaChartData}
+                      seriesColor={map(locations, (elem) =>
+                        omit(elem, ['locationName'])
+                      )}
+                    />
+                  ) : (
+                    noDataToDisplayDiv
+                  )}
                 </Box>
               </Flex>
             )}

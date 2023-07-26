@@ -51,8 +51,8 @@ export const GraphSliderContextProvider = ({
   children,
   variableId,
 }: GraphSliderProviderProps) => {
-  const [sliderValues, setSliderValues] = useState<number[]>([]);
-  const [mode, setMode] = useState('value');
+  const [sliderValues, setSliderValues] = useState<number[]>([0, 1]);
+  const [mode, setMode] = useState('range');
   const { locations } = useSelectedLocations();
   const [sliderRange, setSliderRange] = useState<number[]>([]);
   const [countData, setCountData] = useState<any>([]);
