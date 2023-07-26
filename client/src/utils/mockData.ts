@@ -14,7 +14,10 @@ export const userSettings: Settings = {
   unitSystem: 'metric',
 };
 
-const generateAreaChartData = (length: number = 10, upperBound: number = 40) =>
+export const generateAreaChartData = (
+  length: number = 10,
+  upperBound: number = 40
+) =>
   Array(length)
     .fill({})
     .map((_e, i) => ({ x: i, y: Math.random() * upperBound }));

@@ -29,7 +29,7 @@ export const FilterControls = () => {
       .map(({ name, id }) => (
         <GridItem padding={2} key={id}>
           <GraphSliderContextProvider variableId={id}>
-            <FilterBox title={name} withGraphComponent />
+            <FilterBox title={name} withGraphComponent graphType='histogram' />
           </GraphSliderContextProvider>
         </GridItem>
       ));
@@ -42,13 +42,17 @@ export const FilterControls = () => {
       {/* Static Variables */}
       <GridItem padding={2} key='time'>
         <GraphSliderContextProvider variableId={-2}>
-          <FilterBox title='Time' withGraphComponent={false} />
+          <FilterBox title='Time' />
         </GraphSliderContextProvider>
       </GridItem>
       <GridItem padding={2} key='altitude'>
         {/* in the RPC, we use -1 to as the "altitude" variable's key */}
         <GraphSliderContextProvider variableId={-1}>
-          <FilterBox title='Altitude' withGraphComponent />
+          <FilterBox
+            title='Altitude'
+            withGraphComponent
+            graphType='sparkline'
+          />
         </GraphSliderContextProvider>
       </GridItem>
     </Grid>

@@ -19,7 +19,7 @@ import { useMemo, useState } from 'react';
 import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 import { useRPC } from '../../hooks/useRPC';
 import '../../../node_modules/react-vis/dist/style.css';
-import { AreaChart } from '../d3-graphs/AreaChart';
+import { LineChart } from '../d3-graphs/LineChart';
 import { map, omit, startCase } from 'lodash';
 import { User } from '../../utils/types';
 import { useSidebarFormValues } from '../../hooks/useSidebarFormValues';
@@ -49,7 +49,6 @@ export const BottomBar = () => {
   const { locations, removeLocation, toggleLocationVisibility } =
     useSelectedLocations();
   const { altitude, time, ...dynamicVariables } = useSidebarFormValues();
-  console.log({ dynamicVariables });
   const {
     data: areaChartData,
     error,
@@ -233,7 +232,7 @@ export const BottomBar = () => {
                     ))}
                   </Select>
                   {areaChartData && areaChartData.length > 0 ? (
-                    <AreaChart
+                    <LineChart
                       selectedVariableId={selectedVariableId}
                       data={areaChartData}
                       seriesColor={map(locations, (elem) =>

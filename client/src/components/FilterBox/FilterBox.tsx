@@ -16,13 +16,24 @@ import './Calendar.css';
 import { useFormContext } from 'react-hook-form';
 import { FormInput } from '../Forms/FormInput';
 import { D3Histogram } from '../d3-graphs/D3Histogram';
+import { SparklineChart } from '../d3-graphs/SparklineChart';
+import { generateAreaChartData } from '../../utils/mockData';
 
 interface FilterBoxProps {
   title: string;
   withGraphComponent?: boolean;
+  graphType?: 'sparkline' | 'histogram';
 }
 
-export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
+const sparklineMockData = generateAreaChartData(25, 35);
+
+console.log({ sparklineMockData });
+
+export const FilterBox = ({
+  title,
+  withGraphComponent,
+  graphType,
+}: FilterBoxProps) => {
   const { isOpen, onToggle } = useDisclosure();
   const { histogramData, isLoadingHistogramData, setMode, mode } =
     useGraphSlider();
@@ -102,7 +113,15 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
               <GraphSlider
                 title={title.toLocaleLowerCase()}
                 graphComponent={
-                  <D3Histogram data={histogramData} height={75} width={173} />
+                  graphType === 'histogram' ? (
+                    <D3Histogram data={histogramData} height={75} width={173} />
+                  ) : (
+                    <SparklineChart
+                      data={sparklineMockData}
+                      height={100}
+                      width={173}
+                    />
+                  )
                 }
               />
             )}
