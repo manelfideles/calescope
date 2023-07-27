@@ -54,17 +54,6 @@ export const BottomBar = () => {
     error,
     isLoading: isLoadingChartData,
   } = useRPC({
-    /* 
-    SELECT * FROM get_filtered_values(
-      '[
-        {"variable_id": 1, "min_value": 17, "max_value": 32}, 
-        {"variable_id": 8, "min_value": 10, "max_value": 22}
-      ]',
-      100, -- Replace with min_altitude
-      200, -- Replace with max_altitude
-      '{1, 2}' -- Replace with selected_location_ids
-    );
-     */
     rpcName: 'get_filtered_values',
     convertToJson: false,
     // TODO @CS-31:

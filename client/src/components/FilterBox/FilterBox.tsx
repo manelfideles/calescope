@@ -25,9 +25,9 @@ interface FilterBoxProps {
   graphType?: 'sparkline' | 'histogram';
 }
 
-const sparklineMockData = generateAreaChartData(25, 35);
+const MOCK_DATA = generateAreaChartData(25, 35);
 
-console.log({ sparklineMockData });
+console.log({ MOCK_DATA });
 
 export const FilterBox = ({
   title,
@@ -35,8 +35,14 @@ export const FilterBox = ({
   graphType,
 }: FilterBoxProps) => {
   const { isOpen, onToggle } = useDisclosure();
-  const { histogramData, isLoadingHistogramData, setMode, mode } =
-    useGraphSlider();
+  const {
+    histogramData,
+    isLoadingHistogramData,
+    sparklineData,
+    isLoadingSparklineData,
+    setMode,
+    mode,
+  } = useGraphSlider();
   const { register } = useFormContext();
   const formatInsertedDate = (date: string) =>
     !date.length ? '' : date.replace('T', ' ').slice(0, 16) + ':00+00';
@@ -105,7 +111,7 @@ export const FilterBox = ({
                   </FormInput>
                 )}
               </>
-            ) : isLoadingHistogramData ? (
+            ) : isLoadingHistogramData || isLoadingSparklineData ? (
               <Flex alignItems='center' justifyContent='center' padding={2}>
                 <Spinner size='sm' />
               </Flex>
@@ -117,7 +123,7 @@ export const FilterBox = ({
                     <D3Histogram data={histogramData} height={75} width={173} />
                   ) : (
                     <SparklineChart
-                      data={sparklineMockData}
+                      data={sparklineData}
                       height={100}
                       width={173}
                     />

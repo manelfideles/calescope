@@ -1,4 +1,7 @@
+import { groupBy } from 'lodash';
 import { LineSeries, FlexibleXYPlot } from 'react-vis';
+import { getRandomColor } from '../../utils/mockData';
+// import { useGraphSlider } from '../../hooks/useGraphSlider';
 
 interface SparklineChartProps {
   data: any[];
@@ -11,14 +14,30 @@ export const SparklineChart = ({
   width,
   height,
 }: SparklineChartProps) => {
-  const dataByVariable = [];
+  // const { mode, sliderRange, sliderValues } = useGraphSlider();
+  const dataByVariable = Object.entries(groupBy(data, 'variable_id')).map(
+    ([variable_id, variable_values]) => ({
+      variable_id,
+      values: variable_values.map(({ altitude, average_value }) => ({
+        x: altitude,
+        y: average_value,
+      })),
+    })
+  );
+  console.log(dataByVariable);
   return (
     <FlexibleXYPlot
       height={height}
       width={width}
       margin={{ left: 0, top: 5, bottom: 0, right: 0 }}
     >
-      <LineSeries color='tomato' curve='curveMonotoneX' data={data} />
+      {dataByVariable.map(({ variable_id, values }) => (
+        <LineSeries
+          color={getRandomColor()}
+          curve='curveMonotoneX'
+          data={values}
+        />
+      ))}
     </FlexibleXYPlot>
   );
 };
