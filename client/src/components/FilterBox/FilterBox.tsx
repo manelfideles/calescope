@@ -29,7 +29,7 @@ export const FilterBox = ({
   title,
   withGraphComponent,
   graphType,
-  variableColor
+  variableColor,
 }: FilterBoxProps) => {
   const { isOpen, onToggle } = useDisclosure();
   const {
@@ -46,7 +46,12 @@ export const FilterBox = ({
 
   return (
     <>
-      <Card title={title} onToggle={onToggle} isOpen={isOpen} variableColor={variableColor}>
+      <Card
+        title={title}
+        onToggle={onToggle}
+        isOpen={isOpen}
+        variableColor={variableColor}
+      >
         <Collapse in={isOpen} animateOpacity>
           <GridItem marginTop={2}>
             <FormInput

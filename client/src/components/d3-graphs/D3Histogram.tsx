@@ -53,13 +53,9 @@ export const D3Histogram = ({
     [bins]
   );
 
-  const graphStyle = {
-    marginBottom: '-10px',
-  };
-
   return (
     <D3GraphTemplate
-      childStyle={graphStyle}
+      childStyle={{ marginBottom: '-10px' }}
       graphId='histogram'
       width={width}
       height={height}

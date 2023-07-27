@@ -25,17 +25,7 @@ import { User } from '../../utils/types';
 import { useSidebarFormValues } from '../../hooks/useSidebarFormValues';
 import { useLocalStorage } from 'usehooks-ts';
 import { Link as ReactRouterLink } from 'react-router-dom';
-
-const defaultUserValues: User = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  userSettings: {
-    variables: [],
-    unitSystem: 'metric',
-  },
-};
+import { getDefaultUserValues } from '../../utils/mockData';
 
 export const BottomBar = () => {
   const [selectedVariableId, setSelectedVariableId] = useState(1);
@@ -45,7 +35,7 @@ export const BottomBar = () => {
       userSettings: { variables },
     },
     _setSettings,
-  ] = useLocalStorage<User>('settings', defaultUserValues);
+  ] = useLocalStorage<User>('settings', getDefaultUserValues());
   const { locations, removeLocation, toggleLocationVisibility } =
     useSelectedLocations();
   const { altitude, time, ...dynamicVariables } = useSidebarFormValues();
@@ -59,14 +49,16 @@ export const BottomBar = () => {
     // TODO @CS-31:
     // These values will be controlled by the sidebar context
     params: {
-      min_altitude: altitude.mode === 'value' ? altitude.val : altitude.val[0],
+      min_altitude:
+        altitude.mode === 'value' ? altitude.val : altitude.val[0] || 0,
       max_altitude:
-        altitude.mode === 'value' ? altitude.val + 1 : altitude.val[1],
+        altitude.mode === 'value' ? altitude.val + 1 : altitude.val[1] || 1,
       variable_ranges: Object.values(dynamicVariables).map((variable) => ({
         variable_id: variable.id,
-        min_value: variable.mode === 'value' ? variable.val : variable.val[0],
+        min_value:
+          variable.mode === 'value' ? variable.val : variable.val[0] || 0,
         max_value:
-          variable.mode === 'value' ? variable.val + 1 : variable.val[1],
+          variable.mode === 'value' ? variable.val + 1 : variable.val[1] || 1,
       })),
       selected_location_ids: map(locations, 'locationId'),
     },

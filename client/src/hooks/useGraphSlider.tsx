@@ -10,6 +10,7 @@ import { useSelectedLocations } from './useSelectedLocations';
 import { useRPC } from './useRPC';
 import { useLocalStorage } from 'usehooks-ts';
 import { User } from '../utils/types';
+import { getDefaultUserValues } from '../utils/mockData';
 
 interface GraphSliderProviderProps {
   children: React.ReactNode;
@@ -42,17 +43,6 @@ const initialState = {
   isLoadingSparklineData: true,
 };
 
-const defaultUserValues: User = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  userSettings: {
-    variables: [],
-    unitSystem: 'metric',
-  },
-};
-
 export const GraphSliderContext =
   createContext<GraphSliderContextInterface>(initialState);
 
@@ -72,7 +62,7 @@ export const GraphSliderContextProvider = ({
       userSettings: { variables },
     },
     _setSettings,
-  ] = useLocalStorage<User>('settings', defaultUserValues);
+  ] = useLocalStorage<User>('settings', getDefaultUserValues());
   const [sliderValues, setSliderValues] = useState<number[]>([0, 1]);
   const [mode, setMode] = useState('range');
   const { locations } = useSelectedLocations();
@@ -120,7 +110,6 @@ export const GraphSliderContextProvider = ({
   });
 
   useEffect(() => {
-    console.log({ sparklineData });
     if (!isLoadingSliderRange && variableSliderRange) {
       if (variableSliderRange?.[0]?.min_value != null) {
         const formattedRange = [
@@ -140,11 +129,16 @@ export const GraphSliderContextProvider = ({
           histogramData.map((d: Record<string, number>) => d.variable_value)
         );
       }
-      if (!isLoadingSparklineData && sparklineData) {
-        setAvgValueData(sparklineData);
-      }
     }
-  }, [variableSliderRange, isLoadingSliderRange]);
+    if (!isLoadingSparklineData && sparklineData) {
+      setAvgValueData(sparklineData);
+    }
+  }, [
+    variableSliderRange,
+    isLoadingSliderRange,
+    isLoadingSparklineData,
+    sparklineData,
+  ]);
 
   return (
     <GraphSliderContext.Provider

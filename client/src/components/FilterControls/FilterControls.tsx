@@ -4,17 +4,7 @@ import { useMemo } from 'react';
 import { User } from '../../utils/types';
 import { GraphSliderContextProvider } from '../../hooks/useGraphSlider';
 import { useLocalStorage } from 'usehooks-ts';
-
-const defaultUserValues: User = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  userSettings: {
-    variables: [],
-    unitSystem: 'metric',
-  },
-};
+import { getDefaultUserValues } from '../../utils/mockData';
 
 export const FilterControls = () => {
   const [
@@ -22,7 +12,7 @@ export const FilterControls = () => {
       userSettings: { variables },
     },
     _setSettings,
-  ] = useLocalStorage<User>('settings', defaultUserValues);
+  ] = useLocalStorage<User>('settings', getDefaultUserValues());
   const visibleVariables = useMemo(() => {
     return variables
       .filter(({ isSelected }) => isSelected)

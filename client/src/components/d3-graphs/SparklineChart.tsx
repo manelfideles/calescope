@@ -1,8 +1,8 @@
 import { groupBy } from 'lodash';
 import { LineSeries, FlexibleXYPlot } from 'react-vis';
-import { getRandomColor } from '../../utils/mockData';
 import { useLocalStorage } from 'usehooks-ts';
 import { User } from '../../utils/types';
+import { getDefaultUserValues } from '../../utils/mockData';
 // import { useGraphSlider } from '../../hooks/useGraphSlider';
 
 interface SparklineChartProps {
@@ -10,17 +10,6 @@ interface SparklineChartProps {
   height: number;
   width: number;
 }
-
-const defaultUserValues: User = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  userSettings: {
-    variables: [],
-    unitSystem: 'metric',
-  },
-};
 
 export const SparklineChart = ({
   data,
@@ -32,7 +21,7 @@ export const SparklineChart = ({
       userSettings: { variables },
     },
     _setSettings,
-  ] = useLocalStorage<User>('settings', defaultUserValues);
+  ] = useLocalStorage<User>('settings', getDefaultUserValues());
   // const { mode, sliderRange, sliderValues } = useGraphSlider();
   const dataByVariable = Object.entries(groupBy(data, 'variable_id')).map(
     ([variable_id, variable_values]) => ({

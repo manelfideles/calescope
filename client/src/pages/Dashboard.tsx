@@ -9,17 +9,7 @@ import { Form } from '../components/Forms/Form';
 import { SelectedLocationsContextProvider } from '../hooks/useSelectedLocations';
 import { SliderValuesType, User } from '../utils/types';
 import { useMemo } from 'react';
-
-const defaultUserValues: User = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  userSettings: {
-    variables: [],
-    unitSystem: 'metric',
-  },
-};
+import { getDefaultUserValues } from '../utils/mockData';
 
 export const Dashboard = () => {
   const [
@@ -27,7 +17,7 @@ export const Dashboard = () => {
       userSettings: { variables },
     },
     _setSettings,
-  ] = useLocalStorage<User>('settings', defaultUserValues);
+  ] = useLocalStorage<User>('settings', getDefaultUserValues());
 
   const defaultValues = useMemo(
     () =>

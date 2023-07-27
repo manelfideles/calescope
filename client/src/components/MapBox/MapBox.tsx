@@ -50,7 +50,7 @@ export const MapBox = () => {
     convertToJson: true,
     params: {},
   });
-  const { data: idwData } = useRPC({
+  /* const { data: idwData } = useRPC({
     // TODO @CS-31:
     // These values will be controlled by the sidebar context
     rpcName: 'get_filtered_values',
@@ -63,9 +63,9 @@ export const MapBox = () => {
       // only uses the currently selected locations for the IDW calculation
       selected_location_ids: map(locations, 'locationId'),
     },
-  });
+  }); */
 
-  const toggleIdwLayerCreation = (layerId: string = IDW_LAYER_ID) => {
+  /* const toggleIdwLayerCreation = (layerId: string = IDW_LAYER_ID) => {
     if (JSON.stringify(features) !== '{}') {
       try {
         mapRef.current?.getMap().removeLayer(layerId);
@@ -86,7 +86,7 @@ export const MapBox = () => {
     } else if (mapRef.current?.getLayer(layerId)) {
       mapRef.current?.getMap().removeLayer(layerId);
     }
-  };
+  }; */
 
   const onClick = (event: mapboxgl.MapLayerMouseEvent) => {
     const feature = event.features?.[0];
@@ -138,12 +138,12 @@ export const MapBox = () => {
   //   );
   // }, [idwData]);
 
-  useEffect(
+  /* useEffect(
     () => toggleIdwLayerCreation(),
     [JSON.stringify(features), idwData]
-  );
+  ); */
 
-  const onUpdate = useCallback(
+  /* const onUpdate = useCallback(
     (ev: any) => {
       mapRef.current?.getMap().removeLayer('interpolation-layer');
       setFeatures((currFeatures) => {
@@ -155,7 +155,7 @@ export const MapBox = () => {
       });
     },
     [idwData]
-  );
+  ); */
 
   const selectedLocationsFilter = useMemo(
     () => [
@@ -209,8 +209,8 @@ export const MapBox = () => {
               polygon: true,
               trash: true,
             }}
-            onCreate={onUpdate}
-            onUpdate={onUpdate}
+            /* onCreate={onUpdate}
+            onUpdate={onUpdate} */
             onDelete={() => setFeatures({})}
           />
         )}
