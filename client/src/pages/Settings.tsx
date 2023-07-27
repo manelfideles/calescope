@@ -26,6 +26,7 @@ import { useClient } from 'react-supabase';
 import { toLower, startCase } from 'lodash';
 import { UploadForm } from '../components/Forms/UploadForm';
 import { useLocalStorage } from 'usehooks-ts';
+import { getRandomColor } from '../utils/mockData';
 
 const defaultUserValues: User = {
   firstName: '',
@@ -98,6 +99,7 @@ export const Settings = () => {
         id: variable.id,
         name: formatVariableName(variable.name),
         isSelected: false,
+        color: getRandomColor(),
       }));
       setSettings({
         ...settings,

@@ -21,6 +21,7 @@ export type Variable = {
   id: number;
   name: string;
   isSelected: boolean;
+  color: string;
 };
 
 export type SignUpInputs = {

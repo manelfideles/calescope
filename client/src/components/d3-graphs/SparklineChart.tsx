@@ -1,6 +1,8 @@
 import { groupBy } from 'lodash';
 import { LineSeries, FlexibleXYPlot } from 'react-vis';
 import { getRandomColor } from '../../utils/mockData';
+import { useLocalStorage } from 'usehooks-ts';
+import { User } from '../../utils/types';
 // import { useGraphSlider } from '../../hooks/useGraphSlider';
 
 interface SparklineChartProps {
@@ -9,11 +11,28 @@ interface SparklineChartProps {
   width: number;
 }
 
+const defaultUserValues: User = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  userSettings: {
+    variables: [],
+    unitSystem: 'metric',
+  },
+};
+
 export const SparklineChart = ({
   data,
   width,
   height,
 }: SparklineChartProps) => {
+  const [
+    {
+      userSettings: { variables },
+    },
+    _setSettings,
+  ] = useLocalStorage<User>('settings', defaultUserValues);
   // const { mode, sliderRange, sliderValues } = useGraphSlider();
   const dataByVariable = Object.entries(groupBy(data, 'variable_id')).map(
     ([variable_id, variable_values]) => ({
@@ -24,7 +43,6 @@ export const SparklineChart = ({
       })),
     })
   );
-  console.log(dataByVariable);
   return (
     <FlexibleXYPlot
       height={height}
@@ -33,7 +51,9 @@ export const SparklineChart = ({
     >
       {dataByVariable.map(({ variable_id, values }) => (
         <LineSeries
-          color={getRandomColor()}
+          color={
+            variables.filter(({ id }) => id === Number(variable_id))[0].color
+          }
           curve='curveMonotoneX'
           data={values}
         />

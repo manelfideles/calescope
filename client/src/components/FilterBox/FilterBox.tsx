@@ -17,22 +17,19 @@ import { useFormContext } from 'react-hook-form';
 import { FormInput } from '../Forms/FormInput';
 import { D3Histogram } from '../d3-graphs/D3Histogram';
 import { SparklineChart } from '../d3-graphs/SparklineChart';
-import { generateAreaChartData } from '../../utils/mockData';
 
 interface FilterBoxProps {
   title: string;
   withGraphComponent?: boolean;
   graphType?: 'sparkline' | 'histogram';
+  variableColor?: string;
 }
-
-const MOCK_DATA = generateAreaChartData(25, 35);
-
-console.log({ MOCK_DATA });
 
 export const FilterBox = ({
   title,
   withGraphComponent,
   graphType,
+  variableColor
 }: FilterBoxProps) => {
   const { isOpen, onToggle } = useDisclosure();
   const {
@@ -49,7 +46,7 @@ export const FilterBox = ({
 
   return (
     <>
-      <Card title={title} onToggle={onToggle} isOpen={isOpen}>
+      <Card title={title} onToggle={onToggle} isOpen={isOpen} variableColor={variableColor}>
         <Collapse in={isOpen} animateOpacity>
           <GridItem marginTop={2}>
             <FormInput

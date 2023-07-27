@@ -26,10 +26,15 @@ export const FilterControls = () => {
   const visibleVariables = useMemo(() => {
     return variables
       .filter(({ isSelected }) => isSelected)
-      .map(({ name, id }) => (
+      .map(({ name, id, color }) => (
         <GridItem padding={2} key={id}>
           <GraphSliderContextProvider variableId={id}>
-            <FilterBox title={name} withGraphComponent graphType='histogram' />
+            <FilterBox
+              title={name}
+              withGraphComponent
+              graphType='histogram'
+              variableColor={color}
+            />
           </GraphSliderContextProvider>
         </GridItem>
       ));
