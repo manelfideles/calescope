@@ -26,17 +26,7 @@ import { useClient } from 'react-supabase';
 import { toLower, startCase } from 'lodash';
 import { UploadForm } from '../components/Forms/UploadForm';
 import { useLocalStorage } from 'usehooks-ts';
-
-const defaultUserValues: User = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  userSettings: {
-    variables: [],
-    unitSystem: 'metric',
-  },
-};
+import { getDefaultUserValues, getRandomColor } from '../utils/mockData';
 
 export const Settings = () => {
   const {
@@ -50,7 +40,7 @@ export const Settings = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [settings, setSettings] = useLocalStorage<User>(
     'settings',
-    defaultUserValues
+    getDefaultUserValues()
   );
   const form = useForm<Omit<User, 'email' & 'password'>>({
     defaultValues: settings,
@@ -98,6 +88,7 @@ export const Settings = () => {
         id: variable.id,
         name: formatVariableName(variable.name),
         isSelected: false,
+        color: getRandomColor(),
       }));
       setSettings({
         ...settings,

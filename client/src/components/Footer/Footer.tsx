@@ -1,9 +1,15 @@
 import { Flex, Link } from '@chakra-ui/react';
 import { FiExternalLink } from 'react-icons/fi';
 
-export const Footer = () => {
+export const Footer = ({ bgColor = 'gray.50' }: { bgColor?: string }) => {
   return (
-    <Flex alignItems='center' justifyContent='center' py={10} bg='gray.50'>
+    <Flex
+      alignItems='center'
+      justifyContent='center'
+      py={10}
+      bg={bgColor}
+      color={bgColor && 'white'}
+    >
       Made with ❤ by{' '}
       <Link
         display='flex'

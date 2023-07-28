@@ -12,7 +12,13 @@ export const routes: Route[] = [
   {
     path: '/',
     pageName: '🔥',
-    element: <PageTemplate pageContent={<Home />} />,
+    element: (
+      <PageTemplate
+        pageContent={<Home />}
+        hasFixedHeight={false}
+        footerBgColor='purple.600'
+      />
+    ),
   },
   {
     path: '/dashboard',

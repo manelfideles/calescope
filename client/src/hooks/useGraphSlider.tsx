@@ -8,7 +8,9 @@ import {
 } from 'react';
 import { useSelectedLocations } from './useSelectedLocations';
 import { useRPC } from './useRPC';
-import { countBy, max, min } from 'lodash';
+import { useLocalStorage } from 'usehooks-ts';
+import { User } from '../utils/types';
+import { getDefaultUserValues } from '../utils/mockData';
 
 interface GraphSliderProviderProps {
   children: React.ReactNode;
@@ -24,6 +26,8 @@ interface GraphSliderContextInterface {
   isLoadingSliderRange: boolean;
   histogramData: any[];
   isLoadingHistogramData: boolean;
+  sparklineData: any[];
+  isLoadingSparklineData: boolean;
 }
 
 const initialState = {
@@ -35,6 +39,8 @@ const initialState = {
   isLoadingSliderRange: true,
   histogramData: [],
   isLoadingHistogramData: true,
+  sparklineData: [],
+  isLoadingSparklineData: true,
 };
 
 export const GraphSliderContext =
@@ -51,11 +57,18 @@ export const GraphSliderContextProvider = ({
   children,
   variableId,
 }: GraphSliderProviderProps) => {
+  const [
+    {
+      userSettings: { variables },
+    },
+    _setSettings,
+  ] = useLocalStorage<User>('settings', getDefaultUserValues());
   const [sliderValues, setSliderValues] = useState<number[]>([0, 1]);
   const [mode, setMode] = useState('range');
   const { locations } = useSelectedLocations();
   const [sliderRange, setSliderRange] = useState<number[]>([]);
   const [countData, setCountData] = useState<any>([]);
+  const [avgValueData, setAvgValueData] = useState<any>([]);
   const { data: variableSliderRange, isLoading: isLoadingSliderRange } = useRPC(
     {
       rpcName: 'get_variable_value_range',
@@ -82,6 +95,19 @@ export const GraphSliderContextProvider = ({
           : locations?.map(({ locationId }) => locationId),
     },
   });
+  const { data: sparklineData, isLoading: isLoadingSparklineData } = useRPC({
+    rpcName: 'get_average_values_for_altitude',
+    convertToJson: false,
+    params: {
+      selected_location_ids:
+        locations.length === 0
+          ? [...Array(20).keys()]
+          : locations?.map(({ locationId }) => locationId),
+      variable_ids: variables
+        .filter(({ isSelected }) => isSelected)
+        .map(({ id }) => id),
+    },
+  });
 
   useEffect(() => {
     if (!isLoadingSliderRange && variableSliderRange) {
@@ -104,7 +130,15 @@ export const GraphSliderContextProvider = ({
         );
       }
     }
-  }, [variableSliderRange, isLoadingSliderRange]);
+    if (!isLoadingSparklineData && sparklineData) {
+      setAvgValueData(sparklineData);
+    }
+  }, [
+    variableSliderRange,
+    isLoadingSliderRange,
+    isLoadingSparklineData,
+    sparklineData,
+  ]);
 
   return (
     <GraphSliderContext.Provider
@@ -117,6 +151,8 @@ export const GraphSliderContextProvider = ({
         isLoadingSliderRange,
         histogramData: countData,
         isLoadingHistogramData,
+        sparklineData: avgValueData,
+        isLoadingSparklineData,
       }}
     >
       {children}

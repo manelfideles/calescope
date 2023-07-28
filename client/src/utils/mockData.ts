@@ -1,20 +1,23 @@
-import { Settings } from './types';
+import { Settings, User } from './types';
 
 export const userSettings: Settings = {
   variables: [
-    { id: 1, name: 'Temperature', isSelected: true },
-    { id: 2, name: 'Humidity', isSelected: true },
-    { id: 3, name: 'Pressure', isSelected: true },
-    { id: 4, name: 'Example 4', isSelected: false },
-    { id: 5, name: 'Example 5', isSelected: false },
-    { id: 6, name: 'Example 6', isSelected: false },
-    { id: 7, name: 'Example 7', isSelected: false },
-    { id: 8, name: 'Example 8', isSelected: false },
+    { id: 1, name: 'Temperature', isSelected: true, color: 'black' },
+    { id: 2, name: 'Humidity', isSelected: true, color: 'black' },
+    { id: 3, name: 'Pressure', isSelected: true, color: 'black' },
+    { id: 4, name: 'Example 4', isSelected: false, color: 'black' },
+    { id: 5, name: 'Example 5', isSelected: false, color: 'black' },
+    { id: 6, name: 'Example 6', isSelected: false, color: 'black' },
+    { id: 7, name: 'Example 7', isSelected: false, color: 'black' },
+    { id: 8, name: 'Example 8', isSelected: false, color: 'black' },
   ],
   unitSystem: 'metric',
 };
 
-const generateAreaChartData = (length: number = 10, upperBound: number = 40) =>
+export const generateAreaChartData = (
+  length: number = 10,
+  upperBound: number = 40
+) =>
   Array(length)
     .fill({})
     .map((_e, i) => ({ x: i, y: Math.random() * upperBound }));
@@ -85,4 +88,18 @@ export const getRandomColor = () => {
 
 export const generateHistogramData = (length: number, n_buckets: number) => {
   return Array.from({ length }, () => Math.floor(Math.random() * n_buckets));
+};
+
+export const getDefaultUserValues = () => {
+  const defaultValues: User = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    userSettings: {
+      variables: [],
+      unitSystem: 'metric',
+    },
+  };
+  return defaultValues;
 };

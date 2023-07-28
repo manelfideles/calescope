@@ -8,16 +8,22 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { BiChevronDown, BiChevronUp } from 'react-icons/bi';
-import { FiHelpCircle } from 'react-icons/fi';
 
 interface CardProps {
   children: React.ReactNode;
   title: string;
   onToggle: () => void;
   isOpen: boolean;
+  variableColor?: string;
 }
 
-export const Card = ({ children, title, onToggle, isOpen }: CardProps) => {
+export const Card = ({
+  children,
+  title,
+  onToggle,
+  isOpen,
+  variableColor,
+}: CardProps) => {
   return (
     <Box
       rounded='lg'
@@ -31,7 +37,7 @@ export const Card = ({ children, title, onToggle, isOpen }: CardProps) => {
           alignItems='center'
           justifyContent='space-between'
         >
-          <Icon as={FiHelpCircle} />
+          <Box ml='3px' p={2} rounded='lg' bgColor={variableColor} />
           <Text fontWeight='bold'>{title}</Text>
           <IconButton
             bg='none'

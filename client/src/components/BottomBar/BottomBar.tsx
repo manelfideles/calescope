@@ -19,23 +19,13 @@ import { useMemo, useState } from 'react';
 import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 import { useRPC } from '../../hooks/useRPC';
 import '../../../node_modules/react-vis/dist/style.css';
-import { AreaChart } from '../d3-graphs/AreaChart';
+import { LineChart } from '../d3-graphs/LineChart';
 import { map, omit, startCase } from 'lodash';
 import { User } from '../../utils/types';
 import { useSidebarFormValues } from '../../hooks/useSidebarFormValues';
 import { useLocalStorage } from 'usehooks-ts';
 import { Link as ReactRouterLink } from 'react-router-dom';
-
-const defaultUserValues: User = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  userSettings: {
-    variables: [],
-    unitSystem: 'metric',
-  },
-};
+import { getDefaultUserValues } from '../../utils/mockData';
 
 export const BottomBar = () => {
   const [selectedVariableId, setSelectedVariableId] = useState(1);
@@ -45,40 +35,30 @@ export const BottomBar = () => {
       userSettings: { variables },
     },
     _setSettings,
-  ] = useLocalStorage<User>('settings', defaultUserValues);
+  ] = useLocalStorage<User>('settings', getDefaultUserValues());
   const { locations, removeLocation, toggleLocationVisibility } =
     useSelectedLocations();
   const { altitude, time, ...dynamicVariables } = useSidebarFormValues();
-  console.log({ dynamicVariables });
   const {
     data: areaChartData,
     error,
     isLoading: isLoadingChartData,
   } = useRPC({
-    /* 
-    SELECT * FROM get_filtered_values(
-      '[
-        {"variable_id": 1, "min_value": 17, "max_value": 32}, 
-        {"variable_id": 8, "min_value": 10, "max_value": 22}
-      ]',
-      100, -- Replace with min_altitude
-      200, -- Replace with max_altitude
-      '{1, 2}' -- Replace with selected_location_ids
-    );
-     */
     rpcName: 'get_filtered_values',
     convertToJson: false,
     // TODO @CS-31:
     // These values will be controlled by the sidebar context
     params: {
-      min_altitude: altitude.mode === 'value' ? altitude.val : altitude.val[0],
+      min_altitude:
+        altitude.mode === 'value' ? altitude.val : altitude.val[0] || 0,
       max_altitude:
-        altitude.mode === 'value' ? altitude.val + 1 : altitude.val[1],
+        altitude.mode === 'value' ? altitude.val + 1 : altitude.val[1] || 1,
       variable_ranges: Object.values(dynamicVariables).map((variable) => ({
         variable_id: variable.id,
-        min_value: variable.mode === 'value' ? variable.val : variable.val[0],
+        min_value:
+          variable.mode === 'value' ? variable.val : variable.val[0] || 0,
         max_value:
-          variable.mode === 'value' ? variable.val + 1 : variable.val[1],
+          variable.mode === 'value' ? variable.val + 1 : variable.val[1] || 1,
       })),
       selected_location_ids: map(locations, 'locationId'),
     },
@@ -233,7 +213,7 @@ export const BottomBar = () => {
                     ))}
                   </Select>
                   {areaChartData && areaChartData.length > 0 ? (
-                    <AreaChart
+                    <LineChart
                       selectedVariableId={selectedVariableId}
                       data={areaChartData}
                       seriesColor={map(locations, (elem) =>

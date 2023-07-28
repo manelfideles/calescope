@@ -3,7 +3,6 @@ import { useMemo } from 'react';
 import {
   AreaSeriesPoint,
   FlexibleXYPlot,
-  Highlight,
   HorizontalGridLines,
   LineMarkSeries,
   XAxis,
@@ -13,17 +12,17 @@ import { MetricSystemUnits } from '../../utils/misc';
 import { Tag, TagLeftIcon, TagLabel, Box, Text } from '@chakra-ui/react';
 import { BsExclamationLg } from 'react-icons/bs';
 
-interface AreaChartProps {
+interface LineChartProps {
   data?: (any[] | AreaSeriesPoint)[];
   seriesColor: any;
   selectedVariableId: number;
 }
 
-export const AreaChart = ({
+export const LineChart = ({
   data,
   seriesColor,
   selectedVariableId,
-}: AreaChartProps) => {
+}: LineChartProps) => {
   const dataByLocation = Object.entries(groupBy(data, 'location_id')).map(
     (elem) => {
       return {
@@ -91,10 +90,6 @@ export const AreaChart = ({
               color={locationData.isVisible ? locationData.color : 'lightgray'}
             />
           ))}
-          <Highlight
-            onBrushEnd={(area: any) => console.log('onBrushEnd:', { area })}
-            onDrag={(area: any) => console.log('onDrag:', { area })}
-          />
         </FlexibleXYPlot>
       ) : (
         <Box

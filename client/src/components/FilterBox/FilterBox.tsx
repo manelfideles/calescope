@@ -16,23 +16,42 @@ import './Calendar.css';
 import { useFormContext } from 'react-hook-form';
 import { FormInput } from '../Forms/FormInput';
 import { D3Histogram } from '../d3-graphs/D3Histogram';
+import { SparklineChart } from '../d3-graphs/SparklineChart';
 
 interface FilterBoxProps {
   title: string;
   withGraphComponent?: boolean;
+  graphType?: 'sparkline' | 'histogram';
+  variableColor?: string;
 }
 
-export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
+export const FilterBox = ({
+  title,
+  withGraphComponent,
+  graphType,
+  variableColor,
+}: FilterBoxProps) => {
   const { isOpen, onToggle } = useDisclosure();
-  const { histogramData, isLoadingHistogramData, setMode, mode } =
-    useGraphSlider();
+  const {
+    histogramData,
+    isLoadingHistogramData,
+    sparklineData,
+    isLoadingSparklineData,
+    setMode,
+    mode,
+  } = useGraphSlider();
   const { register } = useFormContext();
   const formatInsertedDate = (date: string) =>
     !date.length ? '' : date.replace('T', ' ').slice(0, 16) + ':00+00';
 
   return (
     <>
-      <Card title={title} onToggle={onToggle} isOpen={isOpen}>
+      <Card
+        title={title}
+        onToggle={onToggle}
+        isOpen={isOpen}
+        variableColor={variableColor}
+      >
         <Collapse in={isOpen} animateOpacity>
           <GridItem marginTop={2}>
             <FormInput
@@ -94,7 +113,7 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
                   </FormInput>
                 )}
               </>
-            ) : isLoadingHistogramData ? (
+            ) : isLoadingHistogramData || isLoadingSparklineData ? (
               <Flex alignItems='center' justifyContent='center' padding={2}>
                 <Spinner size='sm' />
               </Flex>
@@ -102,7 +121,15 @@ export const FilterBox = ({ title, withGraphComponent }: FilterBoxProps) => {
               <GraphSlider
                 title={title.toLocaleLowerCase()}
                 graphComponent={
-                  <D3Histogram data={histogramData} height={75} width={173} />
+                  graphType === 'histogram' ? (
+                    <D3Histogram data={histogramData} height={75} width={173} />
+                  ) : (
+                    <SparklineChart
+                      data={sparklineData}
+                      height={100}
+                      width={173}
+                    />
+                  )
                 }
               />
             )}

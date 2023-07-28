@@ -4,17 +4,7 @@ import { useMemo } from 'react';
 import { User } from '../../utils/types';
 import { GraphSliderContextProvider } from '../../hooks/useGraphSlider';
 import { useLocalStorage } from 'usehooks-ts';
-
-const defaultUserValues: User = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  userSettings: {
-    variables: [],
-    unitSystem: 'metric',
-  },
-};
+import { getDefaultUserValues } from '../../utils/mockData';
 
 export const FilterControls = () => {
   const [
@@ -22,14 +12,19 @@ export const FilterControls = () => {
       userSettings: { variables },
     },
     _setSettings,
-  ] = useLocalStorage<User>('settings', defaultUserValues);
+  ] = useLocalStorage<User>('settings', getDefaultUserValues());
   const visibleVariables = useMemo(() => {
     return variables
       .filter(({ isSelected }) => isSelected)
-      .map(({ name, id }) => (
+      .map(({ name, id, color }) => (
         <GridItem padding={2} key={id}>
           <GraphSliderContextProvider variableId={id}>
-            <FilterBox title={name} withGraphComponent />
+            <FilterBox
+              title={name}
+              withGraphComponent
+              graphType='histogram'
+              variableColor={color}
+            />
           </GraphSliderContextProvider>
         </GridItem>
       ));
@@ -42,13 +37,17 @@ export const FilterControls = () => {
       {/* Static Variables */}
       <GridItem padding={2} key='time'>
         <GraphSliderContextProvider variableId={-2}>
-          <FilterBox title='Time' withGraphComponent={false} />
+          <FilterBox title='Time' />
         </GraphSliderContextProvider>
       </GridItem>
       <GridItem padding={2} key='altitude'>
         {/* in the RPC, we use -1 to as the "altitude" variable's key */}
         <GraphSliderContextProvider variableId={-1}>
-          <FilterBox title='Altitude' withGraphComponent />
+          <FilterBox
+            title='Altitude'
+            withGraphComponent
+            graphType='sparkline'
+          />
         </GraphSliderContextProvider>
       </GridItem>
     </Grid>
