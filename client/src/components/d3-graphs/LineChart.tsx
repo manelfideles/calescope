@@ -1,5 +1,5 @@
 import { groupBy, pick, startCase, uniqBy } from 'lodash';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   AreaSeriesPoint,
   FlexibleXYPlot,
@@ -23,17 +23,22 @@ export const LineChart = ({
   seriesColor,
   selectedVariableId,
 }: LineChartProps) => {
-  const dataByLocation = Object.entries(groupBy(data, 'location_id')).map(
+  const processedData = Object.entries(groupBy(data, 'location_id')).map(
     (elem) => {
       return {
         locationId: Number(elem[0]),
         variable: uniqBy(
           elem[1].map((point) => ({
             ...pick(point, ['measured_variable_id', 'variable_name']),
-            values: groupBy(elem[1], 'measured_variable_id')[
-              // @ts-ignore
-              point.measured_variable_id as unknown as string
-            ],
+            values: Object.values(
+              groupBy(
+                groupBy(elem[1], 'measured_variable_id')[
+                  // @ts-ignore
+                  point.measured_variable_id as unknown as string
+                ],
+                'measurement_id'
+              )
+            ),
           })),
           'measured_variable_id'
         ),
@@ -47,6 +52,7 @@ export const LineChart = ({
       };
     }
   );
+  console.log({ processedData });
 
   const xAxisTitle = useMemo(
     () =>
@@ -58,6 +64,16 @@ export const LineChart = ({
       ),
     [selectedVariableId]
   );
+
+  const [isHovered, setIsHovered] = useState<{ id: number; hover: boolean }[]>(
+    []
+  );
+
+  const handleSeriesMouseHover = (id: number, hover: boolean) => {
+    setIsHovered((hoveredSeries) => [...hoveredSeries, { id, hover }]);
+    // popup with measurement start_date and end_date
+    // here˙
+  };
 
   return (
     <>
@@ -78,18 +94,51 @@ export const LineChart = ({
               })`
             }
           />
-          {dataByLocation?.map((locationData) => (
-            <LineMarkSeries
-              // @ts-ignore
-              data={
-                locationData.variable.filter(
-                  (v: any) => v.measured_variable_id === selectedVariableId
-                )?.[0]?.values
-              }
-              opacity={locationData.isVisible ? 0.5 : 0.2}
-              color={locationData.isVisible ? locationData.color : 'lightgray'}
-            />
-          ))}
+          {processedData?.map((locationData) =>
+            locationData.variable
+              .filter(
+                (v: any) => v.measured_variable_id === selectedVariableId
+              )?.[0]
+              ?.values.map((measurements) => {
+                return (
+                  <LineMarkSeries
+                    data={measurements}
+                    opacity={
+                      /* isHovered.length &&
+                      isHovered.filter(
+                        // @ts-ignore
+                        (hs) => hs.id === measurements[0].measurement_id
+                      )[0].hover && */
+                      locationData.isVisible ? 0.4 : 0.1
+                    }
+                    onSeriesMouseOver={() => {
+                      console.log(
+                        isHovered.filter(
+                          // @ts-ignore
+                          (hs) => hs.id === measurements[0].measurement_id
+                        )[0]
+                      );
+                      console.log(measurements[0]);
+                      handleSeriesMouseHover(
+                        // @ts-ignore
+                        measurements[0].measurement_id,
+                        true
+                      );
+                    }}
+                    onSeriesMouseOut={() =>
+                      handleSeriesMouseHover(
+                        // @ts-ignore
+                        measurements[0].measurement_id,
+                        false
+                      )
+                    }
+                    color={
+                      locationData.isVisible ? locationData.color : 'lightgray'
+                    }
+                  />
+                );
+              })
+          )}
         </FlexibleXYPlot>
       ) : (
         <Box
