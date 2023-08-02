@@ -50,6 +50,9 @@ export const MapBox = () => {
     convertToJson: true,
     params: {},
   });
+
+  console.log({ measurementCountPerLocation });
+
   /* const { data: idwData } = useRPC({
     // TODO @CS-31:
     // These values will be controlled by the sidebar context
@@ -111,7 +114,11 @@ export const MapBox = () => {
     // clicked feature is a specific measurement
     else {
       if (feature)
-        addLocation(feature?.properties!.name, feature?.properties!.id);
+        addLocation(
+          feature?.properties!.name,
+          feature?.properties!.id,
+          feature?.properties!.color
+        );
     }
   };
 

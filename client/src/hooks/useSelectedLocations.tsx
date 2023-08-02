@@ -2,7 +2,6 @@ import { createContext, useContext, useState } from 'react';
 import { SelectedLocation } from '../utils/types';
 import { includes } from 'lodash';
 import { useToast } from '@chakra-ui/react';
-import { getRandomColor } from '../utils/mockData';
 
 interface SelectedLocationsProviderProps {
   children: React.ReactNode;
@@ -10,7 +9,11 @@ interface SelectedLocationsProviderProps {
 
 interface SelectedLocationsContextInterface {
   locations: SelectedLocation[];
-  addLocation: (locationName: string, locationId: number) => void;
+  addLocation: (
+    locationName: string,
+    locationId: number,
+    locationColor: string
+  ) => void;
   removeLocation: (locationName: string, locationId: number) => void;
   toggleLocationVisibility: (locationId: number) => void;
   isInSelectedLocations: (locationId: number) => boolean;
@@ -45,12 +48,20 @@ export const SelectedLocationsContextProvider = ({
   const isInSelectedLocations = (locationId: number) =>
     locations.some((l) => includes(l, locationId));
 
-  const addLocation = (locationName: string, locationId: number) => {
+  const addLocation = (
+    locationName: string,
+    locationId: number,
+    locationColor: string
+  ) => {
     if (!isInSelectedLocations(locationId)) {
-      const color = getRandomColor();
       setLocations([
         ...locations,
-        { locationName, locationId, isVisible: true, color: color ?? 'black' },
+        {
+          locationName,
+          locationId,
+          isVisible: true,
+          color: locationColor ?? 'black',
+        },
       ]);
       toast({
         status: 'info',

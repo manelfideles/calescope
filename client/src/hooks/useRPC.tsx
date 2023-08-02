@@ -13,7 +13,7 @@ export const useRPC = ({
   rpcName,
   params,
   convertToJson = true,
-  properties = ['id', 'name', 'measurementCount'],
+  properties = ['id', 'name', 'measurementCount', 'color'],
 }: RpcProps) => {
   const supabase = useClient();
   const [data, setData] = useState<any>(undefined);
