@@ -8,10 +8,11 @@ import { SearchBar } from '../components/SearchBar';
 import { Form } from '../components/Forms/Form';
 import { SelectedLocationsContextProvider } from '../hooks/useSelectedLocations';
 import { SliderValuesType, User } from '../utils/types';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { getDefaultUserValues } from '../utils/mockData';
 
 export const Dashboard = () => {
+  const [selectedVariableId, setSelectedVariableId] = useState(1);
   const [
     {
       userSettings: { variables },
@@ -54,8 +55,11 @@ export const Dashboard = () => {
       <Form form={form} onSubmit={debouncedOnSubmit} isReactive>
         <Sidebar />
         <SearchBar />
-        <MapBox />
-        <BottomBar />
+        <MapBox selectedVariableId={selectedVariableId} />
+        <BottomBar
+          selectedVariableId={selectedVariableId}
+          setSelectedVariableId={setSelectedVariableId}
+        />
       </Form>
     </SelectedLocationsContextProvider>
   );
