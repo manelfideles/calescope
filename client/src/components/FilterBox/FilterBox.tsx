@@ -41,8 +41,6 @@ export const FilterBox = ({
     mode,
   } = useGraphSlider();
   const { register } = useFormContext();
-  const formatInsertedDate = (date: string) =>
-    !date.length ? '' : date.replace('T', ' ').slice(0, 16) + ':00+00';
 
   return (
     <>
@@ -90,9 +88,7 @@ export const FilterBox = ({
                     type='datetime-local'
                     defaultValue={new Date().toISOString().slice(0, 16)}
                     mb={4}
-                    {...register('time.val', {
-                      setValueAs: (v) => formatInsertedDate(v),
-                    })}
+                    {...register('time.val.0')}
                   />
                 </FormInput>
                 {mode === 'range' && (
@@ -106,9 +102,7 @@ export const FilterBox = ({
                       type='datetime-local'
                       defaultValue={new Date().toISOString().slice(0, 16)}
                       mb={4}
-                      {...register('time.val', {
-                        setValueAs: (v) => formatInsertedDate(v),
-                      })}
+                      {...register('time.val.1')}
                     />
                   </FormInput>
                 )}

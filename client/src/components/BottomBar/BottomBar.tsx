@@ -27,6 +27,9 @@ import { useLocalStorage } from 'usehooks-ts';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { getDefaultUserValues } from '../../utils/mockData';
 
+const formatInsertedDate = (date: string) =>
+  !date.length ? '' : date.replace('T', ' ').slice(0, 16) + ':00+00';
+
 export const BottomBar = () => {
   const [selectedVariableId, setSelectedVariableId] = useState(1);
   const { onToggle, isOpen } = useDisclosure();
@@ -53,6 +56,11 @@ export const BottomBar = () => {
         altitude.mode === 'value' ? altitude.val : altitude.val[0] || 0,
       max_altitude:
         altitude.mode === 'value' ? altitude.val + 1 : altitude.val[1] || 1,
+      min_timestamp: formatInsertedDate(time.val[0]),
+      max_timestamp:
+        time.mode === 'value'
+          ? formatInsertedDate(time.val[0])
+          : formatInsertedDate(time.val[1]),
       variable_ranges: Object.values(dynamicVariables).map((variable) => ({
         variable_id: variable.id,
         min_value:
