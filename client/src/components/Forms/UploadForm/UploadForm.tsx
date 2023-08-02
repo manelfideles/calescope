@@ -7,6 +7,7 @@ import { Step1, Step2, Step3 } from './steps';
 import { useClient } from 'react-supabase';
 import { useState } from 'react';
 import { removeValueRowsWithOneElement } from '../../../utils/misc';
+import { getRandomColor } from '../../../utils/mockData';
 
 interface UploadFormProps {
   isOpen: boolean;
@@ -37,11 +38,12 @@ export const UploadForm = ({ isOpen, onClose }: UploadFormProps) => {
   const onSubmit = async () => {
     const formValues = form.getValues();
     setIsSubmitting(true);
-    if (!formValues.locationId) {
+    if (formValues.locationId === null) {
       const { data: locationId } = await supabase.rpc('insert_location', {
         name: formValues.locationName,
         lon: formValues.locationLongitude,
         lat: formValues.locationLatitude,
+        color: getRandomColor(),
       });
       formValues['locationId'] = locationId;
     }
