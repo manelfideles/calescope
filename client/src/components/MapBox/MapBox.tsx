@@ -216,8 +216,6 @@ export const MapBox = () => {
               polygon: true,
               trash: true,
             }}
-            /* onCreate={onUpdate}
-            onUpdate={onUpdate} */
             onDelete={() => setFeatures({})}
           />
         )}

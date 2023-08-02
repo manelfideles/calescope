@@ -49,8 +49,6 @@ export const BottomBar = () => {
   } = useRPC({
     rpcName: 'get_filtered_values',
     convertToJson: false,
-    // TODO @CS-31:
-    // These values will be controlled by the sidebar context
     params: {
       min_altitude:
         altitude.mode === 'value' ? altitude.val : altitude.val[0] || 0,
