@@ -1,8 +1,9 @@
-import { groupBy, pick, startCase, uniqBy } from 'lodash';
+import { groupBy, isEqual, pick, startCase, uniqBy } from 'lodash';
 import { useMemo, useState } from 'react';
 import {
   AreaSeriesPoint,
   FlexibleXYPlot,
+  Hint,
   HorizontalGridLines,
   LineMarkSeries,
   XAxis,
@@ -17,6 +18,13 @@ interface LineChartProps {
   seriesColor: any;
   selectedVariableId: number;
 }
+
+const formatInsertedDate = (date: string) => {
+  const d = new Date(date);
+  return `${d.getDate()}/${d.getMonth()}/${d.getFullYear()} ${d.getHours()}h${
+    d.getMinutes() === 0 ? '' : d.getMinutes()
+  }`;
+};
 
 export const LineChart = ({
   data,
@@ -52,7 +60,6 @@ export const LineChart = ({
       };
     }
   );
-  console.log({ processedData });
 
   const xAxisTitle = useMemo(
     () =>
@@ -65,12 +72,11 @@ export const LineChart = ({
     [selectedVariableId]
   );
 
-  const [isHovered, setIsHovered] = useState<{ id: number; hover: boolean }[]>(
-    []
-  );
+  const [hoverSeries, setHoverSeries] = useState<any>(null);
 
-  const handleSeriesMouseHover = (id: number, hover: boolean) => {
-    setIsHovered((hoveredSeries) => [...hoveredSeries, { id, hover }]);
+  const handleSeriesMouseHover = (measurement: any) => {
+    if (isEqual(hoverSeries, measurement)) setHoverSeries(null);
+    else setHoverSeries(measurement);
     // popup with measurement start_date and end_date
     // here˙
   };
@@ -78,7 +84,11 @@ export const LineChart = ({
   return (
     <>
       {selectedVariableId > 0 ? (
-        <FlexibleXYPlot width={425} height={250}>
+        <FlexibleXYPlot
+          width={425}
+          height={250}
+          onMouseLeave={() => setHoverSeries(null)}
+        >
           <HorizontalGridLines />
           <YAxis style={{ fontSize: '90%' }} title='Altitude (m)' />
           <XAxis
@@ -99,45 +109,38 @@ export const LineChart = ({
               .filter(
                 (v: any) => v.measured_variable_id === selectedVariableId
               )?.[0]
-              ?.values.map((measurements) => {
-                return (
-                  <LineMarkSeries
-                    data={measurements}
-                    opacity={
-                      /* isHovered.length &&
-                      isHovered.filter(
-                        // @ts-ignore
-                        (hs) => hs.id === measurements[0].measurement_id
-                      )[0].hover && */
-                      locationData.isVisible ? 0.4 : 0.1
-                    }
-                    onSeriesMouseOver={() => {
-                      console.log(
-                        isHovered.filter(
-                          // @ts-ignore
-                          (hs) => hs.id === measurements[0].measurement_id
-                        )[0]
-                      );
-                      console.log(measurements[0]);
-                      handleSeriesMouseHover(
-                        // @ts-ignore
-                        measurements[0].measurement_id,
-                        true
-                      );
-                    }}
-                    onSeriesMouseOut={() =>
-                      handleSeriesMouseHover(
-                        // @ts-ignore
-                        measurements[0].measurement_id,
-                        false
-                      )
-                    }
-                    color={
-                      locationData.isVisible ? locationData.color : 'lightgray'
-                    }
-                  />
-                );
-              })
+              ?.values.map((measurements, index) => (
+                <LineMarkSeries
+                  data={measurements}
+                  opacity={
+                    !locationData.isVisible
+                      ? 0.1
+                      : isEqual(hoverSeries, measurements[index])
+                      ? 0.75
+                      : 0.4
+                  }
+                  onSeriesMouseOver={() => {
+                    handleSeriesMouseHover(measurements[index]);
+                  }}
+                  onSeriesMouseOut={() =>
+                    handleSeriesMouseHover(measurements[index])
+                  }
+                  color={
+                    locationData.isVisible ? locationData.color : 'lightgray'
+                  }
+                />
+              ))
+          )}
+          {hoverSeries && (
+            <Hint
+              xType='literal'
+              yType='literal'
+              style={{ fontSize: 10 }}
+              value={{
+                'Start Date': formatInsertedDate(hoverSeries.start_date),
+                'End Date': formatInsertedDate(hoverSeries.end_date),
+              }}
+            />
           )}
         </FlexibleXYPlot>
       ) : (
