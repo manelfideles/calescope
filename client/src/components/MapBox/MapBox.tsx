@@ -1,4 +1,12 @@
-import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
+import {
+  useRef,
+  useEffect,
+  useCallback,
+  useState,
+  useMemo,
+  SetStateAction,
+  Dispatch,
+} from 'react';
 import { Map, Source, Layer } from 'react-map-gl';
 import type { MapRef, GeoJSONSource } from 'react-map-gl';
 import { mapboxConfig } from '../../utils/mapbox-config';
@@ -12,8 +20,12 @@ import { map } from 'lodash';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import { useSidebarFormValues } from '../../hooks/useSidebarFormValues';
 
 const IDW_LAYER_ID = 'interpolation-layer';
+
+const formatInsertedDate = (date: string) =>
+  !date.length ? '' : date.replace('T', ' ').slice(0, 16) + ':00+00';
 
 const mapStyle: React.CSSProperties = {
   position: 'absolute',
@@ -30,7 +42,11 @@ type SelectedFeature = {
   type: string;
 };
 
-export const MapBox = () => {
+export const MapBox = ({
+  selectedVariableId,
+}: {
+  selectedVariableId: number;
+}) => {
   const toast = useToast();
   const [features, setFeatures] = useState<Record<string, SelectedFeature>>({});
   const { MAPBOX_TOKEN, centerPoint, defaultZoom } = mapboxConfig;
@@ -40,6 +56,7 @@ export const MapBox = () => {
     longitude: centerPoint[1],
     zoom: defaultZoom,
   };
+  const { altitude, time, ...dynamicVariables } = useSidebarFormValues();
   const { locations, addLocation } = useSelectedLocations();
   const {
     data: measurementCountPerLocation,
@@ -51,24 +68,32 @@ export const MapBox = () => {
     params: {},
   });
 
-  console.log({ measurementCountPerLocation });
-
-  /* const { data: idwData } = useRPC({
-    // TODO @CS-31:
-    // These values will be controlled by the sidebar context
+  // TODO: Como é que lidamos com os valores em falta?
+  // Podemos fazer p.e. os controlos do IDW só aparecerem quando é possível aplicá-lo (?)
+  const { data: idwData } = useRPC({
     rpcName: 'get_filtered_values',
     convertToJson: false,
     params: {
-      min_altitude: 50,
-      max_altitude: 55,
-      min_val: 0,
-      max_val: 500,
-      // only uses the currently selected locations for the IDW calculation
+      min_altitude: altitude.val,
+      max_altitude: altitude.val + 1,
+      min_timestamp: formatInsertedDate(time.val[0]),
+      max_timestamp:
+        time.mode === 'value'
+          ? formatInsertedDate(time.val[0])
+          : formatInsertedDate(time.val[1]),
+      variable_ranges: Object.values(dynamicVariables)
+        .filter((variable) => variable.id === selectedVariableId)
+        .map((variable) => ({
+          variable_id: variable.id,
+          min_value: -500,
+          max_value: 500,
+        })),
+      // use only the currently selected locations for the IDW calculation
       selected_location_ids: map(locations, 'locationId'),
     },
-  }); */
+  });
 
-  /* const toggleIdwLayerCreation = (layerId: string = IDW_LAYER_ID) => {
+  const toggleIdwLayerCreation = (layerId: string = IDW_LAYER_ID) => {
     if (JSON.stringify(features) !== '{}') {
       try {
         mapRef.current?.getMap().removeLayer(layerId);
@@ -89,7 +114,7 @@ export const MapBox = () => {
     } else if (mapRef.current?.getLayer(layerId)) {
       mapRef.current?.getMap().removeLayer(layerId);
     }
-  }; */
+  };
 
   const onClick = (event: mapboxgl.MapLayerMouseEvent) => {
     const feature = event.features?.[0];
@@ -138,19 +163,19 @@ export const MapBox = () => {
     else toast.close(loadingToastId);
   }, [isLoading, locations]);
 
-  // useEffect(() => {
-  //   console.log(
-  //     'idwData: ',
-  //     idwData?.map(({ x, lat, lon }: any) => ({ val: x, lat, lon }))
-  //   );
-  // }, [idwData]);
+  useEffect(() => {
+    console.log(
+      'idwData: ',
+      idwData?.map(({ x, lat, lon }: any) => ({ val: x, lat, lon }))
+    );
+  }, [idwData]);
 
-  /* useEffect(
+  useEffect(
     () => toggleIdwLayerCreation(),
     [JSON.stringify(features), idwData]
-  ); */
+  );
 
-  /* const onUpdate = useCallback(
+  const onUpdate = useCallback(
     (ev: any) => {
       mapRef.current?.getMap().removeLayer('interpolation-layer');
       setFeatures((currFeatures) => {
@@ -162,7 +187,7 @@ export const MapBox = () => {
       });
     },
     [idwData]
-  ); */
+  );
 
   const selectedLocationsFilter = useMemo(
     () => [
@@ -216,8 +241,8 @@ export const MapBox = () => {
               polygon: true,
               trash: true,
             }}
-            /* onCreate={onUpdate}
-            onUpdate={onUpdate} */
+            onCreate={onUpdate}
+            onUpdate={onUpdate}
             onDelete={() => setFeatures({})}
           />
         )}

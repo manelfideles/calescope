@@ -63,10 +63,11 @@ const BenefitsCard = ({
     flexDir='column'
     alignItems='center'
     gap={1}
+    width='15rem'
     p={5}
   >
-    <Image src={imgSrc} />
-    <Text fontWeight='bold' fontSize='xl'>
+    <Image src={imgSrc} width='20rem' height='20rem' objectFit='scale-down' />
+    <Text fontWeight='bold' fontSize='xl' justifySelf='flex-end'>
       {title}
     </Text>
     <Text>{description}</Text>
@@ -175,9 +176,7 @@ export const Home = () => {
             description="Derive valuable insights on gathered data using CaleScope's analysis tools."
           />
           <BenefitsCard
-            // TODO: Replace this with the image below
-            // https://www.freepik.com/free-vector/workforce-organization-management_12085341.htm#from_view=detail_author
-            imgSrc='src/assets/analysis.jpg'
+            imgSrc='src/assets/workforce-organization.jpg'
             title='Centralized Data'
             description='Keep all your data organized in one single powerful platform.'
           />

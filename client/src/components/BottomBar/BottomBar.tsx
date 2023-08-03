@@ -15,7 +15,7 @@ import {
 import { Card } from '../Card';
 import { BsExclamationLg } from 'react-icons/bs';
 import { BiTrash, BiHide, BiShow } from 'react-icons/bi';
-import { useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { useSelectedLocations } from '../../hooks/useSelectedLocations';
 import { useRPC } from '../../hooks/useRPC';
 import '../../../node_modules/react-vis/dist/style.css';
@@ -30,8 +30,15 @@ import { getDefaultUserValues } from '../../utils/mockData';
 const formatInsertedDate = (date: string) =>
   !date.length ? '' : date.replace('T', ' ').slice(0, 16) + ':00+00';
 
-export const BottomBar = () => {
-  const [selectedVariableId, setSelectedVariableId] = useState(1);
+interface BottomBarProps {
+  selectedVariableId: number;
+  setSelectedVariableId: Dispatch<SetStateAction<number>>;
+}
+
+export const BottomBar = ({
+  selectedVariableId,
+  setSelectedVariableId,
+}: BottomBarProps) => {
   const { onToggle, isOpen } = useDisclosure();
   const [
     {
@@ -49,8 +56,6 @@ export const BottomBar = () => {
   } = useRPC({
     rpcName: 'get_filtered_values',
     convertToJson: false,
-    // TODO @CS-31:
-    // These values will be controlled by the sidebar context
     params: {
       min_altitude:
         altitude.mode === 'value' ? altitude.val : altitude.val[0] || 0,
@@ -74,7 +79,7 @@ export const BottomBar = () => {
 
   const selectedLocationsList = useMemo(
     () => (
-      <Flex flexDir='column' gap={2} overflowY='auto' pr={2}>
+      <Flex flexDir='column' gap={2} overflowY='scroll' pr={2}>
         <Text fontWeight='600' fontSize='sm'>
           {locations.length} Selected Location(s)
         </Text>
