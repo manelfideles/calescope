@@ -6,6 +6,7 @@ import {
   Hint,
   HorizontalGridLines,
   LineMarkSeries,
+  MarkSeries,
   XAxis,
   YAxis,
 } from 'react-vis';
@@ -110,7 +111,7 @@ export const LineChart = ({
                 (v: any) => v.measured_variable_id === selectedVariableId
               )?.[0]
               ?.values.map((measurements, index) => (
-                <LineMarkSeries
+                <MarkSeries
                   data={measurements}
                   opacity={
                     !locationData.isVisible
@@ -119,6 +120,7 @@ export const LineChart = ({
                       ? 0.75
                       : 0.4
                   }
+                  size={2}
                   onSeriesMouseOver={() => {
                     handleSeriesMouseHover(measurements[index]);
                   }}

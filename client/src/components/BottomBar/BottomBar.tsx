@@ -79,7 +79,7 @@ export const BottomBar = ({
 
   const selectedLocationsList = useMemo(
     () => (
-      <Flex flexDir='column' gap={2} overflowY='auto' pr={2}>
+      <Flex flexDir='column' gap={2} overflowY='scroll' pr={2}>
         <Text fontWeight='600' fontSize='sm'>
           {locations.length} Selected Location(s)
         </Text>
