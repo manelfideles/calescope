@@ -77,7 +77,7 @@ export const GraphSliderContextProvider = ({
         variable_id: variableId,
         location_ids:
           locations.length === 0
-            ? [...Array(20).keys()]
+            ? [...Array(20).keys()].slice(1)
             : locations?.map(({ locationId }) => locationId),
       },
     }
@@ -111,6 +111,7 @@ export const GraphSliderContextProvider = ({
 
   useEffect(() => {
     if (!isLoadingSliderRange && variableSliderRange) {
+      console.log({ variableSliderRange });
       if (variableSliderRange?.[0]?.min_value != null) {
         const formattedRange = [
           Math.floor(variableSliderRange?.[0]?.min_value),

@@ -211,7 +211,7 @@ export const BottomBar = ({
             ) : (
               <Flex pt={3}>
                 {selectedLocationsList}
-                <Box pt={5} borderLeft='1px solid gray'>
+                <Box pt={5} borderLeft='1px solid gray' pl={1}>
                   <Select
                     ml={10}
                     w='375px'

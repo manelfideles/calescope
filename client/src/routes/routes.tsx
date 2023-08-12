@@ -33,18 +33,6 @@ export const routes: Route[] = [
     showIfLoggedOut: false,
   },
   {
-    path: '/data',
-    pageName: 'Data',
-    element: <PageTemplate pageContent={<Data />} />,
-    showIfLoggedOut: false,
-  },
-  {
-    path: '/faqs',
-    pageName: 'FAQs',
-    element: <PageTemplate pageContent={<Faqs />} />,
-    showIfLoggedOut: false,
-  },
-  {
     path: '/login',
     pageName: 'Login',
     element: <PageTemplate pageContent={<Login />} />,

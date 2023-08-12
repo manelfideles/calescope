@@ -70,8 +70,10 @@ export const AuthContextProvider = ({ children }: AuthProviderProps) => {
       password,
       options: { data: { firstName, lastName } },
     });
-    if (error) toast({ status: 'error', title: error.message });
-    setAuthState({ session, user, isLoggedIn: true });
+    if (error) {
+      toast({ status: 'error', title: error.message });
+      setAuthState({ session: null, user: null, isLoggedIn: false });
+    } else setAuthState({ session, user, isLoggedIn: true });
     setIsLoading(false);
   };
 
